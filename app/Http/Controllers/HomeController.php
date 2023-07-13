@@ -25,4 +25,9 @@ class HomeController extends Controller
     {
         return view('home');
     }
+    public function getAccessToken(Request $request)
+    {
+        $accessToken = $request->session()->get('access_token_client');
+        return response()->json(['access_token' => $accessToken]);
+    }
 }

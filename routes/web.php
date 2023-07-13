@@ -19,8 +19,14 @@ Route::get("/sso/login", [SSOController::class, 'getLogin'])->name("sso.login");
 Route::get("/callback", [SSOController::class, 'getCallback'])->name("sso.callback");
 Route::get("/sso/connect", [SSOController::class, 'connectUser'])->name("sso.connect");
 
-
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
+Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Auth::routes(['register' => false, 'reset' => false ]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin');
+Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');
+Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');
+
+Route::get('/getaccesstoken', [App\Http\Controllers\HomeController::class, 'getAccessToken'])->name('getaccesstoken');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');

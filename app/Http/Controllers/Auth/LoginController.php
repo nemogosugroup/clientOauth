@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cookie;
 class LoginController extends Controller
 {
     /*
@@ -42,7 +43,7 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
-        abort(404);
+        return view('auth/login');
     }
 
     /**
@@ -53,15 +54,20 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::user()->logoutFromSSO();
+        
+        // die;
+        if (Auth::check()) {
+            // Người dùng đã đăng nhập, thực hiện mã lệnh tại đây
+            Auth::user()->logoutFromSSO();
+        }
 
 
         $this->guard()->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
+        $sessionCookieName = config('session.cookie');
+        $response = new \Illuminate\Http\Response();
         if ($response = $this->loggedOut($request)) {
             return $response;
         }
@@ -69,5 +75,24 @@ class LoginController extends Controller
         return $request->wantsJson()
             ? new JsonResponse([], 204)
             : redirect('/');
+    }
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function logoutClient(Request $request)
+    {
+        if (Auth::check()) {
+            Auth::user()->logoutFromSSO();
+        }
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return JsonResponse(['message' => 'Logged out successfully'], 200);
     }
 }

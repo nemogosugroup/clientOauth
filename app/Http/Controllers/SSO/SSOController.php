@@ -68,9 +68,9 @@ class SSOController extends Controller
             $user->save();
         }
 
-        Auth::login($user);
-        
-        // dd(Auth::check());die;
+        auth()->login($user);
+        $token = $user->createToken('API Token')->accessToken;
+        $request->session()->put('access_token_client', $token);
         return redirect(route("home"));
     }
 }
