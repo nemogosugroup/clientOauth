@@ -20,8 +20,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware('auth:api')->get('/logout', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::middleware('auth:api')->get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logoutClient'])->name('logout-api');
+Route::middleware('auth:api')->post('/vote/add', [App\Http\Controllers\VoteController::class, 'add'])->name('vote-add');
+Route::middleware('auth:api')->get('/vote/get-info', [App\Http\Controllers\VoteController::class, 'getInfo'])->name('get-vote-info');
+Route::middleware('auth:api')->get('/vote/set-status', [App\Http\Controllers\VoteController::class, 'setStatus'])->name('set-status');
+Route::middleware('auth:api')->get('/vote/get-all', [App\Http\Controllers\VoteController::class, 'getAll'])->name('get-vote-all');
+Route::middleware('auth:api')->post('/vote/vote', [App\Http\Controllers\VoteController::class, 'vote'])->name('vote');
+Route::post('/permissions',  [App\Http\Controllers\PermissionController::class, 'store']);

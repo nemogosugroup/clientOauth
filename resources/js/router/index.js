@@ -2,17 +2,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 
 import HomePage from '../components/home/HomePage.vue';
-import HomePageTest from '../components/home/HomePageTest.vue';
 
 import AdminParent from '../components/admin/AdminParent.vue';
 import Dashboard from '../components/admin/Dashboard.vue';
+import Vote from '../components/admin/vote/Vote.vue';
+import AddVote from '../components/admin/vote/AddVote.vue';
 
 const ErrorPage = {
     template: '<div>403 - Access denied</div>'
 };
 export const routes = [
     { name: 'home', path: '/home', component: HomePage },
-    { name: 'test', path: '/home/test', component: HomePageTest },
     {
         path: '/admin',
         name: 'Dashboard',
@@ -20,30 +20,24 @@ export const routes = [
         meta: { requiresAuth: true },
         children: [
             { name: 'Admin Dashboard', path: 'dashboard', component: Dashboard },
-            // {
-            //     path: 'language',
-            //     name: 'Language',
-            //     component: LanguageParent,
-            //     meta: { permissions: ['Language Manager'] },
-            //     children: [
-            //         {
-            //             name: 'All Language',
-            //             path: 'all',
-            //             component: AllLanguages,
-            //         },
-            //         {
-            //             name: 'Add Language',
-            //             path: 'add',
-            //             component: AddLanguage,
-            //         },
-            //         {
-            //             name: 'Edit Language',
-            //             path: 'edit/:id',
-            //             component: EditLanguage,
-            //         }
-            //     ]
-            // }
-
+            {
+                path: 'vote',
+                name: 'Vote',
+                component: AdminParent,
+                // meta: { permissions: ['Language Manager'] },
+                children: [
+                    {
+                        name: 'All Vote',
+                        path: 'all',
+                        component: Vote,
+                    },
+                    {
+                        name: 'Add Vote',
+                        path: 'add/:value',
+                        component: AddVote,
+                    }
+                ]
+            }
         ]
     },
     

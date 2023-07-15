@@ -23,6 +23,7 @@ class SSOController extends Controller
             "state" => $state,
             "prompt" => true
         ]);
+        // return redirect(config("auth.sso_host") .  "/oauth/authorize?" . $query)->header('crossorigin', 'anonymous');
         return redirect(config("auth.sso_host") .  "/oauth/authorize?" . $query);
     }
     public function getCallback(Request $request)
