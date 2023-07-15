@@ -5,8 +5,13 @@ import HomePage from '../components/home/HomePage.vue';
 
 import AdminParent from '../components/admin/AdminParent.vue';
 import Dashboard from '../components/admin/Dashboard.vue';
-import Vote from '../components/admin/vote/Vote.vue';
-import AddVote from '../components/admin/vote/AddVote.vue';
+// import Vote from '../components/admin/vote/Vote.vue';
+// import AddVote from '../components/admin/vote/AddVote.vue';
+
+import VoteParent from '../components/admin/vote/VoteParent.vue';
+import CreateVote from '../components/admin/vote/CreateVote.vue';
+import ViewVote from '../components/admin/vote/ViewVote.vue';
+// import AllVote from '../components/admin/vote/AllVote.vue';
 
 const ErrorPage = {
     template: '<div>403 - Access denied</div>'
@@ -20,25 +25,40 @@ export const routes = [
         meta: { requiresAuth: true },
         children: [
             { name: 'Admin Dashboard', path: 'dashboard', component: Dashboard },
-            {
-                path: 'vote',
-                name: 'Vote',
-                component: AdminParent,
-                // meta: { permissions: ['Language Manager'] },
-                children: [
-                    {
-                        name: 'All Vote',
-                        path: 'all',
-                        component: Vote,
-                    },
-                    {
-                        name: 'Add Vote',
-                        path: 'add/:value',
-                        component: AddVote,
-                    }
-                ]
-            }
+            // {
+            //     path: 'vote',
+            //     name: 'Vote',
+            //     component: AdminParent,
+            //     // meta: { permissions: ['Language Manager'] },
+            //     children: [
+            //         {
+            //             name: 'All Vote',
+            //             path: 'all',
+            //             component: Vote,
+            //         },
+            //         {
+            //             name: 'Add Vote',
+            //             path: 'add/:value',
+            //             component: AddVote,
+            //         }
+            //     ]
+            // }
         ]
+    },
+    {
+        path: '/admin',
+        name: 'Vote',
+        component: VoteParent,
+        meta: { requiresAuth: true },
+        children: [
+            { name: 'Create Vote', path: 'create-vote', component: CreateVote },
+            // { name: 'All Vote', path: 'all-vote', component: AllVote },
+        ]
+    },
+    {
+        path: '/voting',
+        name: 'Voting',
+        component: ViewVote,
     },
     
 
