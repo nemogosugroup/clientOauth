@@ -7,6 +7,11 @@ import HomePageTest from '../components/home/HomePageTest.vue';
 import AdminParent from '../components/admin/AdminParent.vue';
 import Dashboard from '../components/admin/Dashboard.vue';
 
+import VoteParent from '../components/admin/vote/VoteParent.vue';
+import CreateVote from '../components/admin/vote/CreateVote.vue';
+import ViewVote from '../components/admin/vote/ViewVote.vue';
+import AllVote from '../components/admin/vote/AllVote.vue';
+
 const ErrorPage = {
     template: '<div>403 - Access denied</div>'
 };
@@ -45,6 +50,21 @@ export const routes = [
             // }
 
         ]
+    },
+    {
+        path: '/admin',
+        name: 'Vote',
+        component: VoteParent,
+        meta: { requiresAuth: true },
+        children: [
+            { name: 'Create Vote', path: 'create-vote', component: CreateVote },
+            // { name: 'All Vote', path: 'all-vote', component: AllVote },
+        ]
+    },
+    {
+        path: '/voting',
+        name: 'Voting',
+        component: ViewVote,
     },
     
 
