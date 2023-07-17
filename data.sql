@@ -14,6 +14,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+-- Dumping database structure for sso_client_ecommerce
+CREATE DATABASE IF NOT EXISTS `sso_client_ecommerce` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `sso_client_ecommerce`;
+
 -- Dumping structure for table sso_client_ecommerce.failed_jobs
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -65,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `oauth_access_tokens` (
   KEY `oauth_access_tokens_user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sso_client_ecommerce.oauth_access_tokens: ~56 rows (approximately)
+-- Dumping data for table sso_client_ecommerce.oauth_access_tokens: ~58 rows (approximately)
 INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes`, `revoked`, `created_at`, `updated_at`, `expires_at`) VALUES
 	('0396e9a743fda2203367efcc6434e667c61116a2250b1915bd21711fb00a8de04564c9d9648ae1a0', 6, 3, 'API Token', '[]', 0, '2023-07-12 19:51:01', '2023-07-12 19:51:01', '2024-07-13 02:51:01'),
 	('067757cb32da7c9c047ef07d14af25d65d5abe977dad468910d96a807e10b77e3c5c28e05da9b545', 6, 3, 'API Token', '[]', 0, '2023-07-12 03:28:47', '2023-07-12 03:28:47', '2024-07-12 10:28:47'),
@@ -76,6 +81,7 @@ INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes
 	('1888e96fb356e2e8f32a7ca70c73dd4eeb1d10bace56c0f89b050dc3128fb816753f3fe0cf7c1dda', 6, 3, 'API Token', '[]', 0, '2023-07-12 02:54:32', '2023-07-12 02:54:32', '2024-07-12 09:54:32'),
 	('1b0f5c3f6f12089d54a3b2dd09e37ef5508629d8cc4040c00ea00350c4796f6d65a24ab97c57cef8', 6, 3, 'API Token', '[]', 0, '2023-07-12 19:33:08', '2023-07-12 19:33:08', '2024-07-13 02:33:08'),
 	('1d104ef57cfe7933e62e47b3ab68a58f1e206af93fe1b8d9a8038f74b99f1b01e916443bb7c876ca', 6, 3, 'API Token', '[]', 0, '2023-07-12 03:08:27', '2023-07-12 03:08:27', '2024-07-12 10:08:27'),
+	('21eba7657b0f80dc7b8ecdb7de609381452321b3d36a0122a4fd1e2e14469f1886d82f4c478f0d16', 6, 3, 'API Token', '[]', 0, '2023-07-15 01:06:22', '2023-07-15 01:06:22', '2024-07-15 08:06:22'),
 	('291a5b2deefb1baff94e1dd3f08320ad1ceef07c48a6e449b187bfe09c111987f6f7bfe173731495', 6, 3, 'API Token', '[]', 0, '2023-07-12 20:45:52', '2023-07-12 20:45:52', '2024-07-13 03:45:52'),
 	('2ec65eccb6ce22cde3c5178e103e24f012bd6af15f49f0098f9297f5ec6fcef77b6bc36a0d571283', 6, 3, 'API Token', '[]', 0, '2023-07-12 19:52:21', '2023-07-12 19:52:21', '2024-07-13 02:52:21'),
 	('4a336ddf6e9c26a535aefca868d195d359b6282d51c13fe527dbb8a71dc9fc6ba2c96786244c0ed4', 6, 3, 'API Token', '[]', 0, '2023-07-12 19:48:42', '2023-07-12 19:48:42', '2024-07-13 02:48:42'),
@@ -105,6 +111,7 @@ INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes
 	('ad950f08d8a1b826cbe6ef833a60f3fd95742dbc81018131bed934417ed592639821650ac5e18b86', 6, 3, 'API Token', '[]', 0, '2023-07-12 03:25:40', '2023-07-12 03:25:40', '2024-07-12 10:25:40'),
 	('b21b816724d4b69f95fd429e90c847a17e694be5a29b5a46079864c0a3738378e1c32e4b90bd4c93', 6, 3, 'API Token', '[]', 0, '2023-07-14 19:24:36', '2023-07-14 19:24:36', '2024-07-15 02:24:36'),
 	('b650c1e603afa8d6ac8efdf61024350f914cc94e7e7e3397e42ba649090887a599e4c72aa71290ff', 6, 3, 'API Token', '[]', 0, '2023-07-12 03:29:54', '2023-07-12 03:29:54', '2024-07-12 10:29:54'),
+	('b6ae20e56c9b43a2e5fffb5759f44b0a84e669017c16223ecc92a592a273f34d0205e5cb088052b7', 6, 3, 'API Token', '[]', 0, '2023-07-16 18:39:02', '2023-07-16 18:39:02', '2024-07-17 01:39:02'),
 	('ba9b85cb4ff4b5836714004bc3eaec7e68a1b2a535f85a08b4907e18114d7437ad886d3568a086d3', 6, 3, 'API Token', '[]', 0, '2023-07-12 02:47:40', '2023-07-12 02:47:40', '2024-07-12 09:47:40'),
 	('bb346dd2e21836f216159368dd0ec9154b0b63576c5179293f9f76afe4cc132edbbb4961eadb5645', 6, 3, 'API Token', '[]', 0, '2023-07-14 19:25:40', '2023-07-14 19:25:40', '2024-07-15 02:25:40'),
 	('bc40479f2348e3ebfd08dd9acc5a6febbe320034754a0f94863088125db097ee42488de8f9510466', 6, 3, 'API Token', '[]', 0, '2023-07-12 19:32:46', '2023-07-12 19:32:46', '2024-07-13 02:32:46'),
@@ -227,19 +234,19 @@ INSERT INTO `users` (`id`, `roles`, `name`, `email`, `email_verified_at`, `remem
 -- Dumping structure for table sso_client_ecommerce.vote
 CREATE TABLE IF NOT EXISTS `vote` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL DEFAULT '0',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
   `type` smallint NOT NULL DEFAULT '1',
   `type_view` smallint NOT NULL DEFAULT '1',
   `status` smallint NOT NULL DEFAULT '1',
   `updated_at` timestamp NOT NULL,
   `created_at` timestamp NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table sso_client_ecommerce.vote: ~2 rows (approximately)
-INSERT INTO `vote` (`id`, `name`, `type`, `type_view`, `status`, `updated_at`, `created_at`) VALUES
-	(1, 'a', 1, 1, 1, '2023-07-15 00:54:32', '2023-07-14 21:47:39'),
-	(2, 'a', 1, 1, 1, '2023-07-14 21:49:37', '2023-07-14 21:49:37');
+INSERT INTO `vote` (`id`, `title`, `type`, `type_view`, `status`, `updated_at`, `created_at`) VALUES
+	(5, 'Không hút thuốc lá', 1, 1, 1, '2023-07-16 19:51:14', '2023-07-16 19:51:14'),
+	(6, 'Không coi youtube trong giờ làm', 1, 1, 1, '2023-07-16 20:04:53', '2023-07-16 20:04:53');
 
 -- Dumping structure for table sso_client_ecommerce.vote_history
 CREATE TABLE IF NOT EXISTS `vote_history` (
@@ -250,37 +257,63 @@ CREATE TABLE IF NOT EXISTS `vote_history` (
   `updated_at` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK__users` (`user_id`),
-  KEY `FK__vote_options` (`vote_option_id`),
+  KEY `FK_vote_history_vote_options` (`vote_option_id`),
   CONSTRAINT `FK__users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `FK__vote_options` FOREIGN KEY (`vote_option_id`) REFERENCES `vote_options` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FK_vote_history_vote_options` FOREIGN KEY (`vote_option_id`) REFERENCES `vote_options` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table sso_client_ecommerce.vote_history: ~0 rows (approximately)
 INSERT INTO `vote_history` (`id`, `user_id`, `vote_option_id`, `created_at`, `updated_at`) VALUES
-	(5, 6, 1, '2023-07-15 00:42:16', '2023-07-15 00:42:16'),
-	(6, 6, 2, '2023-07-15 00:42:16', '2023-07-15 00:42:16');
+	(15, 6, 7, '2023-07-16 20:28:21', '2023-07-16 20:28:21'),
+	(16, 6, 10, '2023-07-16 20:28:21', '2023-07-16 20:28:21'),
+	(17, 6, 11, '2023-07-16 20:28:21', '2023-07-16 20:28:21');
 
 -- Dumping structure for table sso_client_ecommerce.vote_options
 CREATE TABLE IF NOT EXISTS `vote_options` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `vote_id` int NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `question_id` int NOT NULL,
+  `option` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `updated_at` timestamp NOT NULL,
   `created_at` timestamp NOT NULL,
   `total_voted` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE,
-  KEY `FK_vote_options_vote` (`vote_id`),
-  CONSTRAINT `FK_vote_options_vote` FOREIGN KEY (`vote_id`) REFERENCES `vote` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+  KEY `FK_vote_options_question` (`question_id`),
+  CONSTRAINT `FK_vote_options_question` FOREIGN KEY (`question_id`) REFERENCES `vote_questions` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table sso_client_ecommerce.vote_options: ~6 rows (approximately)
-INSERT INTO `vote_options` (`id`, `vote_id`, `name`, `updated_at`, `created_at`, `total_voted`) VALUES
-	(1, 1, 'abc', '2023-07-15 00:42:16', '2023-07-14 21:47:39', 1),
-	(2, 1, 'def', '2023-07-15 00:42:16', '2023-07-14 21:47:39', 1),
-	(3, 1, 'ghi', '2023-07-14 21:47:39', '2023-07-14 21:47:39', 0),
-	(4, 2, 'abc', '2023-07-14 21:49:37', '2023-07-14 21:49:37', 0),
-	(5, 2, 'def', '2023-07-14 21:49:37', '2023-07-14 21:49:37', 0),
-	(6, 2, 'ghi', '2023-07-14 21:49:37', '2023-07-14 21:49:37', 0);
+-- Dumping data for table sso_client_ecommerce.vote_options: ~12 rows (approximately)
+INSERT INTO `vote_options` (`id`, `question_id`, `option`, `updated_at`, `created_at`, `total_voted`) VALUES
+	(7, 1, 'abc', '2023-07-16 20:28:21', '2023-07-16 19:51:14', 1),
+	(8, 1, 'def', '2023-07-16 19:51:14', '2023-07-16 19:51:14', 0),
+	(9, 1, 'ghi', '2023-07-16 19:51:14', '2023-07-16 19:51:14', 0),
+	(10, 2, 'aaa', '2023-07-16 20:28:21', '2023-07-16 19:51:14', 1),
+	(11, 2, 'bbbb', '2023-07-16 20:28:21', '2023-07-16 19:51:14', 1),
+	(12, 2, 'cccc', '2023-07-16 19:51:14', '2023-07-16 19:51:14', 0),
+	(13, 3, 'gggg', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0),
+	(14, 3, 'sss', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0),
+	(15, 3, 'bbbb', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0),
+	(16, 4, 'arrraa', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0),
+	(17, 4, 'cc', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0),
+	(18, 4, 'eeer', '2023-07-16 20:04:53', '2023-07-16 20:04:53', 0);
+
+-- Dumping structure for table sso_client_ecommerce.vote_questions
+CREATE TABLE IF NOT EXISTS `vote_questions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `vote_id` int NOT NULL,
+  `question` text NOT NULL,
+  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__vote` (`vote_id`),
+  CONSTRAINT `FK__vote` FOREIGN KEY (`vote_id`) REFERENCES `vote` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table sso_client_ecommerce.vote_questions: ~4 rows (approximately)
+INSERT INTO `vote_questions` (`id`, `vote_id`, `question`, `created_at`, `updated_at`) VALUES
+	(1, 5, 'có phòng hút thuốc', '2023-07-16 19:51:14', '2023-07-16 19:51:14'),
+	(2, 5, 'không hút thuốc trong căn phòng', '2023-07-16 19:51:14', '2023-07-16 19:51:14'),
+	(3, 6, 'có phòng nghỉ ngơi để coi', '2023-07-16 20:04:53', '2023-07-16 20:04:53'),
+	(4, 6, 'tuyệt đối không coi', '2023-07-16 20:04:53', '2023-07-16 20:04:53');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

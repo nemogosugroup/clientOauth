@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\DB;
 
-class Vote extends Model
+class VoteQuestions extends Model
 {
     use HasFactory;
-    protected $table = 'vote';
+    protected $table = 'vote_questions';
 
     protected $fillable = [
-        'title',
-        'type',
-        'type_view',
-        'status'
+        'vote_id',
+        'question',
     ];
     
 }
+ 

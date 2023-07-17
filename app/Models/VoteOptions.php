@@ -13,10 +13,9 @@ class VoteOptions extends Model
     protected $table = 'vote_options';
 
     protected $fillable = [
-        'vote_id',
-        'name',
+        'question_id',
+        'option',
         'total_voted'
     ];
-    
 }
  

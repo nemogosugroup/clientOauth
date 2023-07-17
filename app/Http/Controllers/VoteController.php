@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Vote;
+use App\Models\VoteQuestions;
 use App\Models\VoteOptions;
 use App\Models\VoteHistory;
 
@@ -31,23 +32,31 @@ class VoteController extends Controller
     // }
     public function add(Request $request)
     {
-        $name = $request->input('name');
-        $voteOptions = $request->input('vote_options') ?? "[]";
-        $voteOptions = json_decode($voteOptions, true);
+        $title = $request->input('title');
+        $questions = $request->input('questions') ?? "[]";
+        $questions = json_decode($questions, true);
         $type = $request->input('type');
         $typeView = $request->input('type_view');
         // $vote = new Vote([
-        //     'name' => $name,
+        //     'title' => $title,
         //     'type' => $type,
         //     'typeView' => $typeView,
         // ]);
         // $vote->save();
-        // foreach ($voteOptions as $voteOption) {
-        //     $voteOptionModel = new VoteOptions([
+        // foreach ($questions as $question) {
+        //     $voteQuestionModel = new VoteQuestions([
         //         'vote_id' => $vote->id,
-        //         'name' => $voteOption,
+        //         'question' => $question['question'],
         //     ]);
-        //     $voteOptionModel->save();
+        //     $voteQuestionModel->save();
+        //     $voteOptions = $question['options'];
+        //     foreach ($voteOptions as $voteOption) {
+        //         $voteOptionModel = new VoteOptions([
+        //             'question_id' => $voteQuestionModel->id,
+        //             'option' => $voteOption,
+        //         ]);
+        //         $voteOptionModel->save();
+        //     }
         // }
 
 
@@ -56,18 +65,25 @@ class VoteController extends Controller
 
         try {
             $vote = new Vote([
-                'name' => $name,
+                'title' => $title,
                 'type' => $type,
                 'typeView' => $typeView,
             ]);
             $vote->save();
-
-            foreach ($voteOptions as $voteOption) {
-                $voteOptionModel = new VoteOptions([
+            foreach ($questions as $question) {
+                $voteQuestionModel = new VoteQuestions([
                     'vote_id' => $vote->id,
-                    'name' => $voteOption,
+                    'question' => $question['question'],
                 ]);
-                $voteOptionModel->save();
+                $voteQuestionModel->save();
+                $voteOptions = $question['options'];
+                foreach ($voteOptions as $voteOption) {
+                    $voteOptionModel = new VoteOptions([
+                        'question_id' => $voteQuestionModel->id,
+                        'option' => $voteOption,
+                    ]);
+                    $voteOptionModel->save();
+                }
             }
 
 
@@ -76,7 +92,7 @@ class VoteController extends Controller
             $response = [
                 "status" => 200,
                 "message" => "success",
-                "data" => ['voteOptions' => $voteOptions],
+                "data" => [],
                 "success" => true
             ];
             return response()->json($response);
@@ -141,32 +157,27 @@ class VoteController extends Controller
     }
     public function getInfo(Request $request)
     {
-        $id = $request->input('id');
+        $voteId = $request->input('id');
         
 
-        $vote = Vote::where("id", $id)->first();
-        if(!$vote){
-            $response = [
-                "status"=> 200,
-                "message"=>"Không tìm thấy!",
-                "data"=>[],
-                "success"=>false
-            ];
-            return response()->json($response);
+        
+        $data = Vote::select('vote.id', 'vote_questions.question as question', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->where('vote.id', $voteId)
+        ->get();
+
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id]['vote_id'] = $item->id;
+            $result[$item->id]['questions'][$item->question][] = ['option_id'=>$item->option_id,'option'=>$item->option,'total_voted'=>$item->total_voted];
         }
-        $voteOptions = VoteOptions::where("vote_id", $id)->get();
-        $voteInfo = [
-            'id' =>$id,
-            'name' => $vote->name,
-            'type' => $vote->type,
-            'type_view' => $vote->type_view,
-            'status' => $vote->status,
-            'oftion' => $voteOptions
-        ];
+
+        $jsonString = json_encode($result);
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['voteInfo'=>$voteInfo],
+            "data"=>['voteInfo'=>$jsonString],
             "success"=>true
         ];
         return response()->json($response);
@@ -176,12 +187,23 @@ class VoteController extends Controller
     {
         
 
-        $votes = Vote::get();
-        
+        $data = Vote::select('vote.id', 'vote_questions.question as question', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        // ->where('vote.id', $id)
+        ->get();
+
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id]['vote_id'] = $item->id;
+            $result[$item->id]['questions'][$item->question][] = ['option_id'=>$item->option_id,'option'=>$item->option,'total_voted'=>$item->total_voted];
+        }
+
+        $jsonString = json_encode($result);
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['votes'=>$votes],
+            "data"=>['voteInfo'=>$jsonString],
             "success"=>true
         ];
         return response()->json($response);
@@ -191,8 +213,8 @@ class VoteController extends Controller
     {
         $user = $request->user();
         $id = $request->input('id');
-        $voteOptions = $request->input('options') ?? "[]";
-        $voteOptions = json_decode($voteOptions, true);
+        $voteInfos = $request->input('vote_info') ?? "[]";
+        $voteInfos = json_decode($voteInfos, true);
         if(!$user){
             $response = [
                 "status"=> 200,
@@ -213,9 +235,10 @@ class VoteController extends Controller
         }
 
         $history = Vote::where('vote.id', $id)
-        ->join('vote_options', 'vote.id', '=', 'vote_options.vote_id')
+        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->join('vote_history', 'vote_options.id', '=', 'vote_history.vote_option_id')
-        ->select('vote_history.*', 'vote_options.name as vote_option_name','vote.name as vote_name')
+        ->select('vote_history.*', 'vote_options.option as option','vote.title as vote_title')
         ->get();
         if(count($history)){
             $response = [
@@ -234,32 +257,46 @@ class VoteController extends Controller
                 "data"=>[],
                 "success"=>false
             ];
+            return response()->json($response);
         }
-        foreach ($voteOptions as $voteOption) {
-            $voteOptionModel  = VoteOptions::where("id", $voteOption)->first();
-            if($voteOptionModel  && $voteOptionModel ->vote_id = $id){
-                $voteOptionModel->increment('total_voted');
-                $voteOptionModel->save();
-                $newVoteHistory = new VoteHistory([
-                    'user_id' => $user->id,
-                    'vote_option_id' => $voteOptionModel->id,
-                ]);
-                $newVoteHistory->save();
+        foreach ($voteInfos as $index => $voteOptions) {
+            $voteQuestion = VoteQuestions::where("id", $index)
+                ->where("vote_id", $id)
+                ->first();
+            if($voteQuestion){
+                foreach ($voteOptions as $voteOption) {
+                    $voteOptionModel  = VoteOptions::where("id", $voteOption)->where("question_id",$index)->first();
+                    if($voteOptionModel){
+                        $voteOptionModel->increment('total_voted');
+                        $voteOptionModel->save();
+                        $newVoteHistory = new VoteHistory([
+                            'user_id' => $user->id,
+                            'vote_option_id' => $voteOptionModel->id,
+                        ]);
+                        $newVoteHistory->save();
+                    }
+                }
+                
             }
+            
         }
-        $newVoteOptions = VoteOptions::where("vote_id", $id)->get();
-        $voteInfo = [
-            'id' =>$id,
-            'name' => $vote->name,
-            'type' => $vote->type,
-            'type_view' => $vote->type_view,
-            'status' => $vote->status,
-            'oftion' => $newVoteOptions
-        ];
+        $data = Vote::select('vote.id', 'vote_questions.question as question', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->where('vote.id', $id)
+        ->get();
+
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id]['vote_id'] = $item->id;
+            $result[$item->id]['questions'][$item->question][] = ['option_id'=>$item->option_id,'option'=>$item->option,'total_voted'=>$item->total_voted];
+        }
+
+        $jsonString = json_encode($result);
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['voteInfo'=>$voteInfo],
+            "data"=>['voteInfo'=>$jsonString],
             "success"=>true
         ];
         return response()->json($response);
