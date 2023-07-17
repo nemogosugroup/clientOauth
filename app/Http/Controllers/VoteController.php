@@ -62,7 +62,7 @@ class VoteController extends Controller
         //     foreach ($voteOptions as $voteOption) {
         //         $voteOptionModel = new VoteOptions([
         //             'question_id' => $voteQuestionModel->id,
-        //             'option' => $voteOption,
+        //             'option' => $voteOption['answer_value'],
         //         ]);
         //         $voteOptionModel->save();
         //     }
@@ -89,7 +89,7 @@ class VoteController extends Controller
                 foreach ($voteOptions as $voteOption) {
                     $voteOptionModel = new VoteOptions([
                         'question_id' => $voteQuestionModel->id,
-                        'option' => $voteOption,
+                        'option' => $voteOption['answer_value'],
                     ]);
                     $voteOptionModel->save();
                 }
