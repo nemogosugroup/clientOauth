@@ -14,7 +14,6 @@ class Vote extends Model
 
     protected $fillable = [
         'title',
-        'type',
         'type_view',
         'status'
     ];

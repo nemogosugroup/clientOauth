@@ -35,11 +35,19 @@ class VoteController extends Controller
         $title = $request->input('title');
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
-        $type = $request->input('type');
+        if (json_last_error() !== 0) {
+            $response = [
+                "status" => 200,
+                "message" => "xử lý dữ liệu false",
+                "data" => [],
+                "success" => false
+            ];
+            return response()->json($response);
+            
+        }
         $typeView = $request->input('type_view');
         // $vote = new Vote([
         //     'title' => $title,
-        //     'type' => $type,
         //     'typeView' => $typeView,
         // ]);
         // $vote->save();
@@ -47,6 +55,7 @@ class VoteController extends Controller
         //     $voteQuestionModel = new VoteQuestions([
         //         'vote_id' => $vote->id,
         //         'question' => $question['question'],
+        //         'type' => $question['type'],
         //     ]);
         //     $voteQuestionModel->save();
         //     $voteOptions = $question['options'];
@@ -66,7 +75,6 @@ class VoteController extends Controller
         try {
             $vote = new Vote([
                 'title' => $title,
-                'type' => $type,
                 'typeView' => $typeView,
             ]);
             $vote->save();
@@ -74,6 +82,7 @@ class VoteController extends Controller
                 $voteQuestionModel = new VoteQuestions([
                     'vote_id' => $vote->id,
                     'question' => $question['question'],
+                    'type' => $question['type'],
                 ]);
                 $voteQuestionModel->save();
                 $voteOptions = $question['options'];
