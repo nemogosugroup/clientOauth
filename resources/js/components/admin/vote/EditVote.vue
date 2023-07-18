@@ -30,42 +30,40 @@
       removeQuestion(index) {
         this.group_question.splice(index, 1);
       },
-      saveData() {
-        if (this.validateForm()) {
-          let dataQuestion = JSON.stringify(this.group_question);
-          let formCreateVote = {
-            title: this.title_vote,
-            type_view: 1,
-            questions: dataQuestion,
-          };
-          console.log(formCreateVote);
-          // Gửi dữ liệu formCreateVote đi
-        }
+      clearData() {
+        this.group_question = [];
       },
-      validateForm() {
-        let isValid = true;
-  
-        // Validate title
-        if (this.title_vote.trim() === '') {
-          this.validationErrors.title = 'Vui lòng nhập tiêu đề.';
-          isValid = false;
-        } else {
-          this.validationErrors.title = '';
-        }
-  
-        // Validate questions
-        this.validationErrors.questions = [];
-        this.group_question.forEach((question, index) => {
-          if (question.question.trim() === '') {
-            this.validationErrors.questions[index] = 'Vui lòng nhập câu hỏi.';
-            isValid = false;
-          } else {
-            this.validationErrors.questions[index] = '';
-          }
-        });
-  
-        return isValid;
-      },
+      // saveData() {
+      //   let token = this.$store.getters.accessToken;
+      //   if (this.validateForm()) {
+      //     let dataQuestion = JSON.stringify(this.group_question);
+      //     let formCreateVote = {
+      //       vote_id: this.$route.params.id,
+      //       type_view: 1,
+      //       questions: dataQuestion,
+      //     };
+      //     console.log(formCreateVote);
+      //     // Gửi dữ liệu formCreateVote đi
+      //     axios.post(`/api/vote/update`, formCreateVote, {
+      //     headers: {
+      //       'Authorization': 'Bearer ' + token
+      //     }
+      //     })
+      //     .then(function (response) {
+      //       console.log("vote/add: ", response.data);
+      //     })
+      //     .catch(function (error) {
+      //       console.log("vote/add error: ", error);
+      //     });
+      //     this.$swal.fire({
+      //       position: "center",
+      //       icon: "success",
+      //       title: "Bạn đã tạo biểu mẫu thành công",
+      //       showConfirmButton: false,
+      //       timer: 1500
+      //     });
+      //   }
+      // },
     },
     created() {
       let token = this.$store.getters.accessToken;
@@ -101,6 +99,8 @@
         .catch((error) => {
           console.log('Error:', error);
         });
+
+        console.log(this.group_question);
     }
   };
 </script>
@@ -114,9 +114,9 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-12">
-                    <label class="card-title">Tiêu đề<span class="text-danger">*</span></label>
-                    <b-form-group id="title-text" :state="validationErrors.title ? false : null" :invalid-feedback="validationErrors.title">
-                      <b-form-input v-model="title_vote" placeholder=""></b-form-input>
+                    <label class="card-title font-size-16 font-weight-bold">Tiêu đề</label>
+                    <b-form-group>
+                      <b-form-input v-model="title_vote" disabled placeholder=""></b-form-input>
                     </b-form-group>
                   </div>
                 </div>
@@ -127,14 +127,14 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-lg-9">
-                      <label class="card-title">Câu hỏi<span class="text-danger">*</span></label>
-                      <b-form-group :state="validationErrors.questions[indexQuestion] ? false : null" :invalid-feedback="validationErrors.questions[indexQuestion]">
-                        <b-form-input v-model="question.question" placeholder=""></b-form-input>
+                      <label class="card-title font-size-16 font-weight-bold">Câu hỏi</label>
+                      <b-form-group>
+                        <b-form-input v-model="question.question" disabled placeholder=""></b-form-input>
                       </b-form-group>
                     </div>
                     <div class="col-lg-3">
                       <label>Loại:</label>
-                      <select class="form-control select2" v-model="question.type">
+                      <select class="form-control select2" v-model="question.type" disabled>
                         <option v-for="value in type_options" :key="value.id" :value="value.id">{{ value.option }}</option>
                       </select>
                     </div>
@@ -143,24 +143,13 @@
                   <div class="row" v-if="question.type !== 3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
                     <div class="col-lg-9">
                       <b-form-group>
-                        <b-form-input v-model="answer.answer_value" placeholder=""></b-form-input>
+                        <b-form-input v-model="answer.answer_value" disabled placeholder=""></b-form-input>
                       </b-form-group>
-                    </div>
-                    <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question, indexAnswer)" href="#"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>
-                  </div>
-                  <a href="#" @click="addAnswer(question)" v-if="question.type !== 3"><i class="fas fa-plus"></i>&nbsp;&nbsp;Thêm câu trả lời</a>
-                  <div class="row float-right">
-                    <div v-if="group_question.length > 1" class="mr-3">
-                      <a class="text-danger" href="#" @click="removeQuestion(indexQuestion)"><i class="fas fa-trash-alt"></i>&nbsp;Xoá câu hỏi</a>
-                    </div>
-                    <div class="mr-2">
-                      <a href="#" @click="addQuestion"><i class="fas fa-plus"></i>&nbsp;Thêm câu hỏi</a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary float-right mb-4" type="submit">Lưu biểu mẫu</button>
           </form>
         </div>
       </div>
