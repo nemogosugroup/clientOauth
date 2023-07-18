@@ -24,6 +24,7 @@ Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout
 Auth::routes(['register' => false, 'reset' => false ]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/error', [App\Http\Controllers\HomeController::class, 'index'])->name('error');
 Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin');
 Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');
 Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');

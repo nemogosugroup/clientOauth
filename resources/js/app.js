@@ -26,7 +26,12 @@ app.use(store);
 // app.use(Multiselect);
 app.use(BootstrapVue3);
 app.use(router).mount('#app');
+
 const accessToken = localStorage.getItem('accessToken');
 if (accessToken) {
   store.commit('changeAccessToken', accessToken);
+}
+const infoUser = localStorage.getItem('infoUser');
+if (infoUser) {
+  store.commit('changeInfoUser', infoUser);
 }

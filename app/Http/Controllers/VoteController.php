@@ -126,6 +126,126 @@ class VoteController extends Controller
         return response()->json($response);
     }
 
+    public function update(Request $request)
+    {
+        $voteId = $request->input('vote_id');
+        $type_view = $request->input('type_view');
+        $questions = $request->input('questions') ?? "[]";
+        $questions = json_decode($questions, true);
+        if (json_last_error() !== 0) {
+            $response = [
+                "status" => 200,
+                "message" => "xử lý dữ liệu false",
+                "data" => [],
+                "success" => false
+            ];
+            return response()->json($response);
+            
+        }
+        $typeView = $request->input('type_view');
+        $vote = Vote::where("id", $voteId)->first();
+        if(!$vote){
+            $response = [
+                "status"=> 200,
+                "message"=>"Không tìm thấy!",
+                "data"=>[],
+                "success"=>false
+            ];
+            return response()->json($response);
+        }
+        foreach ($questions as $question) {
+            if($question['options'] && count($question['options']) >0 ){
+                $questionId = $question['question_id'] ?? 0;
+                if($questionId > 0){
+                    $voteQuestionModel = VoteQuestions::where("id", $question['question_id'])->where("vote_id", $voteId)->first();
+                    if(!$voteQuestionModel){
+                        $response = [
+                            "status"=> 200,
+                            "message"=>"Không tìm thấy!",
+                            "data"=>[],
+                            "success"=>false
+                        ];
+                        return response()->json($response);
+                    }
+                }else{
+                    $voteQuestionModel = new VoteQuestions([
+                        'vote_id' => $vote->id,
+                        'question' => $question['question'],
+                        'type' => $question['type'],
+                    ]);
+                    $voteQuestionModel->save();
+                }
+    
+                $voteOptions = $question['options'];
+                foreach ($voteOptions as $voteOption) {
+                    $voteOptionModel = new VoteOptions([
+                        'question_id' => $voteQuestionModel->id,
+                        'option' => $voteOption['answer_value'],
+                    ]);
+                    $voteOptionModel->save();
+                }
+            }
+            
+        }
+
+
+        // ----
+        // DB::beginTransaction();
+
+        // try {
+        //     $vote = new Vote([
+        //         'title' => $title,
+        //         'typeView' => $typeView,
+        //     ]);
+        //     $vote->save();
+        //     foreach ($questions as $question) {
+        //         $voteQuestionModel = new VoteQuestions([
+        //             'vote_id' => $vote->id,
+        //             'question' => $question['question'],
+        //             'type' => $question['type'],
+        //         ]);
+        //         $voteQuestionModel->save();
+        //         $voteOptions = $question['options'];
+        //         foreach ($voteOptions as $voteOption) {
+        //             $voteOptionModel = new VoteOptions([
+        //                 'question_id' => $voteQuestionModel->id,
+        //                 'option' => $voteOption['answer_value'],
+        //             ]);
+        //             $voteOptionModel->save();
+        //         }
+        //     }
+
+
+        //     DB::commit();
+
+        //     $response = [
+        //         "status" => 200,
+        //         "message" => "success",
+        //         "data" => [],
+        //         "success" => true
+        //     ];
+        //     return response()->json($response);
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+
+        //     $response = [
+        //         "status" => 500,
+        //         "message" => "error",
+        //         "data" => [],
+        //         "success" => false
+        //     ];
+        //     return response()->json($response);
+        // }
+        // ----
+        $response = [
+            "status"=> 200,
+            "message"=>"success",
+            "data"=>[],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+
     public function setStatus(Request $request)
     {
         $id = $request->input('id');

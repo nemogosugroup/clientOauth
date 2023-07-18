@@ -19,37 +19,24 @@ const ErrorPage = {
 export const routes = [
     { name: 'home', path: '/home', component: HomePage },
     {
+        path: '/error',
+        name: 'error',
+        component: ErrorPage
+    },
+    {
         path: '/admin',
         name: 'Dashboard',
         component: AdminParent,
         meta: { requiresAuth: true },
         children: [
             { name: 'Admin Dashboard', path: 'dashboard', component: Dashboard },
-            // {
-            //     path: 'vote',
-            //     name: 'Vote',
-            //     component: AdminParent,
-            //     // meta: { permissions: ['Language Manager'] },
-            //     children: [
-            //         {
-            //             name: 'All Vote',
-            //             path: 'all',
-            //             component: Vote,
-            //         },
-            //         {
-            //             name: 'Add Vote',
-            //             path: 'add/:value',
-            //             component: AddVote,
-            //         }
-            //     ]
-            // }
         ]
     },
     {
         path: '/admin',
         name: 'Vote',
         component: VoteParent,
-        meta: { requiresAuth: true },
+        meta: { roles: ['ROLE_ADMIN'] },
         children: [
             { name: 'Create Vote', path: 'create-vote', component: CreateVote },
             // { name: 'All Vote', path: 'all-vote', component: AllVote },
@@ -59,7 +46,7 @@ export const routes = [
         path: '/voting',
         name: 'Voting',
         component: ViewVote,
-    },
+    }
     
 
 ];
@@ -68,47 +55,54 @@ const router = createRouter({
     routes
 })
 import { store } from '../store/store';
-import permissions from '../store/Modules/permissions';
+import oAuthLogin from '../store/modules/oAuthLogin';
 router.beforeEach((to, from, next) => {
-    // const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    // const isAuthenticated = store.getters.getLoginResponse.authenticated || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
-    // const roles = to.meta.roles
-    // const permissions = to.meta.permissions
-    // let authUser = undefined
-    // if (store.getters.getAuthUser.id !== undefined) {
-    //     authUser = store.getters.getAuthUser;
-    // }
-    // authUser = JSON.parse(localStorage.getItem('authUser'))
-    // if (requiresAuth) {
-    //     // kiểm tra xem người dùng đã đăng nhập hay chưa
-    //     if (!isAuthenticated) {
-    //         next('/login');
-    //         return
-    //     }
-    // }
-    // if (roles && roles.length > 0) {
-    //     const userRoles = authUser.roles
-    //     const hasAccess = userRoles.some(role => roles.includes(role.name));
-    //     if (!hasAccess) {
-    //         next('/error');
-    //         return;
-    //     }
-    // }
-    // if (permissions && permissions.length > 0) {
-    //     const userRoles = authUser.roles
-    //     let hasAccess = false;
-
-    //     for (const role of userRoles) {
-    //         if (role.permissions.some(permission => permissions.includes(permission.name))) {
-    //             hasAccess = true;
-    //             break;
-    //         }
-    //     }
-    //     if (!hasAccess) {
-    //         next('/error');
-    //         return;
-    //     }
-    // }
+    if(!store.getters.infoUser ){
+        $.ajax({
+            url: '/getaccesstoken',
+            type: 'GET',
+            success: function(response) {
+                let token = response.access_token;
+                $.ajax({
+                    url: '/api/user',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    success: function(userResponse) {
+                        // Xử lý dữ liệu người dùng
+                        // userResponse.access_token = token;
+                        const userResponseJSON = JSON.stringify(userResponse);
+                        store.dispatch('saveAccessToken', token);
+                        store.dispatch('saveInfoUser', userResponseJSON);
+                        
+                        handleInfoUser(JSON.parse(store.getters.infoUser));
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            },
+        });
+    }else{
+        handleInfoUser(JSON.parse(store.getters.infoUser));
+    }
+    
+    function handleInfoUser(infoUser) {
+        const roles = to.meta.roles;
+        if (roles && roles.length > 0) {
+          const userRoles = infoUser.roles ?? "[]";
+          const userRolesArray = JSON.parse(userRoles);
+          // Xử lý và kiểm tra roles
+          const hasAccess = userRolesArray.some(role => roles.includes(role));
+            if (!hasAccess) {
+                next('/error');
+                return;
+            }
+        }
+    
+        next();
+      }
     next();
 
 })

@@ -438,7 +438,7 @@ export default {
         //     return JSON.parse(localStorage.getItem('infoUser'));
         // },
         UserForm() {
-            let user = this.$store.getters.infoUser;
+            let user = JSON.parse(this.$store.getters.infoUser);
             return {
                 name: user ? user.name : ""
             }

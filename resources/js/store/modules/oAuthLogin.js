@@ -22,6 +22,7 @@ const actions = {
         
         commit('changeAccessToken', null);
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('infoUser');
         window.location.href = '/logout';
     },
 };

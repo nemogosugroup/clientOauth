@@ -72,6 +72,11 @@ class SSOController extends Controller
         auth()->login($user);
         $token = $user->createToken('API Token')->accessToken;
         $request->session()->put('access_token_client', $token);
+        $previousUrl = $request->session()->get('previousUrl');
+        $request->session()->forget('previousUrl');
+        if($previousUrl){
+            return redirect()->to($previousUrl);
+        }
         return redirect(route("home"));
     }
 }

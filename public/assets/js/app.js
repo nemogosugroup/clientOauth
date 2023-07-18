@@ -22130,68 +22130,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_layouts_LayoutWrapper_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/layouts/LayoutWrapper.vue */ "./resources/js/components/layouts/LayoutWrapper.vue");
 /* harmony import */ var _components_layouts_RightSidebar_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/layouts/RightSidebar.vue */ "./resources/js/components/layouts/RightSidebar.vue");
 /* harmony import */ var _components_home_view_NavbarView_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/home/view/NavbarView.vue */ "./resources/js/components/home/view/NavbarView.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-    });
-  }
-  return target;
-}
-function _defineProperty(obj, key, value) {
-  key = _toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-function _toPropertyKey(arg) {
-  var key = _toPrimitive(arg, "string");
-  return _typeof(key) === "symbol" ? key : String(key);
-}
-function _toPrimitive(input, hint) {
-  if (_typeof(input) !== "object" || input === null) return input;
-  var prim = input[Symbol.toPrimitive];
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || "default");
-    if (_typeof(res) !== "object") return res;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return (hint === "string" ? String : Number)(input);
-}
 // import loginLayout from './components/account/LoginLayout.vue';
 // import register from './components/account/Register.vue';
-
 
 
 
@@ -22212,41 +22152,8 @@ function _toPrimitive(input, hint) {
       return this.$route.path.startsWith("/admin/") || this.$route.path.startsWith("/admin");
     }
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapActions)(['saveInfoUser', "saveAccessToken"])), {}, {
-    getAccessToken: function getAccessToken() {
-      if (!this.$store.getters.accessToken) {
-        var self = this;
-        $.ajax({
-          url: '/getaccesstoken',
-          type: 'GET',
-          success: function success(response) {
-            var token = response.access_token;
-            console.log("getaccesstoken: ", token);
-            self.saveAccessToken(token);
-            $.ajax({
-              url: '/api/user',
-              type: 'GET',
-              headers: {
-                'Authorization': 'Bearer ' + token
-              },
-              success: function success(userResponse) {
-                // Xử lý dữ liệu người dùng
-                self.saveInfoUser(userResponse);
-                console.log(userResponse);
-                console.log("check save info user:", self.$store.getters.infoUser);
-              },
-              error: function error(_error) {
-                console.log(_error);
-              }
-            });
-          }
-        });
-      }
-    }
-  }),
-  mounted: function mounted() {
-    this.getAccessToken();
-  }
+  methods: {},
+  mounted: function mounted() {}
 });
 
 /***/ }),
@@ -22754,7 +22661,7 @@ function _toPrimitive(input, hint) {
     //     return JSON.parse(localStorage.getItem('infoUser'));
     // },
     UserForm: function UserForm() {
-      var user = this.$store.getters.infoUser;
+      var user = JSON.parse(this.$store.getters.infoUser);
       return {
         name: user ? user.name : ""
       };
@@ -24044,6 +23951,10 @@ var accessToken = localStorage.getItem('accessToken');
 if (accessToken) {
   _store_store__WEBPACK_IMPORTED_MODULE_10__.store.commit('changeAccessToken', accessToken);
 }
+var infoUser = localStorage.getItem('infoUser');
+if (infoUser) {
+  _store_store__WEBPACK_IMPORTED_MODULE_10__.store.commit('changeInfoUser', infoUser);
+}
 
 /***/ }),
 
@@ -24134,7 +24045,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_admin_vote_CreateVote_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/admin/vote/CreateVote.vue */ "./resources/js/components/admin/vote/CreateVote.vue");
 /* harmony import */ var _components_admin_vote_ViewVote_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/admin/vote/ViewVote.vue */ "./resources/js/components/admin/vote/ViewVote.vue");
 /* harmony import */ var _store_store__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../store/store */ "./resources/js/store/store.js");
-/* harmony import */ var _store_Modules_permissions__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../store/Modules/permissions */ "./resources/js/store/Modules/permissions.js");
+/* harmony import */ var _store_modules_oAuthLogin__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../store/modules/oAuthLogin */ "./resources/js/store/modules/oAuthLogin.js");
 
 
 
@@ -24155,6 +24066,10 @@ var routes = [{
   path: '/home',
   component: _components_home_HomePage_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
 }, {
+  path: '/error',
+  name: 'error',
+  component: ErrorPage
+}, {
   path: '/admin',
   name: 'Dashboard',
   component: _components_admin_AdminParent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -24165,32 +24080,13 @@ var routes = [{
     name: 'Admin Dashboard',
     path: 'dashboard',
     component: _components_admin_Dashboard_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
-  }
-  // {
-  //     path: 'vote',
-  //     name: 'Vote',
-  //     component: AdminParent,
-  //     // meta: { permissions: ['Language Manager'] },
-  //     children: [
-  //         {
-  //             name: 'All Vote',
-  //             path: 'all',
-  //             component: Vote,
-  //         },
-  //         {
-  //             name: 'Add Vote',
-  //             path: 'add/:value',
-  //             component: AddVote,
-  //         }
-  //     ]
-  // }
-  ]
+  }]
 }, {
   path: '/admin',
   name: 'Vote',
   component: _components_admin_vote_VoteParent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
   meta: {
-    requiresAuth: true
+    roles: ['ROLE_ADMIN']
   },
   children: [{
     name: 'Create Vote',
@@ -24211,202 +24107,55 @@ var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_6__.createRouter)({
 
 
 router.beforeEach(function (to, from, next) {
-  // const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  // const isAuthenticated = store.getters.getLoginResponse.authenticated || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
-  // const roles = to.meta.roles
-  // const permissions = to.meta.permissions
-  // let authUser = undefined
-  // if (store.getters.getAuthUser.id !== undefined) {
-  //     authUser = store.getters.getAuthUser;
-  // }
-  // authUser = JSON.parse(localStorage.getItem('authUser'))
-  // if (requiresAuth) {
-  //     // kiểm tra xem người dùng đã đăng nhập hay chưa
-  //     if (!isAuthenticated) {
-  //         next('/login');
-  //         return
-  //     }
-  // }
-  // if (roles && roles.length > 0) {
-  //     const userRoles = authUser.roles
-  //     const hasAccess = userRoles.some(role => roles.includes(role.name));
-  //     if (!hasAccess) {
-  //         next('/error');
-  //         return;
-  //     }
-  // }
-  // if (permissions && permissions.length > 0) {
-  //     const userRoles = authUser.roles
-  //     let hasAccess = false;
-
-  //     for (const role of userRoles) {
-  //         if (role.permissions.some(permission => permissions.includes(permission.name))) {
-  //             hasAccess = true;
-  //             break;
-  //         }
-  //     }
-  //     if (!hasAccess) {
-  //         next('/error');
-  //         return;
-  //     }
-  // }
+  if (!_store_store__WEBPACK_IMPORTED_MODULE_7__.store.getters.infoUser) {
+    $.ajax({
+      url: '/getaccesstoken',
+      type: 'GET',
+      success: function success(response) {
+        var token = response.access_token;
+        $.ajax({
+          url: '/api/user',
+          type: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          },
+          success: function success(userResponse) {
+            // Xử lý dữ liệu người dùng
+            // userResponse.access_token = token;
+            var userResponseJSON = JSON.stringify(userResponse);
+            _store_store__WEBPACK_IMPORTED_MODULE_7__.store.dispatch('saveAccessToken', token);
+            _store_store__WEBPACK_IMPORTED_MODULE_7__.store.dispatch('saveInfoUser', userResponseJSON);
+            handleInfoUser(JSON.parse(_store_store__WEBPACK_IMPORTED_MODULE_7__.store.getters.infoUser));
+          },
+          error: function error(_error) {
+            console.log(_error);
+          }
+        });
+      }
+    });
+  } else {
+    handleInfoUser(JSON.parse(_store_store__WEBPACK_IMPORTED_MODULE_7__.store.getters.infoUser));
+  }
+  function handleInfoUser(infoUser) {
+    var roles = to.meta.roles;
+    if (roles && roles.length > 0) {
+      var _infoUser$roles;
+      var userRoles = (_infoUser$roles = infoUser.roles) !== null && _infoUser$roles !== void 0 ? _infoUser$roles : "[]";
+      var userRolesArray = JSON.parse(userRoles);
+      // Xử lý và kiểm tra roles
+      var hasAccess = userRolesArray.some(function (role) {
+        return roles.includes(role);
+      });
+      if (!hasAccess) {
+        next('/error');
+        return;
+      }
+    }
+    next();
+  }
   next();
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (router);
-
-/***/ }),
-
-/***/ "./resources/js/store/Modules/permissions.js":
-/*!***************************************************!*\
-  !*** ./resources/js/store/Modules/permissions.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-
-var state = {
-  permissions: {},
-  permission: {},
-  newPerm: {},
-  message: {},
-  edit: {}
-};
-var getters = {
-  permissions: function permissions(state) {
-    return state.permissions;
-  },
-  permission: function permission(state) {
-    return state.permission;
-  },
-  newPermPage: function newPermPage(state) {
-    return state.newPerm;
-  },
-  retrieveMessage2: function retrieveMessage2(state) {
-    return state.message;
-  },
-  editPerm: function editPerm(state) {
-    return state.edit;
-  }
-};
-var actions = {
-  getPermissions: function getPermissions(_ref, page) {
-    var commit = _ref.commit;
-    if (_typeof(page) == undefined) {
-      page = 1;
-    }
-    commit('loadingStatus', true);
-    axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/admin/permissions?page=' + page).then(function (response) {
-      if (response.status == 200) {
-        commit('permissions', response.data);
-        commit('loadingStatus', false);
-      }
-    })["catch"](function (error) {
-      console.log(error);
-    });
-  },
-  viewPermission: function viewPermission(_ref2, id) {
-    var commit = _ref2.commit;
-    commit('loadingStatus', true);
-    axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/admin/permissions/' + id).then(function (response) {
-      if (response.status == 200) {
-        console.log(response.data);
-        commit('permission', response.data);
-        commit('loadingStatus', false);
-      }
-    })["catch"](function (error) {
-      console.log(error);
-    });
-  },
-  createPermission: function createPermission(_ref3) {
-    var commit = _ref3.commit;
-    commit('loadingStatus', true);
-    axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/admin/permissions/create').then(function (response) {
-      commit('mutateNewPermission', response.data);
-      commit('loadingStatus', false);
-    })["catch"](function (error) {
-      console.log(error);
-    });
-  },
-  storeNewPermission: function storeNewPermission(_ref4, input) {
-    var commit = _ref4.commit;
-    axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/admin/permissions', {
-      newPermission: input
-    }).then(function (response) {
-      if (response.status == 200) {
-        commit('message', response.data);
-      }
-    })["catch"](function (error) {
-      console.log(error);
-    });
-  },
-  editPermission: function editPermission(_ref5, id) {
-    var commit = _ref5.commit;
-    commit('loadingStatus', true);
-    axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/admin/permissions/' + id + '/edit').then(function (response) {
-      if (response.status == 200) {
-        commit('edit', response.data);
-        commit('loadingStatus', false);
-      }
-    });
-  },
-  updatePermission: function updatePermission(_ref6, data) {
-    var commit = _ref6.commit;
-    axios__WEBPACK_IMPORTED_MODULE_0___default().put('/api/admin/permissions/' + data.id, {
-      data: data.update
-    }).then(function (response) {
-      if (response.status == 200) {
-        console.log(response.data);
-        commit('message', response.data);
-      }
-    });
-  },
-  deletePermission: function deletePermission(_ref7, routeId) {
-    var commit = _ref7.commit;
-    axios__WEBPACK_IMPORTED_MODULE_0___default()["delete"]('/api/admin/permissions/' + routeId).then(function (response) {
-      if (response.status == 200) {
-        commit('message', response.data);
-      }
-    });
-  }
-};
-var mutations = {
-  permissions: function permissions(state, payload) {
-    return state.permissions = payload;
-  },
-  permission: function permission(state, payload) {
-    return state.permission = payload;
-  },
-  mutateNewPermission: function mutateNewPermission(state, payload) {
-    return state.newPerm = payload;
-  },
-  message: function message(state, payload) {
-    return state.message = payload;
-  },
-  edit: function edit(state, payload) {
-    return state.edit = payload;
-  }
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  state: state,
-  getters: getters,
-  actions: actions,
-  mutations: mutations
-});
 
 /***/ }),
 
@@ -24452,6 +24201,7 @@ var actions = {
       getters = _ref3.getters;
     commit('changeAccessToken', null);
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('infoUser');
     window.location.href = '/logout';
   }
 };

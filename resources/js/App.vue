@@ -25,7 +25,6 @@ import RightSidebar from './components/layouts/RightSidebar.vue';
 import HomeNavbarView from './components/home/view/NavbarView.vue';
 
 
-import { mapGetters, mapMutations, mapActions } from "vuex";
 export default {
     components: {
         // loginLayout,
@@ -43,42 +42,9 @@ export default {
         },
     },
     methods: {
-        // ...mapActions(['saveAccessToken']),
-        ...mapActions(['saveInfoUser',"saveAccessToken"]),
-        getAccessToken() {
-            if(!this.$store.getters.accessToken){
-                let self = this;
-                $.ajax({
-                    url: '/getaccesstoken',
-                    type: 'GET',
-                    success: function(response) {
-                    let token = response.access_token;
-                    console.log("getaccesstoken: ",token);
-                    self.saveAccessToken(token);
-                    $.ajax({
-                        url: '/api/user',
-                        type: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + token
-                        },
-                        success: function(userResponse) {
-                            // Xử lý dữ liệu người dùng
-                            self.saveInfoUser(userResponse);
-                            console.log(userResponse);
-                            console.log("check save info user:",self.$store.getters.infoUser);
-                        },
-                        error: function(error) {
-                            console.log(error);
-                        }
-                        });
-                    },
-                });
-            }
-            
-        },
     },
-    mounted() {
-        this.getAccessToken();
+     mounted() {
+        
     },
 }
 </script>
