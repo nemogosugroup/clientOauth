@@ -23,6 +23,8 @@ Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Auth::routes(['register' => false, 'reset' => false ]);
 
+Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'index'])->name('voting');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/error', [App\Http\Controllers\HomeController::class, 'index'])->name('error');
 Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin');

@@ -16,14 +16,13 @@ import VueAxios from 'vue-axios';
 import axios from 'axios';
 import { store } from './store/store';
 import Swal from 'sweetalert2';
-// import Multiselect from 'vue-multiselect';
+
 
 app.config.globalProperties.$swal = Swal;
 app.config.globalProperties.$config = config;
 // app.use(Vuex);
 app.use(VueAxios, axios);
 app.use(store);
-// app.use(Multiselect);
 app.use(BootstrapVue3);
 app.use(router).mount('#app');
 
