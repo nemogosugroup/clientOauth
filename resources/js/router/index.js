@@ -57,54 +57,48 @@ const router = createRouter({
 })
 import { store } from '../store/store';
 import oAuthLogin from '../store/modules/oAuthLogin';
-router.beforeEach((to, from, next) => {
-    if(!store.getters.infoUser ){
-        $.ajax({
-            url: '/getaccesstoken',
-            type: 'GET',
-            success: function(response) {
-                let token = response.access_token;
-                $.ajax({
-                    url: '/api/user',
-                    type: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    },
-                    success: function(userResponse) {
-                        // Xử lý dữ liệu người dùng
-                        // userResponse.access_token = token;
-                        const userResponseJSON = JSON.stringify(userResponse);
-                        store.dispatch('saveAccessToken', token);
-                        store.dispatch('saveInfoUser', userResponseJSON);
-                        
-                        handleInfoUser(JSON.parse(store.getters.infoUser));
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
-            },
+router.beforeEach(async (to, from, next) => {
+    if (!store.getters.infoUser) {
+      console.log("check getaccesstoken");
+      try {
+        const response = await $.ajax({
+          url: '/getaccesstoken',
+          type: 'GET'
         });
-    }else{
+        const token = response.access_token;
+        const userResponse = await $.ajax({
+          url: '/api/user',
+          type: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+  
+        const userResponseJSON = JSON.stringify(userResponse);
+        store.dispatch('saveAccessToken', token);
+        store.dispatch('saveInfoUser', userResponseJSON);
+        
         handleInfoUser(JSON.parse(store.getters.infoUser));
-    }
-    
-    function handleInfoUser(infoUser) {
-        const roles = to.meta.roles;
-        if (roles && roles.length > 0) {
-          const userRoles = infoUser.roles ?? "[]";
-          const userRolesArray = JSON.parse(userRoles);
-          // Xử lý và kiểm tra roles
-          const hasAccess = userRolesArray.some(role => roles.includes(role));
-            if (!hasAccess) {
-                next('/error');
-                return;
-            }
-        }
-    
-        next();
+      } catch (error) {
+        console.log(error);
       }
-    next();
-
-})
+    } else {
+      handleInfoUser(JSON.parse(store.getters.infoUser));
+    }
+  
+    function handleInfoUser(infoUser) {
+      const roles = to.meta.roles;
+      if (roles && roles.length > 0) {
+        const userRoles = infoUser.roles ?? "[]";
+        const userRolesArray = JSON.parse(userRoles);
+        const hasAccess = userRolesArray.some(role => roles.includes(role));
+        if (!hasAccess) {
+          next('/error');
+          return;
+        }
+      }
+  
+      next();
+    }
+  });
 export default router

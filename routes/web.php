@@ -23,13 +23,13 @@ Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Auth::routes(['register' => false, 'reset' => false ]);
 
-Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'index'])->name('voting');
+Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('voting');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/error', [App\Http\Controllers\HomeController::class, 'index'])->name('error');
-Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin');
-Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');
-Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+Route::get('/error', [App\Http\Controllers\HomeController::class, 'home'])->name('error');
+Route::get('/admin', [App\Http\Controllers\HomeController::class, 'home'])->name('admin');
+Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
+Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
 
 Route::get('/getaccesstoken', [App\Http\Controllers\HomeController::class, 'getAccessToken'])->name('getaccesstoken');
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');

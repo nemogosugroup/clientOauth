@@ -23,6 +23,15 @@ class HomeController extends Controller
      */
     public function index()
     {
+        return redirect(route("home"));
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function home()
+    {
         return view('home');
     }
     public function getAccessToken(Request $request)

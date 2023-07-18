@@ -16,6 +16,7 @@ export default {
   },
   created() {
     let token = this.$store.getters.accessToken;
+    console.log("check token: ",token);
     axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
       headers: {
         Authorization: 'Bearer ' + token
