@@ -4,7 +4,7 @@
       <div class="d-flex">
         <!-- LOGO -->
         <div class="navbar-brand-box bg-white">
-          <router-link to="/" class="logo logo-dark d-block">
+          <router-link to="/" class="logo logo-dark d-block text-center">
             <span class="logo-sm">
               <img src="../../../../assets/images/logo.png" alt="" height="22" />
             </span>

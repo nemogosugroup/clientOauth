@@ -23,8 +23,13 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li>
+                                <router-link :to="{ name: 'All Vote' }" exact tag="li" exact-active-class="active"><i class="ri-file-add-line"></i>Danh sách Vote</router-link>
+                            </li>
+                            <li>
                                 <router-link :to="{ name: 'Create Vote' }" exact tag="li" exact-active-class="active"><i class="ri-file-add-line"></i>Tạo Vote</router-link>
                             </li>
+                            
+
                         </ul>
                         
                     </li>
@@ -123,13 +128,6 @@
                         </ul>
                     </li>
                     <li class="menu-title">Pages</li>
-                    <li>
-                        <router-link :to="{ name: 'Voting' }" class="waves-effect" exact active-class="active">
-                            <i class=" ri-contacts-book-upload-fill"></i>
-                            <!-- <span class="badge badge-pill badge-success float-right">3</span> -->
-                            <span>Giao diện Vote</span>
-                        </router-link>
-                    </li>
                     <li>
                         <router-link :to="{ name: 'Import Word From Excel' }" class=" waves-effect"
                             v-if="checkPermission(['Import Excel'])" exact tag="li" active-class="active">

@@ -12,7 +12,7 @@
                             <img src="../../../assets/images/logo.png" alt="" height="30">
                         </span>
                     </router-link>
-                    <router-link to="/home" class="logo logo-light">
+                    <router-link to="/home" class="logo logo-light text-center">
                         <span class="logo-sm">
                             <img src="../../../assets/images/logo-sm.png" alt="" height="30">
                         </span>

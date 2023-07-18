@@ -10,6 +10,8 @@ import Dashboard from '../components/admin/Dashboard.vue';
 import VoteParent from '../components/admin/vote/VoteParent.vue';
 import CreateVote from '../components/admin/vote/CreateVote.vue';
 import ViewVote from '../components/admin/vote/ViewVote.vue';
+import EditVote from '../components/admin/vote/EditVote.vue';
+
 import AllVote from '../components/admin/vote/AllVote.vue';
 
 const ErrorPage = {
@@ -57,15 +59,14 @@ export const routes = [
         component: VoteParent,
         meta: { requiresAuth: true },
         children: [
-            { name: 'Create Vote', path: 'create-vote', component: CreateVote },
+            { name: 'All Vote', path: 'all-vote', component: AllVote ,},
+            { name: 'Create Vote', path: 'create-vote', component: CreateVote ,},
+            { name: 'Edit Vote', path: 'edit-vote/:id', component: EditVote,},
             // { name: 'All Vote', path: 'all-vote', component: AllVote },
         ]
     },
-    {
-        path: '/voting',
-        name: 'Voting',
-        component: ViewVote,
-    },
+    { name: 'Voting', path: '/voting/:id', component: ViewVote,},
+
     
 
 ];

@@ -5,77 +5,99 @@
 export default {
   data() {
     return {
-      data_checkbox: [
-        { id: 0, text: 'filter_a' },
-        { id: 1, text: 'filter_b' },
-        { id: 2, text: 'filter_c' },
-        { id: 3, text: 'filter_d' },
-      ],
-      data_radio: [
-        { id: 4, text: 'filter_a' },
-        { id: 5, text: 'filter_b' },
-        { id: 6, text: 'filter_c' },
-        { id: 7, text: 'filter_d' },
-      ],
+      group_question: [],
+      options:[],
+      title_vote: "",
       selected_checkbox: [],
       selected_radio: [],
       data_json:'',
-      textContent: '', 
-      minHeight: 'auto'
+      textContent: '',
     };
+  },
+  created() {
+    let token = this.$store.getters.accessToken;
+    axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    .then((response) => {
+      if (response.data.status === 200) {
+        const voteInfo = response.data.data.voteInfo;
+        const voteId = Object.keys(voteInfo)[0];
+        const voteData = voteInfo[voteId];
+        this.title_vote = voteData.title;
+        for (const questionKey in voteData.questions) {
+          const question = voteData.questions[questionKey];
+          const type = question.type;
+          const questionName = Object.keys(question)[1];
+          const options = question[questionName];
+          const optionsArray = options.map((option) => {
+            return { answer_id: option.option_id , answer_value: option.option };
+          });
+          const newQuestion = {
+            question: questionName,
+            options: optionsArray,
+            type: type
+          };
+          this.group_question.push(newQuestion);
+          console.log(this.group_question);
+        }
+      }
+    })
+    .catch((error) => {
+      console.log('Error:', error);
+    });
+  },
+  methods:{
+    saveData(){
+      
+    }  
   },
 };
 </script>
 
 <template>
     <div class="container">
-      <h3>Kiểu 1</h3>
+      <h3>{{ title_vote }}</h3>
       <div class="row">
         <div class="col-md-12">
           <div class="card">
             <div class="card-body">
-              <form class="gosu-form-evaluation"  role="form">
+              <form class="gosu-form-evaluation" role="form" @submit.prevent="saveData">
                 <div class="row mb-3">
-                  <div class="col-md-12">
+                  <div class="col-md-12" :ref="`questionCard_${indexQuestion}`" v-for="(question, indexQuestion) in group_question" :key="indexQuestion">
                     <div>
-                      <h5 class="font-size-16 mb-4">Default Checkboxes</h5>
-                      <div class="row flex-wrap">
-                        <div class="col-md-3" v-for="data_f in data_checkbox" :key="data_f.id">
+                      <h5 class="font-size-16 mb-4">{{ question.question }}</h5>
+                      <div class="row flex-wrap" v-if="question.type === 1">
+                        <div class="col-md-3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
                           <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input" :id="data_f.id" v-model="selected_checkbox" :value="data_f.id" />
-                            <label class="custom-control-label" :for="data_f.id">{{ data_f.text }}</label>
+                            <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_checkbox" />
+                            <label class="custom-control-label" :for="answer.answer_id">{{ answer.answer_value }}</label>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="mt-3">
-                      <h5 class="font-size-16 mb-4">Default Radios</h5>
-                      <div class="row flex-wrap">
-                        <div class="col-md-3" v-for="data_f in data_radio" :key="data_f.id">
-                          <div class="custom-control custom-radio mb-3">
-                            <input
-                              type="radio"
-                              name="customRadio"
-                              class="custom-control-input"
-                              :id="data_f.id" v-model="selected_radio" :value="data_f.id"
-                            />
-                            <label class="custom-control-label" :for="data_f.id">{{ data_f.text }}</label>
+                      <div class="row flex-wrap" v-if="question.type === 2">
+                        <div class="col-md-3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
+                          <div class="custom-control custom-checkbox mb-3">
+                            <input type="radio" class="custom-control-input" :name="'radio_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_radio" />
+                            <label class="custom-control-label" :for="answer.answer_id">{{ answer.answer_value }}</label>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="mt-3">
-                      <h5 class="font-size-16 mb-4">Default Radios</h5>
-                      <textarea
-                        v-model="textarea"
-                        class="form-control"
-                        rows="1"
-                        placeholder=""
-                      ></textarea>
+                      <div class="row flex-wrap" v-if="question.type === 3">
+                        <div class="col-md-12">
+                          <div class="mb-3">
+                            <textarea
+                              v-model="textContent"
+                              class="form-control"
+                              rows="2"
+                              placeholder="Nhập câu trả lời ..."
+                              name="textarea"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -83,75 +105,6 @@ export default {
               </form>
             </div>
           </div>
-        </div>
-      </div>
-      <h3>Kiểu 2</h3>
-      <div class="row">
-        <div class="col-md-12">
-          <form class="gosu-form-evaluation" role="form">
-            <div class="card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h5 class="font-size-16 mb-4">Default Checkboxes</h5>
-                    <div class="row flex-wrap">
-                      <div class="col-md-3" v-for="data_f in data_checkbox" :key="data_f.id">
-                        <div class="custom-control custom-checkbox mb-3">
-                          <input type="checkbox" class="custom-control-input" :id="data_f.id" v-model="selected_checkbox" :value="data_f.id" />
-                          <label class="custom-control-label" :for="data_f.id">{{ data_f.text }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h5 class="font-size-16 mb-4">Default Radios</h5>
-                    <div class="row flex-wrap">
-                      <div class="col-md-3" v-for="data_f in data_radio" :key="data_f.id">
-                        <div class="custom-control custom-radio mb-3">
-                          <input
-                            type="radio"
-                            name="customRadio"
-                            class="custom-control-input"
-                            :id="data_f.id" v-model="selected_radio" :value="data_f.id"
-                          />
-                          <label class="custom-control-label" :for="data_f.id">{{ data_f.text }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h5 class="font-size-16 mb-4">Default Radios</h5>
-                    <div class="row flex-wrap">
-                      <div class="col-md-3" v-for="data_f in data_radio" :key="data_f.id">
-                        <div class="custom-control custom-radio mb-3">
-                          <input
-                            type="radio"
-                            name="customRadio"
-                            class="custom-control-input"
-                            :id="data_f.id" v-model="selected_radio" :value="data_f.id"
-                          />
-                          <label class="custom-control-label" :for="data_f.id">{{ data_f.text }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button class="btn btn-primary float-right" type="submit">Gửi Đánh Giá</button>
-          </form>
         </div>
       </div>
     </div>
