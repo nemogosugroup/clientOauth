@@ -136,21 +136,21 @@ export default {
                   </div>
                 </div>
                 <label class="card-title" v-if="question.type !== 3">Nhập câu trả lời</label>
-                <div class="row" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
-                  <div class="col-lg-9" v-if="question.type !== 3">
+                <div class="row" v-if="question.type !== 3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
+                  <div class="col-lg-9">
                     <b-form-group>
                       <b-form-input id="answer-text" name="answer-text" v-model="answer.answer_value" placeholder=""></b-form-input>
                     </b-form-group>
                   </div>
-                  <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question, indexAnswer)" href="#"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>
+                  <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question, indexAnswer)" href="javascript:void(0);"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>
                 </div>
-                <a href="#" @click="addAnswer(question)" v-if="question.type !== 3"><i class="fas fa-plus"></i>&nbsp;&nbsp;Thêm câu trả lời</a>
+                <a href="javascript:void(0);" @click="addAnswer(question)" v-if="question.type !== 3"><i class="fas fa-plus"></i>&nbsp;&nbsp;Thêm câu trả lời</a>
                 <div class="row float-right">
                   <div v-if="group_question.length > 1" class="mr-3">
-                    <a class="text-danger" href="#" @click="removeQuestion(indexQuestion)"><i class="fas fa-trash-alt"></i>&nbsp;Xoá câu hỏi</a>
+                    <a class="text-danger" href="javascript:void(0);" @click="removeQuestion(indexQuestion)"><i class="fas fa-trash-alt"></i>&nbsp;Xoá câu hỏi</a>
                   </div>
                   <div class="mr-2">
-                    <a href="#" @click="addQuestion"><i class="fas fa-plus"></i>&nbsp;Thêm câu hỏi</a>
+                    <a href="javascript:void(0);" @click="addQuestion"><i class="fas fa-plus"></i>&nbsp;Thêm câu hỏi</a>
                   </div>
                 </div>
               </div>

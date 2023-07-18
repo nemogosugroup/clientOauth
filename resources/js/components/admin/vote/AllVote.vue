@@ -12,9 +12,6 @@ export default {
             isLoaded: false,
         };
     },
-    mounted() {
-        
-    },
     created() {
         let token = this.$store.getters.accessToken;
         this.axios.get(`/api/vote/get-all`,{
@@ -42,23 +39,21 @@ export default {
 <template>
     <div class="container">
       <router-link to="/admin/create-vote">
-        <button class="btn btn-primary mb-4"><i class="ri-chat-new-line"></i>&nbsp;Tạo mới</button>
+        <button class="btn btn-primary mb-4"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
       </router-link>
       <div class="row">
         <div class="col-lg-4" v-for="(vote, voteId) in group_vote" :key="voteId">
-          <b-card no-body>
-            <b-card-body>
-              <b-card-title>
-                <h4 class="card-title">{{ vote.title }}</h4>
-              </b-card-title>
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">{{ vote.title }}</h3>
               <router-link :to="{ path: `/admin/edit-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
-                <button class="btn btn-dark mt-4"><i class="ri-file-list-3-line"></i>&nbsp;Chi tiết</button>
+                <button class="btn btn-dark mt-4"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
               </router-link>
               <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
-                <button class="btn btn-primary mt-4 float-right"><i class="ri-slideshow-2-fill"></i>&nbsp;Hiển thị</button>
+                <button class="btn btn-primary mt-4 float-right"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
               </router-link>
-            </b-card-body>
-          </b-card>
+            </div>
+            </div>
         </div>
       </div>
     </div>

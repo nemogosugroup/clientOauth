@@ -11,28 +11,25 @@
                     <li class="menu-title">Menu</li>
                     
                     <li>
-                        <router-link :to="{ name: 'Admin Dashboard' }" class="waves-effect" exact active-class="active">
+                        <router-link :class="{ 'mm-active': $route.name === 'Admin Dashboard' }" :to="{ name: 'Admin Dashboard' }" class="waves-effect" exact active-class="active">
                             <i class="ri-dashboard-line"></i>
                             <!-- <span class="badge badge-pill badge-success float-right">3</span> -->
                             <span>Dashboard</span>
                         </router-link>
                     </li>
                     <li>
-                        <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-pages-line"></i>
-                            <span>Quản lý Vote</span>
-                        </a>
-                        <ul class="sub-menu" aria-expanded="false">
-                            <li>
-                                <router-link :to="{ name: 'All Vote' }" exact tag="li" exact-active-class="active"><i class="ri-file-add-line"></i>Danh sách Vote</router-link>
-                            </li>
-                            <li>
-                                <router-link :to="{ name: 'Create Vote' }" exact tag="li" exact-active-class="active"><i class="ri-file-add-line"></i>Tạo Vote</router-link>
-                            </li>
-                            
-
-                        </ul>
-                        
+                        <router-link :class="{ 'mm-active': $route.name === 'All Vote' }" :to="{ name: 'All Vote' }" class="waves-effect" exact active-class="active">
+                            <i class="ri-file-list-3-fill"></i>
+                            <!-- <span class="badge badge-pill badge-success float-right">3</span> -->
+                            <span>Quản lý biểu mẫu</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{ name: 'Statistic Vote' }" class="waves-effect" exact active-class="active">
+                            <i class="ri-pie-chart-fill"></i>
+                            <!-- <span class="badge badge-pill badge-success float-right">3</span> -->
+                            <span>Thống kê lượt vote</span>
+                        </router-link>
                     </li>
                     <li>
                         <router-link :to="{ name: 'All User' }" class=" waves-effect" exact tag="li" active-class="active"
