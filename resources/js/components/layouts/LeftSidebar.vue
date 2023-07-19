@@ -25,7 +25,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link :to="{ name: 'Statistic Vote' }" class="waves-effect" exact active-class="active">
+                        <router-link :class="{ 'mm-active': $route.name === 'Statistic Vote' }" :to="{ name: 'Statistic Vote' }" class="waves-effect" exact active-class="active">
                             <i class="ri-pie-chart-fill"></i>
                             <!-- <span class="badge badge-pill badge-success float-right">3</span> -->
                             <span>Thống kê lượt vote</span>
