@@ -128,44 +128,50 @@ export default {
     <div class="row">
       <div class="col-md-12">
         <form class="gosu-form-evaluation" role="form" @submit.prevent="saveData">
-            <div class="row mt-2">
-              <div class="col-md-12" :ref="`questionCard_${indexQuestion}`" v-for="(question, indexQuestion) in group_question" :key="indexQuestion">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}</h5>
-                    <div class="row flex-wrap" v-if="question.type === 1">
-                      <div class="col-md-3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
-                        <div class="custom-control custom-checkbox mb-3">
-                          <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_checkbox" />
-                          <label class="custom-control-label text-capitalize" :for="answer.answer_id">{{ answer.answer_value }}</label>
-                        </div>
+          <div class="row mt-2">
+            <div class="col-md-12" v-for="(question) in group_question" :key="question.question_id">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}</h5>
+                  <div class="row" v-if="question.type === 1">
+                    <div class="col-md-12 mb-3" v-for="(answer) in question.options" :key="answer.answer_id">
+                      <div class="custom-control custom-checkbox mb-2">
+                        <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_checkbox" />
+                        <label class="custom-control-label text-capitalize" :for="answer.answer_id">{{ answer.answer_value }}</label>
                       </div>
+                      <b-progress :max="totalVotedSum(question.question_id)" height="14px">
+                        <b-progress-bar :value="answer.total_voted" :label="`${((answer.total_voted / totalVotedSum(question.question_id)) * 100).toFixed(0)}%`"></b-progress-bar>
+                      </b-progress>
                     </div>
-                    <div class="row flex-wrap" v-if="question.type === 2">
-                      <div class="col-md-3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
-                        <div class="custom-control custom-radio mb-3">
-                          <input type="radio" class="custom-control-input" :name="'radio_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_radio" />
-                          <label class="custom-control-label text-capitalize" :for="answer.answer_id">{{ answer.answer_value }}</label>
-                        </div>
+                  </div>
+                  <div class="row" v-if="question.type === 2">
+                    <div class="col-md-12 mb-3"  v-for="(answer) in question.options" :key="answer.answer_id">
+                      <div class="custom-control custom-radio mb-2">
+                        <input type="radio" class="custom-control-input" :name="'radio_' + answer.answer_id" :id="answer.answer_id" :value="answer.answer_id" v-model="selected_radio[question.question_id]" />
+                        <label class="custom-control-label text-capitalize" :for="answer.answer_id">{{ answer.answer_value }}</label>
                       </div>
+                      <b-progress :max="totalVotedSum(question.question_id)" height="14px">
+                        <b-progress-bar :value="answer.total_voted" :label="`${((answer.total_voted / totalVotedSum(question.question_id)) * 100).toFixed(0)}%`"></b-progress-bar>
+                      </b-progress>
                     </div>
-                    <div class="row flex-wrap" v-if="question.type === 3">
-                      <div class="col-md-12">
-                        <div class="mb-3">
-                          <textarea
-                            v-model="textContent"
-                            class="form-control"
-                            rows="2"
-                            placeholder="Nhập câu trả lời ..."
-                            name="textarea"
-                          ></textarea>
-                        </div>
+                  </div>
+                  <div class="row flex-wrap" v-if="question.type === 3">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <textarea
+                          v-model="textContent"
+                          class="form-control"
+                          rows="2"
+                          placeholder="Nhập câu trả lời ..."
+                          name="textarea"
+                        ></textarea>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
           <button class="btn btn-primary float-right mb-4" type="submit">Gửi Đánh Giá</button>
         </form>
       </div>
