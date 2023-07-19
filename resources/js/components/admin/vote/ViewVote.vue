@@ -11,7 +11,7 @@ export default {
       selected_checkbox: [],
       selected_radio: [],
       data_json:'',
-      textContent: '',
+      textContents: {},
       optionstogetTotal:[],
     };
   },
@@ -74,6 +74,7 @@ export default {
         } else if (question.type === 3) {
           // Loại hình câu hỏi dạng văn bản, không có phương án được chọn
           // Có thể xử lý dữ liệu văn bản ở đây nếu cần thiết
+          vote_info[question.question_id] = this.textContents[question.question_id] || '';
         }
       }
 
@@ -160,7 +161,7 @@ export default {
                     <div class="col-md-12">
                       <div class="mb-3">
                         <textarea
-                          v-model="textContent"
+                          v-model="textContents[question.question_id]"
                           class="form-control"
                           rows="2"
                           placeholder="Nhập câu trả lời ..."

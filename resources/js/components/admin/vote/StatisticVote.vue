@@ -66,9 +66,9 @@ export default {
         <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row align-items-center">
                         <div class="col-lg-9">
-                            <h3 class="card-title">{{ vote.title }}</h3>
+                            <h3 class="card-title mb-0">{{ vote.title }}</h3>
                         </div>
                         <div class="col-lg-3 text-right">
                             <b-button @click="openModals" variant="primary"><i class="ri-line-chart-fill"></i>&nbsp;Thống kê</b-button>
@@ -90,7 +90,6 @@ export default {
                                         <a :href="'mailto:' + row.value">{{ row.value }}</a>
                                     </template>
                                 </b-table>
-                                
                             </b-modal>
                         </div>
                     </div>

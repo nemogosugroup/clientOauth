@@ -42,18 +42,27 @@ export default {
         <button class="btn btn-primary mb-4"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
       </router-link>
       <div class="row">
-        <div class="col-lg-4" v-for="(vote, voteId) in group_vote" :key="voteId">
+        <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">{{ vote.title }}</h3>
-              <router-link :to="{ path: `/admin/edit-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
-                <button class="btn btn-dark mt-4"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
-              </router-link>
-              <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
-                <button class="btn btn-primary mt-4 float-right"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
-              </router-link>
+              <div class="row align-items-center">
+                <div class="col-lg-8">
+                  <h3 class="card-title mb-0">{{ vote.title }}</h3>
+                </div>
+                <div class="col-lg-4 text-right">
+                  <router-link :to="{ path: `/admin/edit-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
+                    <button class="btn btn-dark mr-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
+                  </router-link>
+                  <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
+                    <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
+                  </router-link>
+                  <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
+                    <button class="btn btn-success"><i class="fas fa-power-off"></i>&nbsp;Đóng/mở</button>
+                  </router-link>
+                </div>
+              </div> 
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>
