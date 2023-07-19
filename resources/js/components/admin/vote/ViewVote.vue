@@ -9,7 +9,7 @@ export default {
       options:[],
       title_vote: "",
       selected_checkbox: [],
-      selected_radio: {},
+      selected_radio: [],
       data_json:'',
       textContent: '',
       optionstogetTotal:[],
@@ -69,7 +69,8 @@ export default {
             return question.options.some((option) => option.answer_id === answer_id);
           });
         } else if (question.type === 2) {
-          vote_info[question.question_id] = this.selected_radio[question.question_id] || '';
+          let selected_radio_temp = this.selected_radio[question.question_id] || '';
+          vote_info[question.question_id] = selected_radio_temp !== '' ? [selected_radio_temp] : [];
         } else if (question.type === 3) {
           // Loại hình câu hỏi dạng văn bản, không có phương án được chọn
           // Có thể xử lý dữ liệu văn bản ở đây nếu cần thiết
