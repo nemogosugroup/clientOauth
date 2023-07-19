@@ -397,7 +397,8 @@ class VoteController extends Controller
     {
         $user = $request->user();
         $id = $request->input('id');
-        $voteInfos = $request->input('vote_info');
+        $voteInfos = $request->input('vote_info') ?? "[]";
+        $voteInfos = json_decode($voteInfos, true);
         if(!$user){
             $response = [
                 "status"=> 200,
