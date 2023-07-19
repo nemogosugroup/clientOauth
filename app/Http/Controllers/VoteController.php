@@ -368,7 +368,7 @@ class VoteController extends Controller
     {
         
 
-        $data = Vote::select('vote.id', 'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        $data = Vote::select('vote.id','vote.status', 'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         // ->where('vote.id', $id)
@@ -377,6 +377,7 @@ class VoteController extends Controller
         $result = [];
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
+            $result[$item->id]['status'] = $item->status;
             $result[$item->id]['title'] = $item->title;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id][$item->question][] = [
@@ -445,16 +446,36 @@ class VoteController extends Controller
             if(!$vote ||$vote->status == 0 ){
                 throw new \Exception("Không tìm thấy đợt vote này");
             }
+            
             foreach ($voteInfos as $index => $voteOptions) {
                 $voteQuestion = VoteQuestions::where("id", $index)
                     ->where("vote_id", $id)
                     ->first();
                 if($voteQuestion){
                     switch ($voteQuestion->type) {
-
                         case 1:
-                            foreach ($voteOptions as $voteOption) {
-                                $voteOptionModel  = VoteOptions::where("id", $voteOption)->where("question_id",$index)->first();
+                            if(count($voteOptions)>0){
+                                
+                                foreach ($voteOptions as $voteOption) {
+                                    $voteOptionModel  = VoteOptions::where("id", $voteOption)->where("question_id",$index)->first();
+                                    if($voteOptionModel){
+                                        $voteOptionModel->increment('total_voted');
+                                        $voteOptionModel->save();
+                                        $newVoteHistory = new VoteHistory([
+                                            'user_id' => $user->id,
+                                            'vote_option_id' => $voteOptionModel->id,
+                                        ]);
+                                        $newVoteHistory->save();
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            if(count($voteOptions) > 1){
+                                throw new \Exception("Chỉ 1 đáp án cho câu :".$voteQuestion->question."!");
+                            }
+                            if(count($voteOptions) > 0){
+                                $voteOptionModel  = VoteOptions::where("id", $voteOptions[0])->where("question_id",$index)->first();
                                 if($voteOptionModel){
                                     $voteOptionModel->increment('total_voted');
                                     $voteOptionModel->save();
@@ -465,21 +486,7 @@ class VoteController extends Controller
                                     $newVoteHistory->save();
                                 }
                             }
-                            break;
-                        case 2:
-                            if(count($voteOptions)>1){
-                                throw new \Exception("Chỉ 1 đáp án cho câu :".$voteQuestion->question."!");
-                            }
-                            $voteOptionModel  = VoteOptions::where("id", $voteOptions[0])->where("question_id",$index)->first();
-                            if($voteOptionModel){
-                                $voteOptionModel->increment('total_voted');
-                                $voteOptionModel->save();
-                                $newVoteHistory = new VoteHistory([
-                                    'user_id' => $user->id,
-                                    'vote_option_id' => $voteOptionModel->id,
-                                ]);
-                                $newVoteHistory->save();
-                            }
+                            
                             break;
                         case 3:
                             if(!is_string($voteOptions)){
