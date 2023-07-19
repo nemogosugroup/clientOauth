@@ -14,7 +14,8 @@ class VoteHistory extends Model
 
     protected $fillable = [
         'user_id',
-        'vote_option_id'
+        'vote_option_id',
+        'answer',
     ];
     
 }

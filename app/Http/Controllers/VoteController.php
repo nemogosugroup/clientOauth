@@ -79,19 +79,56 @@ class VoteController extends Controller
             ]);
             $vote->save();
             foreach ($questions as $question) {
-                $voteQuestionModel = new VoteQuestions([
-                    'vote_id' => $vote->id,
-                    'question' => $question['question'],
-                    'type' => $question['type'],
-                ]);
-                $voteQuestionModel->save();
-                $voteOptions = $question['options'];
-                foreach ($voteOptions as $voteOption) {
-                    $voteOptionModel = new VoteOptions([
-                        'question_id' => $voteQuestionModel->id,
-                        'option' => $voteOption['answer_value'],
-                    ]);
-                    $voteOptionModel->save();
+                switch ($question['type']) {
+                    case 1:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptions = $question['options'];
+                        foreach ($voteOptions as $voteOption) {
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $voteOption['answer_value'],
+                            ]);
+                            $voteOptionModel->save();
+                        }
+                        break;
+                    case 2:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptions = $question['options'];
+                        foreach ($voteOptions as $voteOption) {
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $voteOption['answer_value'],
+                            ]);
+                            $voteOptionModel->save();
+                        }
+                        break;
+                    case 3:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptionModel = new VoteOptions([
+                            'question_id' => $voteQuestionModel->id,
+                            'option' => $question['question'],
+                        ]);
+                        $voteOptionModel->save();
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
                 }
             }
 
@@ -190,52 +227,64 @@ class VoteController extends Controller
 
 
         // ----
-        // DB::beginTransaction();
+        DB::beginTransaction();
 
-        // try {
-        //     $vote = new Vote([
-        //         'title' => $title,
-        //         'typeView' => $typeView,
-        //     ]);
-        //     $vote->save();
-        //     foreach ($questions as $question) {
-        //         $voteQuestionModel = new VoteQuestions([
-        //             'vote_id' => $vote->id,
-        //             'question' => $question['question'],
-        //             'type' => $question['type'],
-        //         ]);
-        //         $voteQuestionModel->save();
-        //         $voteOptions = $question['options'];
-        //         foreach ($voteOptions as $voteOption) {
-        //             $voteOptionModel = new VoteOptions([
-        //                 'question_id' => $voteQuestionModel->id,
-        //                 'option' => $voteOption['answer_value'],
-        //             ]);
-        //             $voteOptionModel->save();
-        //         }
-        //     }
+        try {
+            $vote = Vote::where("id", $voteId)->first();
+            if(!$vote){
+                $response = [
+                    "status"=> 200,
+                    "message"=>"Không tìm thấy!",
+                    "data"=>[],
+                    "success"=>false
+                ];
+                return response()->json($response);
+            }
+            foreach ($questions as $question) {
+                if($question['options'] && count($question['options']) >0 ){
+                    $questionId = $question['question_id'] ?? 0;
+                    if($questionId > 0){
+                        $voteQuestionModel = VoteQuestions::where("id", $question['question_id'])->where("vote_id", $voteId)->first();
+                        if(!$voteQuestionModel){
+                            $response = [
+                                "status"=> 200,
+                                "message"=>"Không tìm thấy!",
+                                "data"=>[],
+                                "success"=>false
+                            ];
+                            return response()->json($response);
+                        }
+                    }else{
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                        ]);
+                        $voteQuestionModel->save();
+                    }
+        
+                    $voteOptions = $question['options'];
+                    foreach ($voteOptions as $voteOption) {
+                        $voteOptionModel = new VoteOptions([
+                            'question_id' => $voteQuestionModel->id,
+                            'option' => $voteOption['answer_value'],
+                        ]);
+                        $voteOptionModel->save();
+                    }
+                }
+                
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
 
-
-        //     DB::commit();
-
-        //     $response = [
-        //         "status" => 200,
-        //         "message" => "success",
-        //         "data" => [],
-        //         "success" => true
-        //     ];
-        //     return response()->json($response);
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-
-        //     $response = [
-        //         "status" => 500,
-        //         "message" => "error",
-        //         "data" => [],
-        //         "success" => false
-        //     ];
-        //     return response()->json($response);
-        // }
+            $response = [
+                "status" => 500,
+                "message" => "error",
+                "data" => [],
+                "success" => false
+            ];
+            return response()->json($response);
+        }
         // ----
         $response = [
             "status"=> 200,
@@ -287,10 +336,9 @@ class VoteController extends Controller
     public function getInfo(Request $request)
     {
         $voteId = $request->input('id');
-        
-
-        
-        $data = Vote::select('vote.id', 'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        $data = Vote::select(
+            'vote.id', 
+            'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $voteId)
@@ -304,7 +352,8 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question_id][$item->question][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
-                'total_voted'=>$item->total_voted];
+                'total_voted'=>$item->total_voted
+            ];
         }
         $response = [
             "status"=> 200,
@@ -384,37 +433,92 @@ class VoteController extends Controller
             ];
             return response()->json($response);
         }
-        $vote = Vote::where("id", $id)->first();
-        if(!$vote ||$vote->status == 0 ){
+
+        // xử lý vote start
+        
+
+        // ----
+        DB::beginTransaction();
+
+        try {
+            $vote = Vote::where("id", $id)->first();
+            if(!$vote ||$vote->status == 0 ){
+                throw new \Exception("Không tìm thấy đợt vote này");
+            }
+            foreach ($voteInfos as $index => $voteOptions) {
+                $voteQuestion = VoteQuestions::where("id", $index)
+                    ->where("vote_id", $id)
+                    ->first();
+                if($voteQuestion){
+                    switch ($voteQuestion->type) {
+
+                        case 1:
+                            foreach ($voteOptions as $voteOption) {
+                                $voteOptionModel  = VoteOptions::where("id", $voteOption)->where("question_id",$index)->first();
+                                if($voteOptionModel){
+                                    $voteOptionModel->increment('total_voted');
+                                    $voteOptionModel->save();
+                                    $newVoteHistory = new VoteHistory([
+                                        'user_id' => $user->id,
+                                        'vote_option_id' => $voteOptionModel->id,
+                                    ]);
+                                    $newVoteHistory->save();
+                                }
+                            }
+                            break;
+                        case 2:
+                            if(count($voteOptions)>1){
+                                throw new \Exception("Chỉ 1 đáp án cho câu :".$voteQuestion->question."!");
+                            }
+                            $voteOptionModel  = VoteOptions::where("id", $voteOptions[0])->where("question_id",$index)->first();
+                            if($voteOptionModel){
+                                $voteOptionModel->increment('total_voted');
+                                $voteOptionModel->save();
+                                $newVoteHistory = new VoteHistory([
+                                    'user_id' => $user->id,
+                                    'vote_option_id' => $voteOptionModel->id,
+                                ]);
+                                $newVoteHistory->save();
+                            }
+                            break;
+                        case 3:
+                            if(!is_string($voteOptions)){
+                                throw new \Exception("Đáp án không hợp lệ cho câu :".$voteQuestion->question."!");
+                            }
+                            $voteOptionModel  = VoteOptions::where("question_id",$index)->first();
+                            if($voteOptionModel){
+                                $voteOptionModel->increment('total_voted');
+                                $voteOptionModel->save();
+                                $newVoteHistory = new VoteHistory([
+                                    'user_id' => $user->id,
+                                    'vote_option_id' => $voteOptionModel->id,
+                                    'answer'=> $voteOptions
+                                ]);
+                                $newVoteHistory->save();
+                            }
+                            break;
+                        default:
+                            # code...
+                            break;
+                    }
+                }
+            }
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
             $response = [
-                "status"=> 200,
-                "message"=>"Không tìm thấy đợt vote này",
-                "data"=>[],
-                "success"=>false
+                "status" => 200,
+                "message" => $e->getMessage(),
+                "data" => [],
+                "success" => false
             ];
             return response()->json($response);
         }
-        foreach ($voteInfos as $index => $voteOptions) {
-            $voteQuestion = VoteQuestions::where("id", $index)
-                ->where("vote_id", $id)
-                ->first();
-            if($voteQuestion){
-                foreach ($voteOptions as $voteOption) {
-                    $voteOptionModel  = VoteOptions::where("id", $voteOption)->where("question_id",$index)->first();
-                    if($voteOptionModel){
-                        $voteOptionModel->increment('total_voted');
-                        $voteOptionModel->save();
-                        $newVoteHistory = new VoteHistory([
-                            'user_id' => $user->id,
-                            'vote_option_id' => $voteOptionModel->id,
-                        ]);
-                        $newVoteHistory->save();
-                    }
-                }
-                
-            }
-            
-        }
+        // ----
+
+        // xử lý vote end
         $data = Vote::select('vote.id', 'vote_questions.question as question', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
@@ -427,11 +531,10 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question][] = ['option_id'=>$item->option_id,'option'=>$item->option,'total_voted'=>$item->total_voted];
         }
 
-        $jsonString = json_encode($result);
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['voteInfo'=>$jsonString],
+            "data"=>['voteInfo'=>$result],
             "success"=>true
         ];
         return response()->json($response);
