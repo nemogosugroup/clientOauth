@@ -54,13 +54,6 @@ export default {
     });
   },
   methods:{
-    // saveData(){
-    //   let formVoteData = {
-    //     id: this.$route.params.id,
-        
-    //   };
-    //   console.log(formVoteData);
-    // }  
     saveData() {
       let vote_info = {};
       for (const question of this.group_question) {

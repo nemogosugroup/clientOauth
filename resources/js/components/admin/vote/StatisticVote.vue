@@ -9,20 +9,15 @@ export default {
             textContent: '', 
             minHeight: 'auto',
             group_vote: [],
+            group_question:[],
             isLoaded: false,
             modalShow: false,
-            tableData: [
-                { id: 1, name: 'John Doe', age: 25, email: 'john@example.com' },
-                { id: 2, name: 'Jane Smith', age: 32, email: 'jane@example.com' },
-                { id: 3, name: 'Tom Johnson', age: 42, email: 'tom@example.com' },
-                { id: 4, name: 'Emily Davis', age: 28, email: 'emily@example.com' },
-            ],
             tableFields: [
-                { key: 'id', label: 'ID' },
-                { key: 'name', label: 'Name' },
-                { key: 'age', label: 'Age' },
-                { key: 'email', label: 'Email' },
+                { key: 'question_id', label: 'Question ID' },
+                { key: 'title', label: 'Question Title' },
+                { key: 'options', label: 'Options' },
             ],
+            currentVoteId: null,
         };
     },
     created() {
@@ -35,33 +30,46 @@ export default {
         .then((response) => {
             if (response.data.status === 200) {
                 this.group_vote = response.data.data.voteInfo;
+                this.isLoaded = true;
             }
         })
         .catch((error) => {
-            if (error.response.status == 403) {
-            this.logout();
-            }
-            if (error.response.status == 401) {
-            this.logout();
-            }
+            console.log("vote/get error: ", error);
         });
     },
     methods:{
-        openModals(){
+         // ... (các phương thức khác)
+        openModals(voteId) {
+            // Đặt voteId vào biến currentVoteId
+            this.currentVoteId = voteId;
             this.modalShow = true;
         },
-        closeModal () {
+        closeModal() {
             this.modalShow = false;
         },
+        // getQuestionsByVoteId(questions) {
+        // // Xử lý dữ liệu từ các questions trong vote
+        // const questionsData = [];
+        // for (const questionId in questions) {
+        //     if (Object.hasOwnProperty.call(questions, questionId)) {
+        //     const question = questions[questionId];
+        //     const title = Object.keys(question)[0];
+        //     const options = question[title];
+        //     questionsData.push({
+        //         question_id: questionId,
+        //         title: title,
+        //         options: options,
+        //     });
+        //     }
+        // }
+        // return questionsData;
+        // },
     },
 };
 </script>
 
 <template>
     <div class="container">
-      <router-link to="/admin/create-vote">
-        <button class="btn btn-primary mb-4"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
-      </router-link>
       <div class="row">
         <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
@@ -71,24 +79,20 @@ export default {
                             <h3 class="card-title mb-0">{{ vote.title }}</h3>
                         </div>
                         <div class="col-lg-3 text-right">
-                            <b-button @click="openModals" variant="primary"><i class="ri-line-chart-fill"></i>&nbsp;Thống kê</b-button>
-                            <b-modal id="modal-xl" size="xl" hide-footer hide-header v-model="modalShow">
-                                <div class="row justify-content-end">
-                                    <div class="col-lg-9"></div>
-                                    <div class="col-lg-3 text-right">
-                                        <b-button variant="link" @click="closeModal"><i class="fas fa-times"></i></b-button>
-                                    </div>
-                                </div>
-                                <b-table striped hover :items="tableData" :fields="tableFields" bordered responsive sticky-header>
-                                    <template #cell(name)="row">
-                                        <strong>{{ row.value }}</strong>
-                                    </template>
-                                    <template #cell(age)="row">
-                                        {{ row.value }}
-                                    </template>
-                                    <template #cell(email)="row">
-                                        <a :href="'mailto:' + row.value">{{ row.value }}</a>
-                                    </template>
+                            <b-button @click="openModals(vote.vote_id)" variant="primary"><i class="ri-line-chart-fill"></i>&nbsp;Thống kê</b-button>
+                            <b-modal :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
+                            <!-- ... -->
+                                <b-table
+                                    v-if="group_vote[currentVoteId].questions"
+                                    striped
+                                    hover
+                                    :items="getQuestionsByVoteId(group_vote[currentVoteId].questions)"
+                                    :fields="tableFields"
+                                    bordered
+                                    responsive
+                                    sticky-header
+                                >
+                                <!-- ... -->
                                 </b-table>
                             </b-modal>
                         </div>
