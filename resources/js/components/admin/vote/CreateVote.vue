@@ -139,7 +139,7 @@ export default {
                 <div class="row" v-if="question.type !== 3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
                   <div class="col-lg-9">
                     <b-form-group>
-                      <b-form-input id="answer-text" name="answer-text" v-model="answer.answer_value" placeholder=""></b-form-input>
+                      <b-form-input id="answer-text" name="answer-text" v-model="answer.answer_value" placeholder="" @keypress.enter.prevent @keyup.enter="addAnswer(question)" ></b-form-input>
                     </b-form-group>
                   </div>
                   <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question, indexAnswer)" href="javascript:void(0);"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>

@@ -368,8 +368,6 @@ class VoteController extends Controller
 
     public function getAll(Request $request)
     {
-        
-
         $data = Vote::select(
             'vote.id',
             'vote.status',

@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <a href="{{ route("sso.login") }}" class="btn btn-block btn-danger btn-sm">Login with Web Thương vụ</a>
+                    <a href="{{ route("sso.login") }}" class="btn btn-block btn-danger btn-sm">Đăng nhập bằng mail GOSU</a>
                 </div>
             </div>
         </div>

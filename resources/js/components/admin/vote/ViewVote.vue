@@ -158,11 +158,8 @@ export default {
                       <div class="custom-control custom-checkbox mb-2">
                         <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.option_id"
                           :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" />
-                        <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option
-                        }}</label>
+                        <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option}}</label>
                       </div>
-                      {{ answer.total_voted }}
-                      {{ question.total_voted }}
                       <b-progress :max="100" height="14px">
                         <b-progress-bar :value="(answer.total_voted / question.total_voted) * 100"
                           :label="`${((answer.total_voted / question.total_voted) * 100).toFixed(0)}%`"></b-progress-bar>
