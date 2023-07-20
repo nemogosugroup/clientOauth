@@ -58,16 +58,16 @@ export default {
             // Xử lý dữ liệu từ các questions trong vote
             const questionsData = [];
             for (const questionId in questions) {
-                if (Object.hasOwnProperty.call(questions, questionId)) {
-                    const question = questions[questionId];
-                    questionsData.push({
-                        question_id: question.question_id,
-                        title: question.question,
-                        options: question.options,
-                        type: question.type,
-                    });
-                }
+            if (Object.hasOwnProperty.call(questions, questionId)) {
+                const question = questions[questionId];
+                questionsData.push({
+                    question_id: question.question_id,
+                    title: question.question,
+                    options: question.options,
+                    type: question.type,
+                });
             }
+    }
             console.log(questionsData);
             return questionsData;
             } else {
@@ -98,7 +98,7 @@ export default {
             </div>
         </div>
       </div>
-      <b-modal v-if="currentVoteId" :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
+      <b-modal v-if="currentVoteId" :scrollable="true" :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
         <div class="row justify-content-end">
             <div class="col-lg-9"></div>
             <div class="col-lg-3 text-right">
@@ -116,14 +116,21 @@ export default {
             responsive
             sticky-header
         >
-            <!-- Tùy chỉnh hiển thị các option -->
-            <template #cell(options)="row">
-                <ol class="mb-0">
-                    <li class="mb-1" v-for="option in row.value" :key="option.option_id">
+        <template #cell(options)="row">
+            <ol class="mb-0">
+                <li class="mb-1" v-for="option in row.value" :key="option.option_id">
+                    <!-- Sử dụng row.type để lọc các option dựa trên type -->
+                    <template v-if="row.item.type === 3">
+                        <span v-if="option.answer == '' || option.answer == null">Không ý kiến</span>
+                        <span v-else>{{ option.answer }}</span>
+                    </template>
+                    <template v-else-if="row.item.type !== 3">
                         {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
-                    </li>
-                </ol>
-            </template>
+                    </template>
+                    <!-- Các type khác nếu có -->
+                </li>
+            </ol>
+        </template>
         </b-table>
       </b-modal>
     </div>
