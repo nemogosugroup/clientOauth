@@ -10,28 +10,34 @@ export default {
             minHeight: 'auto',
             group_vote: [],
             isLoaded: false,
+            isStatus:false,
         };
     },
     created() {
         let token = this.$store.getters.accessToken;
         this.axios.get(`/api/vote/get-all`,{
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
         })
         .then((response) => {
-            if (response.data.status === 200) {
-                this.group_vote = response.data.data.voteInfo;
-            }
+          if (response.data.status === 200) {
+            this.group_vote = response.data.data.voteInfo;
+          }
         })
         .catch((error) => {
-            if (error.response.status == 403) {
-            this.logout();
-            }
-            if (error.response.status == 401) {
-            this.logout();
-            }
+          if (error.response.status == 403) {
+            console.log('Error:', error);
+          }
+          if (error.response.status == 401) {
+            console.log('Error:', error);
+          }
         });
+    },
+    methods: {
+      toggleStatus(vote) {
+        vote.isStatus = !vote.isStatus; 
+      }
     },
 };
 </script>
@@ -50,15 +56,15 @@ export default {
                   <h3 class="card-title mb-0">{{ vote.title }}</h3>
                 </div>
                 <div class="col-lg-4 text-right">
-                  <router-link :to="{ path: `/admin/edit-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
+                  <router-link :to="{ path: `/admin/detail-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-dark mr-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
                   </router-link>
                   <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
                   </router-link>
-                  <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
-                    <button class="btn btn-success"><i class="fas fa-power-off"></i>&nbsp;Đóng/mở</button>
-                  </router-link>
+                  <button :class="['btn', { 'btn-success': vote.isStatus, 'btn-danger': !vote.isStatus }]" @click="toggleStatus(vote)">
+                    <i class="fas fa-power-off"></i>&nbsp;{{ vote.isStatus ? 'Mở' : 'Đóng' }}
+                  </button>
                 </div>
               </div> 
             </div>

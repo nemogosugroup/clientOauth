@@ -52,11 +52,11 @@ export default {
         console.log('Error:', error);
       });
   },
-  methods: {
+  methods:{
     // saveData(){
     //   let formVoteData = {
     //     id: this.$route.params.id,
-
+        
     //   };
     //   console.log(formVoteData);
     // }  
@@ -139,7 +139,7 @@ export default {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container mt-5">
     <div class="card">
       <div class="card-body">
         <h3 class="text-capitalize mb-0">{{ title_vote }}</h3>
