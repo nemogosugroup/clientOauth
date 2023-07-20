@@ -58,21 +58,34 @@ export default {
             // Xử lý dữ liệu từ các questions trong vote
             const questionsData = [];
             for (const questionId in questions) {
-            if (Object.hasOwnProperty.call(questions, questionId)) {
-                const question = questions[questionId];
-                questionsData.push({
-                    question_id: question.question_id,
-                    title: question.question,
-                    options: question.options,
-                    type: question.type,
-                });
+                if (Object.hasOwnProperty.call(questions, questionId)) {
+                    const question = questions[questionId];
+                    questionsData.push({
+                        question_id: question.question_id,
+                        title: question.question,
+                        options: question.options,
+                        type: question.type,
+                    });
+                }
             }
-    }
             console.log(questionsData);
             return questionsData;
             } else {
             return [];
             }
+        },
+        parseAnswer(answer) {
+        try {
+            // Unescape chuỗi JSON trước khi parse
+            const unescapedValue = answer.replace(/\\'/g, "'");
+            const parsedValue = JSON.parse(unescapedValue);
+            return Array.isArray(parsedValue) ? parsedValue : [];
+        } catch (error) {
+            return [];
+        }
+        },
+            isNonEmptyArray(arr) {
+            return Array.isArray(arr) && arr.length > 0;
         },
     },
 };
@@ -118,11 +131,20 @@ export default {
         >
         <template #cell(options)="row">
             <ol class="mb-0">
+                {{ row.value }}
                 <li class="mb-1" v-for="option in row.value" :key="option.option_id">
                     <!-- Sử dụng row.type để lọc các option dựa trên type -->
                     <template v-if="row.item.type === 3">
-                        <span v-if="option.answer.length == 0 || option.answer == null">Không ý kiến</span>
-                        <span v-else v-for="text_answer in option.answer">{{ text_answer }}</span>
+                        <span v-if="isNonEmptyArray(option.answer)">
+                        <ul>
+                            <li v-for="answerItem in parseAnswer(option.answer)" :key="answerItem">
+                                {{ answerItem }}
+                            </li>
+                        </ul>
+                        </span>
+                        <span v-else>
+                            Không ý kiến
+                        </span>
                     </template>
                     <template v-else-if="row.item.type !== 3">
                         {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
