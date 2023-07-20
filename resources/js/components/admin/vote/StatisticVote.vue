@@ -121,8 +121,8 @@ export default {
                 <li class="mb-1" v-for="option in row.value" :key="option.option_id">
                     <!-- Sử dụng row.type để lọc các option dựa trên type -->
                     <template v-if="row.item.type === 3">
-                        <span v-if="option.answer == '' || option.answer == null">Không ý kiến</span>
-                        <span v-else>{{ option.answer }}</span>
+                        <span v-if="option.answer.length == 0 || option.answer == null">Không ý kiến</span>
+                        <span v-else v-for="text_answer in option.answer">{{ text_answer }}</span>
                     </template>
                     <template v-else-if="row.item.type !== 3">
                         {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
