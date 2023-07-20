@@ -79,11 +79,16 @@
             const voteId = Object.keys(voteInfo)[0];
             const voteData = voteInfo[voteId];
             this.title_vote = voteData.title;
+            
+            console.log("check voteData:",voteData);
             for (const questionKey in voteData.questions) {
               const question = voteData.questions[questionKey];
+              console.log("check question2:",question);
               const type = question.type;
-              const questionName = Object.keys(question)[1];
-              const options = question[questionName];
+              const questionName = question['question'];
+              const options = question['options'];
+              
+              console.log("check options:",options);
               const optionsArray = options.map((option) => {
                 return { answer_value: option.option };
               });
@@ -92,8 +97,11 @@
                 options: optionsArray,
                 type: type
               };
+              console.log("group");
               this.group_question.push(newQuestion);
+              
             }
+            console.log("check group_question",this.group_question);
           }
         })
         .catch((error) => {

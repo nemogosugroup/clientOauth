@@ -530,7 +530,9 @@ class VoteController extends Controller
         // ----
 
         // xử lý vote end
-        $data = Vote::select('vote.id', 'vote_questions.question as question', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        $data = Vote::select(
+            'vote.id', 
+            'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $id)
@@ -539,7 +541,15 @@ class VoteController extends Controller
         $result = [];
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
-            $result[$item->id]['questions'][$item->question][] = ['option_id'=>$item->option_id,'option'=>$item->option,'total_voted'=>$item->total_voted];
+            $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
+            $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
+            $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
+            $result[$item->id]['questions'][$item->question_id]['options'][] = [
+                'option_id'=>$item->option_id,
+                'option'=>$item->option,
+                'total_voted'=>$item->total_voted
+            ];
         }
 
         $response = [
