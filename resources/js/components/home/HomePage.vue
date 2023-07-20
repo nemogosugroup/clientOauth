@@ -1,5 +1,5 @@
 <template>
-    <p>Đăng nhập thành công</p>
+    <h3 class="text-center mt-5">Thời gian thực hiện đánh giá đã kết thúc.</h3>
 </template>
   
 <script>
@@ -30,3 +30,7 @@ export default {
     },
 };
 </script>
+
+<style>
+
+</style>

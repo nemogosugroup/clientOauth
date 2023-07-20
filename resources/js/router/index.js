@@ -42,7 +42,7 @@ export const routes = [
         children: [
             { name: 'All Vote', path: 'all-vote', component: AllVote ,},
             { name: 'Create Vote', path: 'create-vote', component: CreateVote ,},
-            { name: 'Edit Vote', path: 'edit-vote/:id', component: EditVote,},
+            { name: 'Detail Vote', path: 'detail-vote/:id', component: EditVote,},
             { name: 'Statistic Vote', path: 'statistic-vote', component: StatisticVote,},
             // { name: 'All Vote', path: 'all-vote', component: AllVote },
         ]

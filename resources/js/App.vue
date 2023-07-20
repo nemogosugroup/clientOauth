@@ -5,12 +5,10 @@
             <RightSidebar />
         </div>
         <div class="" v-else>
-            <div class="container-xl">
-                
+            <div class="container-xl">      
                 <HomeNavbarView />
             </div>
             <div class="container">
-                <br />
                 <router-view></router-view>
             </div>
         </div>

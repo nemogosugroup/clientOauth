@@ -3,7 +3,6 @@
  * Form-element component
  */
 export default {
-
   data() {
     return {
       group_question:[
@@ -23,6 +22,7 @@ export default {
         title: '',
         questions: []
       },
+      statuscode: null,
     };
   },
 
@@ -75,7 +75,6 @@ export default {
           type_view: 1,
           questions: dataQuestion,
         };
-        console.log(formCreateVote);
         let token = this.$store.getters.accessToken;
         axios.post('/api/vote/add', formCreateVote, {
           headers: {
@@ -84,16 +83,19 @@ export default {
         })
         .then(function (response) {
           console.log("vote/add: ", response.data);
-        })
+          if (response.status === 200) {
+            this.$swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Bạn đã tạo biểu mẫu thành công",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.$router.push({ name: 'All Vote' });
+          }
+        }.bind(this))
         .catch(function (error) {
           console.log("vote/add error: ", error);
-        });
-        this.$swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Bạn đã tạo biểu mẫu thành công",
-          showConfirmButton: false,
-          timer: 1500
         });
       }
     },
