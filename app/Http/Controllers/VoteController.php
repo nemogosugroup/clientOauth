@@ -406,11 +406,12 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
+            $answer = $item->answer!="[null]"?$item->answer:"[]";
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
                 'total_voted'=>$item->total_voted,
-                'answer'=>$item->answer
+                'answer'=>$answer
             ];
         }
         $response = [
