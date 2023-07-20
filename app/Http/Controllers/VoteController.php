@@ -380,7 +380,7 @@ class VoteController extends Controller
             'vote_options.option as option',
             'vote_options.id as option_id',
             'vote_options.total_voted as total_voted',
-            DB::raw('CONCAT("{", GROUP_CONCAT("\"", vote_history.user_id, "\": \"", vote_history.answer, "\""), "}") as answer')
+            DB::raw('JSON_ARRAYAGG(vote_history.answer) as answer')
         )
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
