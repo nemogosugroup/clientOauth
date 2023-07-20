@@ -15,6 +15,7 @@ export default {
                 // { key: 'question_id', label: 'Question ID' },
                 { key: 'title', label: 'Câu hỏi' },
                 { key: 'options', label: 'Các câu trả lời' },
+                { key: 'type', label: 'Loại' },
             ],
             currentVoteId: null,
         };
@@ -63,9 +64,11 @@ export default {
                         question_id: question.question_id,
                         title: question.question,
                         options: question.options,
+                        type: question.type,
                     });
                 }
             }
+            console.log(questionsData);
             return questionsData;
             } else {
             return [];
@@ -102,7 +105,7 @@ export default {
                 <b-button variant="link" @click="closeModal"><i class="fas fa-times"></i></b-button>
             </div>
         </div>
-        <h3 class="text-center mb-2">Thông kê lượt vote:</h3>
+        <h3 class="text-center mb-2">Thông kê lượt vote:{{ currentVoteId }}</h3>
         <b-table
             v-if="group_vote[currentVoteId].questions"
             striped
@@ -117,7 +120,7 @@ export default {
             <template #cell(options)="row">
                 <ol class="mb-0">
                     <li class="mb-1" v-for="option in row.value" :key="option.option_id">
-                    {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
+                        {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
                     </li>
                 </ol>
             </template>
