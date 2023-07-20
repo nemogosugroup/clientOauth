@@ -370,10 +370,33 @@ class VoteController extends Controller
     {
         
 
-        $data = Vote::select('vote.id','vote.status', 'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+        $data = Vote::select(
+            'vote.id',
+            'vote.status',
+            'vote.title',
+            'vote_questions.question as question',
+            'vote_questions.type as type',
+            'vote_questions.id as question_id',
+            'vote_options.option as option',
+            'vote_options.id as option_id',
+            'vote_options.total_voted as total_voted',
+            DB::raw('CONCAT("{", GROUP_CONCAT("\"", vote_history.user_id, "\": \"", vote_history.answer, "\""), "}") as answer')
+        )
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->leftJoin('vote_history', 'vote_history.vote_option_id', '=', 'vote_options.id')
         // ->where('vote.id', $id)
+        ->groupBy(
+            'vote.id',
+            'vote.status',
+            'vote.title',
+            'vote_questions.question',
+            'vote_questions.type',
+            'vote_questions.id',
+            'vote_options.option',
+            'vote_options.id',
+            'vote_options.total_voted'
+        )
         ->get();
 
         $result = [];
@@ -386,7 +409,8 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
-                'total_voted'=>$item->total_voted
+                'total_voted'=>$item->total_voted,
+                'answer'=>$item->answer
             ];
         }
         $response = [
