@@ -349,6 +349,7 @@ class VoteController extends Controller
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
+            $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
