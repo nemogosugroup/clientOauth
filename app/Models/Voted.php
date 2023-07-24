@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\DB;
 
-class VoteHistory extends Model
+class Voted extends Model
 {
     use HasFactory;
-    protected $table = 'vote_history';
+    protected $table = 'voted';
 
     protected $fillable = [
         'user_id',
-        'vote_option_id',
-        'answer',
+        'vote_id',
     ];
+    
 }
