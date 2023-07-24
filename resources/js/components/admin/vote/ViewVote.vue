@@ -2,7 +2,12 @@
 /**
  * Form-element component
  */
+import LinearScale from "../vote/type-vote/LinearScale.vue";
+
 export default {
+  components: {
+    LinearScale,
+  },
   data() {
     return {
       group_question: [],
@@ -15,6 +20,7 @@ export default {
       optionstogetTotal: [],
       isVoted: false,
       status: false,
+      scaleValue: {},
     };
   },
   created() {
@@ -83,6 +89,9 @@ export default {
           // Loại hình câu hỏi dạng văn bản, không có phương án được chọn
           // Có thể xử lý dữ liệu văn bản ở đây nếu cần thiết
           vote_info[question.question_id] = this.textContents[question.question_id] || '';
+        } else if (question.type === 4) {
+          // Loại hình câu hỏi dạng LinearScale
+          vote_info[question.question_id] = this.scaleValue;
         }
       }
 
@@ -90,8 +99,9 @@ export default {
         id: this.$route.params.id,
         vote_info: JSON.stringify(vote_info),
       };
+      console.log(formVoteData);
       let token = this.$store.getters.accessToken;
-      console.log("this.group_question", this.group_question);
+      // console.log("this.group_question", this.group_question);
       let seft = this;
       axios.post('/api/vote/vote', formVoteData, {
         headers: {
@@ -114,14 +124,14 @@ export default {
               let question = voteData.questions[questionKey];
               for (const option of question.options) {
                 question_total_voted += option.total_voted;
-                console.log(option);
+                // console.log(option);
               }
               if (question_total_voted == 0) {
                 question_total_voted = 1;
               }
               question.total_voted = question_total_voted
               seft.group_question.push(question);
-              console.log("group_question", seft.group_question);
+              // console.log("group_question", seft.group_question);
               //gửi thông báo
               seft.$swal.fire({
                 position: "center",
@@ -131,7 +141,7 @@ export default {
                 timer: 1500
               });
             }
-            console.log("this.group_question", seft.group_question);
+            // console.log("this.group_question", seft.group_question);
           }else{
             seft.$swal.fire({
               position: "center",
@@ -187,7 +197,13 @@ export default {
       .catch((error) => {
         console.log('Error:', error);
       });
-    }
+    },
+
+
+    onScaleValueChange(value) {
+      this.scaleValue = value;
+    },
+
   },
   computed: {
   },
@@ -242,6 +258,20 @@ export default {
                       <div class="mb-3">
                         <textarea v-model="textContents[question.question_id]" class="form-control" rows="2"
                           placeholder="Nhập câu trả lời ..." name="textarea" :disabled="isVoted || !status"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row flex-wrap" v-if="question.type === 4">
+                    <div class="col-md-12" v-for="(answer) in question.options" :key="answer.option_id">
+                      <div class="mb-3">
+                        <LinearScale
+                          :minValue="0"
+                          :maxValue="answer.option"
+                          :step="1"
+                          :initialValue="0"
+                          @input="onScaleValueChange"
+                          :v-model="scaleValue"
+                        />
                       </div>
                     </div>
                   </div>

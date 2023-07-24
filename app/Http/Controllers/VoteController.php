@@ -125,6 +125,22 @@ class VoteController extends Controller
                         ]);
                         $voteOptionModel->save();
                         break;
+                    case 4:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptions = $question['options'];
+                        foreach ($voteOptions as $voteOption) {
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $voteOption['answer_value'],
+                            ]);
+                            $voteOptionModel->save();
+                        }
+                        break;
                     
                     default:
                         # code...
