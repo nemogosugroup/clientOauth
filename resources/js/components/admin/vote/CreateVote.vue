@@ -83,11 +83,20 @@ export default {
         })
         .then(function (response) {
           console.log("vote/add: ", response.data);
-          if (response.status === 200) {
+          if (response.data.status === 200 && response.data.success == true) {
             this.$swal.fire({
               position: "center",
               icon: "success",
               title: "Bạn đã tạo biểu mẫu thành công",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.$router.push({ name: 'All Vote' });
+          }else{
+            this.$swal.fire({
+              position: "center",
+              icon: "error",
+              title: response.data.message,
               showConfirmButton: false,
               timer: 1500
             });
@@ -139,7 +148,7 @@ export default {
                 </div>
                 <label class="card-title" v-if="question.type !== 3">Nhập câu trả lời</label>
                 <div class="row" v-if="question.type !== 3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
-                  <div class="col-lg-9">
+                  <div class="col-lg-9" ref="lastInput">
                     <b-form-group>
                       <b-form-input id="answer-text" name="answer-text" v-model="answer.answer_value" placeholder="" @keypress.enter.prevent @keyup.enter="addAnswer(question)" ></b-form-input>
                     </b-form-group>

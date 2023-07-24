@@ -13,9 +13,8 @@ export default {
             modalShow: false,
             tableFields: [
                 // { key: 'question_id', label: 'Question ID' },
-                { key: 'title', label: 'Câu hỏi' },
-                { key: 'options', label: 'Các câu trả lời' },
-                { key: 'type', label: 'Loại' },
+                { key: 'title', label: 'Câu hỏi' , thStyle: { width: '50%' }},
+                { key: 'options', label: 'Các câu trả lời' , thStyle: { width: '50%' }},
             ],
             currentVoteId: null,
         };
@@ -118,7 +117,7 @@ export default {
                 <b-button variant="link" @click="closeModal"><i class="fas fa-times"></i></b-button>
             </div>
         </div>
-        <h3 class="text-center mb-2">Thông kê lượt vote:{{ currentVoteId }}</h3>
+        <h3 class="text-center mb-2">Thông kê lượt vote:</h3>
         <b-table
             v-if="group_vote[currentVoteId].questions"
             striped
@@ -131,19 +130,17 @@ export default {
         >
         <template #cell(options)="row">
             <ol class="mb-0">
-                {{ row.value }}
+                <!-- {{ row.value }} -->
                 <li class="mb-1" v-for="option in row.value" :key="option.option_id">
                     <!-- Sử dụng row.type để lọc các option dựa trên type -->
                     <template v-if="row.item.type === 3">
-                        <span v-if="isNonEmptyArray(option.answer)">
-                        <ul>
-                            <li v-for="answerItem in parseAnswer(option.answer)" :key="answerItem">
-                                {{ answerItem }}
-                            </li>
-                        </ul>
-                        </span>
-                        <span v-else>
-                            Không ý kiến
+                        <!-- aaaaaaaaaaaaaaa -->
+                        <span >
+                            <ul>
+                                <li v-for="answerItem in parseAnswer(option.answer)" >
+                                    {{ answerItem }}
+                                </li>
+                            </ul>
                         </span>
                     </template>
                     <template v-else-if="row.item.type !== 3">

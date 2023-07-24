@@ -10,7 +10,7 @@ export default {
             minHeight: 'auto',
             group_vote: [],
             isLoaded: false,
-            isStatus:false,
+            status:false,
         };
     },
     created() {
@@ -36,7 +36,55 @@ export default {
     },
     methods: {
       toggleStatus(vote) {
-        vote.isStatus = !vote.isStatus; 
+        let status = 'off';
+        console.log('check vote',vote);
+        if(vote.status == 0 ){
+          status = 'on';
+        }
+        let formData =  {
+          id: vote.vote_id,
+          action: status
+        };
+        let token = this.$store.getters.accessToken;
+        console.log("check formData",formData);
+        let seft = this;
+        this.axios.post(`/api/vote/set-status`, formData,{
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then((response) => {
+          console.log("check response",response);
+          if (response.data.status === 200 && response.data.success == true) {
+            
+            vote.status = !vote.status; 
+            seft.$swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Bạn đã cập nhật trạng thái thành công",
+                showConfirmButton: false,
+                timer: 1500
+              });
+            // this.group_vote = response.data.data.voteInfo;
+          }else{
+            seft.$swal.fire({
+                position: "center",
+                icon: "error",
+                title: response.data.message,
+                showConfirmButton: false,
+                timer: 1500
+              });
+          }
+        })
+        .catch((error) => {
+          if (error.response.status == 403) {
+            console.log('Error:', error);
+          }
+          if (error.response.status == 401) {
+            console.log('Error:', error);
+          }
+        });
+
       }
     },
 };
@@ -62,8 +110,8 @@ export default {
                   <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
                   </router-link>
-                  <button :class="['btn', { 'btn-success': vote.isStatus, 'btn-danger': !vote.isStatus }]" @click="toggleStatus(vote)">
-                    <i class="fas fa-power-off"></i>&nbsp;{{ vote.isStatus ? 'Mở' : 'Đóng' }}
+                  <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" @click="toggleStatus(vote)">
+                    <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
                 </div>
               </div> 

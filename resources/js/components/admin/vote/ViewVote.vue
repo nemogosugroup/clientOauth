@@ -13,6 +13,8 @@ export default {
       data_json: '',
       textContents: {},
       optionstogetTotal: [],
+      isVoted: false,
+      status: false,
     };
   },
   created() {
@@ -24,33 +26,39 @@ export default {
       }
     })
       .then((response) => {
-        if (response.data.status === 200) {
+        if (response.data.status === 200 && response.data.success == true) {
           const voteInfo = response.data.data.voteInfo;
+          this.isVoted = response.data.data.is_voted;
+          
+          console.log("check this.isVoted",this.isVoted)
           const voteId = Object.keys(voteInfo)[0];
           const voteData = voteInfo[voteId];
-          let question_total_voted = 0;
+          this.status = voteData.status == 1 ? true : false;
+          console.log("check this.status",this.status)
           this.title_vote = voteData.title;
-          console.log(voteData);
           for (const questionKey in voteData.questions) {
+            let question_total_voted = 0;
             let question = voteData.questions[questionKey];
             for (const option of question.options) {
               question_total_voted += option.total_voted;
-              console.log(option);
             }
-
             if (question_total_voted == 0) {
               question_total_voted = 1;
             }
             question.total_voted = question_total_voted
             this.group_question.push(question);
-            console.log("group_question", this.group_question);
           }
-
         }
       })
       .catch((error) => {
         console.log('Error:', error);
       });
+    
+    // Gọi hàm updateData() ban đầu khi component được tạo
+    this.updateData();
+
+    // Gọi hàm updateData() mỗi 5 giây
+    this.updateInterval = setInterval(this.updateData, 10000);
   },
   methods:{
     // saveData(){
@@ -97,41 +105,89 @@ export default {
             const voteInfo = response.data.data.voteInfo;
             const voteId = Object.keys(voteInfo)[0];
             const voteData = voteInfo[voteId];
-            let question_total_voted = 0;
+            seft.isVoted = true;
+            seft.status = voteData.status == 1 ? true : false;
             seft.title_vote = voteData.title;
             // console.log(voteData);
             for (const questionKey in voteData.questions) {
+              let question_total_voted = 0;
               let question = voteData.questions[questionKey];
               for (const option of question.options) {
                 question_total_voted += option.total_voted;
                 console.log(option);
               }
-
               if (question_total_voted == 0) {
                 question_total_voted = 1;
               }
               question.total_voted = question_total_voted
               seft.group_question.push(question);
               console.log("group_question", seft.group_question);
+              //gửi thông báo
+              seft.$swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Bạn thực hiện đánh giá thành công",
+                showConfirmButton: false,
+                timer: 1500
+              });
             }
-
             console.log("this.group_question", seft.group_question);
+          }else{
+            seft.$swal.fire({
+              position: "center",
+              icon: "error",
+              title: response.data.message,
+              showConfirmButton: false,
+              timer: 1500
+            });
           }
 
         })
         .catch(function (error) {
           console.log("vote/add error: ", error);
         });
-      this.$swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Bạn thực hiện đánh giá thành công",
-        showConfirmButton: false,
-        timer: 1500
-      });
+      
 
       console.log(formVoteData);
     },
+    updateData() {
+      let token = this.$store.getters.accessToken;
+      axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      })
+      .then((response) => {
+        if (response.data.status === 200 && response.data.success) {
+          // Cập nhật dữ liệu vào state hoặc các biến khác của component
+          const voteInfo = response.data.data.voteInfo;
+          this.isVoted = response.data.data.is_voted;
+          const voteId = Object.keys(voteInfo)[0];
+          const voteData = voteInfo[voteId];
+          this.status = voteData.status == 1;
+          this.title_vote = voteData.title;
+
+          // Cập nhật lại các giá trị total_voted của câu hỏi
+          for (const questionKey in voteData.questions) {
+            let question_total_voted = 0;
+            let question = voteData.questions[questionKey];
+            for (const option of question.options) {
+              question_total_voted += option.total_voted;
+            }
+            if (question_total_voted == 0) {
+              question_total_voted = 1;
+            }
+            question.total_voted = question_total_voted;
+          }
+
+          // Gán lại giá trị cho group_question
+          this.group_question = Object.values(voteData.questions);
+        }
+      })
+      .catch((error) => {
+        console.log('Error:', error);
+      });
+    }
   },
   computed: {
   },
@@ -157,7 +213,7 @@ export default {
                     <div class="col-md-12 mb-3" v-for="(answer) in question.options" :key="answer.option_id">
                       <div class="custom-control custom-checkbox mb-2">
                         <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.option_id"
-                          :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" />
+                          :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" :disabled="isVoted || !status"/>
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option}}</label>
                       </div>
                       <b-progress :max="100" height="14px">
@@ -171,12 +227,12 @@ export default {
                       <div class="custom-control custom-radio mb-2">
                         <input type="radio" class="custom-control-input" :name="'radio_' + answer.option_id"
                           :id="answer.option_id" :value="answer.option_id"
-                          v-model="selected_radio[question.question_id]" />
+                          v-model="selected_radio[question.question_id]" :disabled="isVoted || !status"/>
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option
                         }}</label>
                       </div>
-                      <b-progress :max="question.total_voted" height="14px">
-                        <b-progress-bar :value="answer.total_voted"
+                      <b-progress :max="100" height="14px">
+                        <b-progress-bar :value="(answer.total_voted / question.total_voted) * 100"
                           :label="`${((answer.total_voted / question.total_voted) * 100).toFixed(0)}%`"></b-progress-bar>
                       </b-progress>
                     </div>
@@ -185,7 +241,7 @@ export default {
                     <div class="col-md-12">
                       <div class="mb-3">
                         <textarea v-model="textContents[question.question_id]" class="form-control" rows="2"
-                          placeholder="Nhập câu trả lời ..." name="textarea"></textarea>
+                          placeholder="Nhập câu trả lời ..." name="textarea" :disabled="isVoted || !status"></textarea>
                       </div>
                     </div>
                   </div>
@@ -193,7 +249,7 @@ export default {
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit">Gửi Đánh Giá</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-bind:class="{ 'disabled-button': isVoted || !status }">Gửi Đánh Giá</button>
         </form>
       </div>
     </div>

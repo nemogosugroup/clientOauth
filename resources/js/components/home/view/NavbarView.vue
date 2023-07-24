@@ -4,7 +4,7 @@
       <div class="d-flex">
         <!-- LOGO -->
         <div class="navbar-brand-box bg-white">
-          <router-link to="/" class="logo logo-dark d-block text-center">
+          <router-link to="/home" class="logo logo-dark d-block text-center">
             <span class="logo-sm">
               <img src="../../../../assets/images/logo.png" alt="" height="22" />
             </span>
@@ -81,11 +81,11 @@ export default {
   computed: {
     
     UserForm() {
-      let user = this.$store.getters.infoUser;
-      return {
-        name: user ? user.name : ""
-      }
-    },
+          let user = JSON.parse(this.$store.getters.infoUser);
+          return {
+              name: user ? user.name : ""
+          }
+      },
     checkNavigation() {
       // const loginResponse = JSON.parse(localStorage.getItem('loginResponse')) ?? {};
       // return this.$store.getters.getLoginResponse.authenticated || loginResponse.authenticated || false;

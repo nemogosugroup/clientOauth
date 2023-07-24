@@ -338,16 +338,26 @@ class VoteController extends Controller
         $voteId = $request->input('id');
         $data = Vote::select(
             'vote.id', 
+            'vote.status', 
             'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $voteId)
         ->get();
 
+        $user = $request->user();
+        $isVoted = VoteHistory::join('vote_options', 'vote_options.id', '=', 'vote_history.vote_option_id')
+            ->join('vote_questions', 'vote_questions.id', '=', 'vote_options.question_id')
+            ->join('vote', 'vote.id', '=', 'vote_questions.vote_id')
+            ->where('vote_history.user_id', $user->id)
+            ->where('vote.id', $voteId)
+            ->exists();
+
         $result = [];
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['status'] = $item->status;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
@@ -360,7 +370,7 @@ class VoteController extends Controller
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['voteInfo'=>$result],
+            "data"=>['voteInfo'=>$result,'is_voted'=>$isVoted],
             "success"=>true
         ];
         return response()->json($response);
@@ -378,7 +388,7 @@ class VoteController extends Controller
             'vote_options.option as option',
             'vote_options.id as option_id',
             'vote_options.total_voted as total_voted',
-            DB::raw('JSON_ARRAYAGG(vote_history.answer) as answer')
+            DB::raw('JSON_UNQUOTE(JSON_ARRAYAGG(vote_history.answer)) as answer')
         )
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
@@ -401,10 +411,11 @@ class VoteController extends Controller
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['status'] = $item->status;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
-            $answer = $item->answer!="[null]"?$item->answer:"[]";
+            $answer = $item->answer!= "[null]" ? utf8_encode($item->answer) : [];
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
@@ -420,7 +431,20 @@ class VoteController extends Controller
         ];
         return response()->json($response);
     }
+    public function getCountVote()
+    {
+        $count = Vote::count();
 
+        
+        $response = [
+            "status"=> 200,
+            "message"=>"success",
+            "data"=>['count_vote'=>$count],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+    
     public function vote(Request $request)
     {
         $user = $request->user();
@@ -451,12 +475,13 @@ class VoteController extends Controller
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->join('vote_history', 'vote_options.id', '=', 'vote_history.vote_option_id')
         ->select('vote_history.*', 'vote_options.option as option','vote.title as vote_title')
+        ->where('vote_history.user_id',$user->id)
         ->get();
         if(count($history)){
             $response = [
                 "status"=> 200,
                 "message"=>"Bạn đã vote trước đó",
-                "data"=>['history'=>$history],
+                "data"=>[],
                 "success"=>false
             ];
             return response()->json($response);
@@ -470,10 +495,12 @@ class VoteController extends Controller
 
         try {
             $vote = Vote::where("id", $id)->first();
-            if(!$vote ||$vote->status == 0 ){
+            if(!$vote){
                 throw new \Exception("Không tìm thấy đợt vote này");
             }
-            
+            if($vote && $vote->status == 0 ){
+                throw new \Exception("Thời gian vote đã kết thúc");
+            }
             foreach ($voteInfos as $index => $voteOptions) {
                 $voteQuestion = VoteQuestions::where("id", $index)
                     ->where("vote_id", $id)

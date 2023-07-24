@@ -57,27 +57,7 @@
                         </ul>
                     </li>
                     <li class="menu-title">Pages</li>
-                    <li>
-                        <router-link :to="{ name: 'Import Word From Excel' }" class=" waves-effect"
-                            v-if="checkPermission(['Import Excel'])" exact tag="li" active-class="active">
-                            <i class="ri-calendar-2-line"></i>
-                            <span>Import file excel</span>
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link :to="{ name: 'Translate Word From Excel' }" class=" waves-effect" exact tag="li"
-                            active-class="active" v-if="checkPermission(['Translate File Excel'])">
-                            <i class="ri-calendar-2-line"></i>
-                            <span>Translate file excel</span>
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link :to="{ name: 'Log Import' }" class=" waves-effect" exact tag="li" active-class="active"
-                            v-if="checkPermission(['Log Import'])">
-                            <i class="ri-calendar-2-line"></i>
-                            <span>Log Import file excel</span>
-                        </router-link>
-                    </li>
+                    
                 </ul>
             </div>
             <!-- Sidebar -->
