@@ -11,6 +11,7 @@ export default {
             group_vote: [],
             isLoaded: false,
             status:false,
+            searchTerm: '',
         };
     },
     created() {
@@ -84,17 +85,57 @@ export default {
             console.log('Error:', error);
           }
         });
+      },
 
-      }
+      searchVotes() {
+      let token = this.$store.getters.accessToken;
+      let searchTerm = this.searchTerm.trim(); 
+
+      // Add the searchTerm as a query parameter to the API call
+      this.axios
+        .get(`/api/vote/search`, {
+          params: {
+            search: searchTerm,
+          },
+          headers: {
+            'Authorization': 'Bearer ' + token
+          },
+        })
+        .then((response) => {
+          if (response.data.status === 200) {
+            this.group_vote = response.data.data.voteInfo;
+          }
+        })
+        .catch((error) => {
+          if (error.response.status == 403) {
+            console.log('Error:', error);
+          }
+          if (error.response.status == 401) {
+            console.log('Error:', error);
+          }
+        });
+      },
     },
 };
 </script>
 
 <template>
-    <div class="container mb-5">
-      <router-link to="/admin/create-vote">
-        <button class="btn btn-primary mb-4"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
-      </router-link>
+    <div class="container mb-5 all-vote">
+      <div class="row justify-content-between mb-4 align-items-center">
+        <div class="col-md-3">
+          <router-link to="/admin/create-vote">
+            <button class="btn btn-primary"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
+          </router-link>
+        </div>
+        <div class="col-md-4">
+          <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes">
+            <div class="position-relative">
+              <input type="text" class="form-control" v-model="searchTerm" @keyup.enter="searchVotes" placeholder="Tìm kiếm..." />
+              <span class="ri-search-line"></span>
+            </div>
+          </form>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
@@ -121,3 +162,9 @@ export default {
       </div>
     </div>
 </template>
+
+<style>
+.all-vote .app-search input{
+  border: 1px solid #ced4da;
+}
+</style>
