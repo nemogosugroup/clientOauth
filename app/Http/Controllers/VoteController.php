@@ -403,6 +403,7 @@ class VoteController extends Controller
     {
         $keyword = $request->input('search');
         $keyword = $keyword ?? null;
+        
         if ($keyword == null) {
             $response = [
                 "status"=> 200,
@@ -412,6 +413,7 @@ class VoteController extends Controller
             ];
             return response()->json($response);
         }
+        $limit = $request->input('limit');
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
@@ -425,10 +427,16 @@ class VoteController extends Controller
             'vote_options.total_voted as total_voted'
         )
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
-        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
-        ->where('vote.title', 'LIKE', "%".$keyword."%") // Sử dụng 'LIKE' ở đây
-        ->get();
-
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id');
+        if($limit) {
+            $data->where('vote.title', 'LIKE', "%".$keyword."%"); // Sử dụng 'LIKE' ở đây
+        }
+        // Nếu $limit có giá trị, thì giới hạn số lượng kết quả trả về
+        if ($limit) {
+            $data = $dataQuery->limit($limit)->get();
+        } else {
+            $data = $dataQuery->get();
+        }
         $user = $request->user();
        
 
