@@ -24,6 +24,7 @@ Route::middleware('auth:api')->get('/logout', [App\Http\Controllers\Auth\LoginCo
 Route::middleware('auth:api','roles:ROLE_ADMIN')->post('/vote/add', [App\Http\Controllers\VoteController::class, 'add'])->name('vote-add');
 Route::middleware('auth:api','roles:ROLE_ADMIN')->post('/vote/update', [App\Http\Controllers\VoteController::class, 'update'])->name('vote-update');
 Route::middleware('auth:api')->get('/vote/get-info', [App\Http\Controllers\VoteController::class, 'getInfo'])->name('get-vote-info');
+Route::middleware('auth:api')->get('/vote/search', [App\Http\Controllers\VoteController::class, 'search'])->name('search');
 Route::middleware('auth:api')->get('/vote/count-vote', [App\Http\Controllers\VoteController::class, 'getCountVote'])->name('get-count-vote');
 Route::middleware('auth:api','roles:ROLE_ADMIN')->post('/vote/set-status', [App\Http\Controllers\VoteController::class, 'setStatus'])->name('set-status');
 Route::middleware('auth:api','roles:ROLE_ADMIN')->get('/vote/get-all', [App\Http\Controllers\VoteController::class, 'getAll'])->name('get-vote-all');

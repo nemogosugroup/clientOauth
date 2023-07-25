@@ -2,5 +2,15 @@
     "/assets/js/app.js": "/assets/js/app.js",
     "/assets/css/simple-typeahead.css": "/assets/css/simple-typeahead.css",
     "/assets/css/datatable.css": "/assets/css/datatable.css",
-    "/assets/css/style.css": "/assets/css/style.css"
+    "/assets/css/style.css": "/assets/css/style.css",
+    "/images/authentication-bg.jpg": "/images/authentication-bg.jpg",
+    "/images/avatar.png": "/images/avatar.png",
+    "/images/background-avatar.png": "/images/background-avatar.png",
+    "/images/img-moon.png": "/images/img-moon.png",
+    "/images/logo-dark.png": "/images/logo-dark.png",
+    "/images/logo-footer.png": "/images/logo-footer.png",
+    "/images/logo-sm.png": "/images/logo-sm.png",
+    "/images/logo.png": "/images/logo.png",
+    "/images/qr-fb.png": "/images/qr-fb.png",
+    "/images/qr-g.png": "/images/qr-g.png"
 }

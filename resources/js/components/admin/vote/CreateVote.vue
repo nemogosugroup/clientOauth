@@ -155,7 +155,7 @@ export default {
             <div class="card question" :ref="`questionCard_${indexQuestion}`" v-for="(question, indexQuestion) in group_question" :key="indexQuestion">
               <div class="card-body">
                 <div class="row">
-                  <div class="col-lg-9">
+                  <div class="col-lg-8">
                       <label class="card-title">Nhập câu hỏi<span class="text-danger">*</span></label>
                       <b-form-group :state="validationErrors.questions[indexQuestion] ? false : null" :invalid-feedback="validationErrors.questions[indexQuestion]">
                         <b-form-input name="question-text" id="question-text" v-model="question.question" placeholder=""></b-form-input>
@@ -166,6 +166,10 @@ export default {
                     <select class="form-control select2" v-model="question.type">
                       <option v-for="value in type_options" :key="value.id" :value="value.id">{{ value.option }}</option>
                     </select>
+                  </div>
+                  <div class="col-lg-1">
+                    <label>*:</label>
+                    <input type="checkbox"  v-model="question.is_required">
                   </div>
                 </div>
                 <label class="card-title" v-if="question.type !== 3 && question.type !== 4">Nhập câu trả lời</label>

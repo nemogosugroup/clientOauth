@@ -45,7 +45,6 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
-        dump("check 1");die;
         // $query = "SELECT data AS json_result FROM tn_vote WHERE TYPE = 'DOT-1-2023' AND tn_vote.data LIKE '%\"active\":1%'";
         // $jsonResult = DB::select(DB::raw($query));
         // dd($jsonResult);die;
@@ -94,6 +93,11 @@ class LoginController extends Controller
         if (Auth::check()) {
             // Người dùng đã đăng nhập, thực hiện mã lệnh tại đây
             Auth::user()->logoutFromSSO();
+            $access_token = $request->session()->get("access_token");
+            Http::withHeaders([
+                "Accept" => "application/json",
+                "Authorization" => "Bearer " . $access_token
+            ])->get(config("auth.sso_host") .  "/login");
         }
 
 

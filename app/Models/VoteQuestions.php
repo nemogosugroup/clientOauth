@@ -15,7 +15,8 @@ class VoteQuestions extends Model
     protected $fillable = [
         'vote_id',
         'question',
-        'type'
+        'type',
+        'is_required'
     ];
     
 }
