@@ -23,28 +23,37 @@ class SSOController extends Controller
             "state" => $state,
             "prompt" => true
         ]);
+
+        return redirect(config("auth.sso_host") .  "/login?" . $query);
+        // login bằng passpost 
         // return redirect(config("auth.sso_host") .  "/oauth/authorize?" . $query)->header('crossorigin', 'anonymous');
-        return redirect(config("auth.sso_host") .  "/oauth/authorize?" . $query);
+        
     }
     public function getCallback(Request $request)
     {
         // dump($request);
         $state = $request->session()->pull("state");
-
-        throw_unless(strlen($state) > 0 && $state == $request->state, InvalidArgumentException::class);
-
-        $response = Http::asForm()->post(
-            config("auth.sso_host") .  "/oauth/token",
-            [
-                "grant_type" => "authorization_code",
-                "client_id" => config("auth.client_id"),
-                "client_secret" => config("auth.client_secret"),
-                "redirect_uri" => config("auth.callback") ,
-                "code" => $request->code
-            ]
-        );
-        // dump($response->json());die;
-        $request->session()->put($response->json());
+        $token = $request->input('token');
+        $stateCallback = $request->input('state');
+        if($token && $stateCallback ){
+            throw_unless(strlen($state) > 0 && $state == $stateCallback, InvalidArgumentException::class);
+            $request->session()->put('access_token',$token);
+        }else{
+            throw_unless(strlen($state) > 0 && $state == $request->state, InvalidArgumentException::class);
+        
+            $response = Http::asForm()->post(
+                config("auth.sso_host") .  "/oauth/token",
+                [
+                    "grant_type" => "authorization_code",
+                    "client_id" => config("auth.client_id"),
+                    "client_secret" => config("auth.client_secret"),
+                    "redirect_uri" => config("auth.callback") ,
+                    "code" => $request->code
+                ]
+            );
+            // dump($response->json());die;
+            $request->session()->put($response->json());
+        }
         return redirect(route("sso.connect"));
     }
     public function connectUser(Request $request)
@@ -55,6 +64,7 @@ class SSOController extends Controller
             "Authorization" => "Bearer " . $access_token
         ])->get(config("auth.sso_host") .  "/api/user");
         $userArray = $response->json();
+        // dd($userArray);
         try {
             $email = $userArray['email'];
         } catch (\Throwable $th) {

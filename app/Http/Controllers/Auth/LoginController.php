@@ -45,6 +45,7 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
+        dump("check 1");die;
         // $query = "SELECT data AS json_result FROM tn_vote WHERE TYPE = 'DOT-1-2023' AND tn_vote.data LIKE '%\"active\":1%'";
         // $jsonResult = DB::select(DB::raw($query));
         // dd($jsonResult);die;

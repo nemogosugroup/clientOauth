@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Vote;
+use App\Models\Voted;
 use App\Models\VoteQuestions;
 use App\Models\VoteOptions;
 use App\Models\VoteHistory;
@@ -362,11 +363,8 @@ class VoteController extends Controller
         ->get();
 
         $user = $request->user();
-        $isVoted = VoteHistory::join('vote_options', 'vote_options.id', '=', 'vote_history.vote_option_id')
-            ->join('vote_questions', 'vote_questions.id', '=', 'vote_options.question_id')
-            ->join('vote', 'vote.id', '=', 'vote_questions.vote_id')
-            ->where('vote_history.user_id', $user->id)
-            ->where('vote.id', $voteId)
+        $isVoted = Voted::where('user_id', $user->id)
+            ->where('vote_id', $voteId)
             ->exists();
 
         $result = [];
@@ -431,7 +429,7 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
-            $answer = $item->answer!= "[null]" ? utf8_encode($item->answer) : [];
+            $answer = $item->answer != "[null]" ? utf8_encode($item->answer) : [];
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
@@ -486,14 +484,14 @@ class VoteController extends Controller
             return response()->json($response);
         }
 
-        $history = Vote::where('vote.id', $id)
-        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
-        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
-        ->join('vote_history', 'vote_options.id', '=', 'vote_history.vote_option_id')
-        ->select('vote_history.*', 'vote_options.option as option','vote.title as vote_title')
-        ->where('vote_history.user_id',$user->id)
-        ->get();
-        if(count($history)){
+        $isVoted = Voted::select('id')
+        // ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        // ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        // ->join('vote_history', 'vote_options.id', '=', 'vote_history.vote_option_id')
+        ->where('voted.vote_id', $id)
+        ->where('voted.user_id',$user->id)
+        ->exists();
+        if($isVoted){
             $response = [
                 "status"=> 200,
                 "message"=>"Bạn đã vote trước đó",
@@ -517,10 +515,15 @@ class VoteController extends Controller
             if($vote && $vote->status == 0 ){
                 throw new \Exception("Thời gian vote đã kết thúc");
             }
+            $newVoted= new Voted([
+                'user_id' => $user->id,
+                'vote_id' => $id,
+            ]);
             foreach ($voteInfos as $index => $voteOptions) {
                 $voteQuestion = VoteQuestions::where("id", $index)
                     ->where("vote_id", $id)
                     ->first();
+                $newVoted->save();
                 if($voteQuestion){
                     switch ($voteQuestion->type) {
                         case 1:
@@ -531,11 +534,14 @@ class VoteController extends Controller
                                     if($voteOptionModel){
                                         $voteOptionModel->increment('total_voted');
                                         $voteOptionModel->save();
-                                        $newVoteHistory = new VoteHistory([
-                                            'user_id' => $user->id,
-                                            'vote_option_id' => $voteOptionModel->id,
-                                        ]);
-                                        $newVoteHistory->save();
+                                        if($vote->is_anonymous !== 1){
+                                            $newVoteHistory = new VoteHistory([
+                                                'user_id' => $user->id,
+                                                'vote_option_id' => $voteOptionModel->id,
+                                            ]);
+                                            $newVoteHistory->save();
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -549,14 +555,15 @@ class VoteController extends Controller
                                 if($voteOptionModel){
                                     $voteOptionModel->increment('total_voted');
                                     $voteOptionModel->save();
-                                    $newVoteHistory = new VoteHistory([
-                                        'user_id' => $user->id,
-                                        'vote_option_id' => $voteOptionModel->id,
-                                    ]);
-                                    $newVoteHistory->save();
+                                    if($vote->is_anonymous !== 1){
+                                        $newVoteHistory = new VoteHistory([
+                                            'user_id' => $user->id,
+                                            'vote_option_id' => $voteOptionModel->id,
+                                        ]);
+                                        $newVoteHistory->save();
+                                    }
                                 }
                             }
-                            
                             break;
                         case 3:
                             if(!is_string($voteOptions)){
@@ -566,8 +573,12 @@ class VoteController extends Controller
                             if($voteOptionModel){
                                 $voteOptionModel->increment('total_voted');
                                 $voteOptionModel->save();
+                                $saveUserId = 0;
+                                if($vote->is_anonymous !== 1){
+                                    $saveUserId = $user->id;
+                                }
                                 $newVoteHistory = new VoteHistory([
-                                    'user_id' => $user->id,
+                                    'user_id' => $saveUserId,
                                     'vote_option_id' => $voteOptionModel->id,
                                     'answer'=> $voteOptions
                                 ]);
