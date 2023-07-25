@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -59,45 +61,11 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        // $query = "SELECT username, data AS json_result FROM tn_vote WHERE TYPE = 'DOT-1-2023' AND tn_vote.data LIKE '%\"active\":1%'";
-        // $jsonResult = DB::select(DB::raw($query));
-        // foreach ($jsonResult as $row) {
-        //     $jsonResultData = $row->json_result;
-        //     $userName =  $row->username;
-        //     // Thực hiện các xử lý khác với $jsonResultData
-        //     // Ví dụ: chuyển đổi $jsonResultData thành đối tượng JSON
-            
-        //     $jsonData = json_decode($jsonResultData);
-            
-        //     // Sử dụng $jsonData cho mục đích khác
-            
-        //     // Ví dụ: truy cập thuộc tính trong đối tượng JSON
-            
-        //     foreach ($jsonData as $row1) {
-        //         $jsonResultData2 = $row1->list;
-        //         foreach($jsonResultData2 as $row2) {
-        //             $jsonResultElementData = $row2;
-        //             if($jsonResultElementData->note != "" ){
-        //                 dump($userName."-".$jsonResultElementData->firstname." ".$jsonResultElementData->lastname."-".$jsonResultElementData->active."-".$jsonResultElementData->note);
-        //             }
-        //         }
-        //     }
-        //     // Hoặc truy cập các phần tử trong mảng JSON
-        //     // foreach ($jsonData as $key => $value) {
-        //     //     // Xử lý từng phần tử trong mảng JSON
-        //     // }
-        // }
-        // die;
-        // dd($jsonResult);die;
-        // die;
+        
         if (Auth::check()) {
             // Người dùng đã đăng nhập, thực hiện mã lệnh tại đây
             Auth::user()->logoutFromSSO();
-            $access_token = $request->session()->get("access_token");
-            Http::withHeaders([
-                "Accept" => "application/json",
-                "Authorization" => "Bearer " . $access_token
-            ])->get(config("auth.sso_host") .  "/login");
+            
         }
 
 
@@ -111,9 +79,25 @@ class LoginController extends Controller
             return $response;
         }
 
-        return $request->wantsJson()
-            ? new JsonResponse([], 204)
-            : redirect('/');
+
+        // $access_token = $request->session()->get("access_token");
+        //     Http::withHeaders([
+        //         "Accept" => "application/json",
+        //         "Authorization" => "Bearer " . $access_token
+        //     ])->get(config("auth.sso_host") .  "/logout");
+        $request->session()->put("state", $state =  Str::random(40));
+        $query = http_build_query([
+            "client_id" => config("auth.client_id"),
+            "redirect_uri" => config("auth.callback") ,
+            "response_type" => "code",
+            "scope" => config("auth.scopes"),
+            "state" => $state,
+            "prompt" => true
+        ]);
+        return redirect(config("auth.sso_host") .  "/logout?".$query);
+        // return $request->wantsJson()
+        //     ? new JsonResponse([], 204)
+        //     : redirect('/');
     }
     /**
      * Log the user out of the application.
