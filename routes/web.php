@@ -19,9 +19,10 @@ Route::get("/sso/login", [SSOController::class, 'getLogin'])->name("sso.login");
 Route::get("/callback", [SSOController::class, 'getCallback'])->name("sso.callback");
 Route::get("/sso/connect", [SSOController::class, 'connectUser'])->name("sso.connect");
 
-Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
+Route::get('/login', [SSOController::class, 'getLogin'])->name('login');
+// Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-Auth::routes(['register' => false, 'reset' => false ]);
+// Auth::routes(['register' => false, 'reset' => false ]);
 
 Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('voting');
 
