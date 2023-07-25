@@ -84,7 +84,7 @@ export default {
 }
 
 .linear-scale a {
-  margin-right: 10px;
+  margin-right: 5px;
   padding: 5px;
   border: 2px solid #ccc;
   border-radius: 5px;

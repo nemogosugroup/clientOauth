@@ -91,7 +91,7 @@ export default {
           vote_info[question.question_id] = this.textContents[question.question_id] || '';
         } else if (question.type === 4) {
           // Loại hình câu hỏi dạng LinearScale
-          vote_info[question.question_id] = this.scaleValue;
+          vote_info[question.question_id] = this.scaleValue[question.question_id] || '';
         }
       }
 
@@ -211,7 +211,7 @@ export default {
 </script>
 
 <template>
-  <div class="container mt-5">
+  <div class="container mb-5 mt-5">
     <div class="card">
       <div class="card-body">
         <h3 class="text-capitalize mb-0">{{ title_vote }}</h3>

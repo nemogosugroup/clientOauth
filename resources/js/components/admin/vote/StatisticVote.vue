@@ -91,7 +91,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container mb-5">
       <div class="row">
         <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
