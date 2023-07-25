@@ -46,3 +46,6 @@ mix.js("resources/js/app.js", "public/assets/js")
     .sass('resources/assets/scss/style.scss', 'public/assets/css')
     .sass('resources/assets/scss/datatable.scss', 'public/assets/css')
     .sass('resources/assets/scss/simple-typeahead.scss', 'public/assets/css')
+
+
+mix.copyDirectory('resources/assets/images', 'public/images');

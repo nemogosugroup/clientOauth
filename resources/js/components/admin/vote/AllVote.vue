@@ -91,7 +91,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container mb-5">
       <router-link to="/admin/create-vote">
         <button class="btn btn-primary mb-4"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
       </router-link>

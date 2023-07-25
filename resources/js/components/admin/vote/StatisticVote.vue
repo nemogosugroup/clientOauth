@@ -91,7 +91,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container mb-5">
       <div class="row">
         <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
@@ -134,10 +134,9 @@ export default {
                 <li class="mb-1" v-for="option in row.value" :key="option.option_id">
                     <!-- Sử dụng row.type để lọc các option dựa trên type -->
                     <template v-if="row.item.type === 3">
-                        <!-- aaaaaaaaaaaaaaa -->
-                        <span >
+                        <span>
                             <ul>
-                                <li v-for="answerItem in parseAnswer(option.answer)" >
+                                <li v-for="answerItem in parseAnswer(option.answer)">
                                     {{ answerItem }}
                                 </li>
                             </ul>
@@ -152,5 +151,7 @@ export default {
         </template>
         </b-table>
       </b-modal>
+
+      
     </div>
 </template>

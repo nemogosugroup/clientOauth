@@ -19,7 +19,7 @@
                     <!-- start page title -->
                     <div class="row">
                         <div class="col-12">
-                            <div class="page-title-box d-flex align-items-center justify-content-between"
+                            <div class="page-title-box d-flex align-items-center justify-content-start"
                                 style="padding-bottom: 0px;">
                                 <h4 class="mb-0 d-none d-md-block">
                                     <!-- {{ pageName }} -->
@@ -85,3 +85,10 @@ export default {
     },
 }
 </script>
+
+<style>
+.page-content{
+    min-height: 815px;
+}
+
+</style>

@@ -15,12 +15,13 @@ export default {
         { id: 1, option: 'Hộp kiểm' },
         { id: 2, option: 'Trắc nghiệm' },
         { id: 3, option: 'Đoạn ngắn' },
+        { id: 4, option: 'Đánh giá điểm' },
       ],
-      type: 1,
       title_vote:"",
       validationErrors: {
         title: '',
-        questions: []
+        questions: [],
+        answers: []
       },
       statuscode: null,
     };
@@ -62,11 +63,31 @@ export default {
           this.validationErrors.questions[index] = '';
         }
       });
-
+      
+      this.group_question.forEach((question, index) => {
+          // Validate answers
+        if(question.type !== 3){
+          this.validationErrors.answers = [];
+          this.group_question.forEach((question, questionIndex) => {
+            question.options.forEach((answer, answerIndex) => {
+              if (answer.answer_value.trim() === '') {
+                this.validationErrors.answers[questionIndex] = this.validationErrors.answers[questionIndex] || [];
+                this.validationErrors.answers[questionIndex][answerIndex] = 'Vui lòng nhập câu trả lời.';
+                isValid = false;
+              } else {
+                this.validationErrors.answers[questionIndex] = this.validationErrors.answers[questionIndex] || [];
+                this.validationErrors.answers[questionIndex][answerIndex] = '';
+              }
+            });
+          });
+        }
+      });
+      
       return isValid;
     },
 
     saveData(){
+      
       if (this.validateForm()) {
         // this.position();
         let dataQuestion = JSON.stringify(this.group_question);
@@ -75,6 +96,7 @@ export default {
           type_view: 1,
           questions: dataQuestion,
         };
+        console.log(formCreateVote);
         let token = this.$store.getters.accessToken;
         axios.post('/api/vote/add', formCreateVote, {
           headers: {
@@ -113,7 +135,7 @@ export default {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container mb-5">
     <div class="row">
       <div class="col-md-12">
         <form class="form-horizontal" role="form" @submit.prevent="saveData">
@@ -146,11 +168,14 @@ export default {
                     </select>
                   </div>
                 </div>
-                <label class="card-title" v-if="question.type !== 3">Nhập câu trả lời</label>
+                <label class="card-title" v-if="question.type !== 3 && question.type !== 4">Nhập câu trả lời</label>
+                <label class="card-title" v-if="question.type === 4">Nhập số điểm tối đa</label>
                 <div class="row" v-if="question.type !== 3" v-for="(answer, indexAnswer) in question.options" :key="indexAnswer">
                   <div class="col-lg-9" ref="lastInput">
-                    <b-form-group>
-                      <b-form-input id="answer-text" name="answer-text" v-model="answer.answer_value" placeholder="" @keypress.enter.prevent @keyup.enter="addAnswer(question)" ></b-form-input>
+                    <b-form-group :state="validationErrors.answers[indexQuestion] && validationErrors.answers[indexQuestion][indexAnswer] ? false : null"
+                                  :invalid-feedback="validationErrors.answers[indexQuestion] ? validationErrors.answers[indexQuestion][indexAnswer] : null">
+                      <b-form-input id="answer-text" v-if="question.type !== 4" name="answer-text" v-model="answer.answer_value" placeholder="" @keypress.enter.prevent @keyup.enter="addAnswer(question)" ></b-form-input>
+                      <b-form-input id="answer-text" v-else name="answer-text" v-model="answer.answer_value" min="0" max="10" type="number" placeholder=""></b-form-input>
                     </b-form-group>
                   </div>
                   <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question, indexAnswer)" href="javascript:void(0);"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>
