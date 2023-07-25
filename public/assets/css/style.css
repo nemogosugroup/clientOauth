@@ -398,12 +398,6 @@ textarea {
 .profile-card-body {
   min-height: 400px !important;
 }
-.disabled-button {
-  background-color: #cccccc; /* Màu tối */
-  pointer-events: none; /* Không cho phép tương tác */
-  border-color: #cccccc;
-  color: #343a40;
-}
 
 @media screen and (max-width: 768px) {
   .btn-clear-input i {

@@ -86,6 +86,8 @@ class VoteController extends Controller
                             'vote_id' => $vote->id,
                             'question' => $question['question'],
                             'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
                         ]);
                         $voteQuestionModel->save();
                         $voteOptions = $question['options'];
@@ -102,6 +104,8 @@ class VoteController extends Controller
                             'vote_id' => $vote->id,
                             'question' => $question['question'],
                             'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
                         ]);
                         $voteQuestionModel->save();
                         $voteOptions = $question['options'];
@@ -118,6 +122,8 @@ class VoteController extends Controller
                             'vote_id' => $vote->id,
                             'question' => $question['question'],
                             'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
                         ]);
                         $voteQuestionModel->save();
                         $voteOptionModel = new VoteOptions([
@@ -126,21 +132,23 @@ class VoteController extends Controller
                         ]);
                         $voteOptionModel->save();
                         break;
-                    case 4:
-                        $voteQuestionModel = new VoteQuestions([
-                            'vote_id' => $vote->id,
-                            'question' => $question['question'],
-                            'type' => $question['type'],
-                        ]);
-                        $voteQuestionModel->save();
-                        $voteOptions = $question['options'];
-                        foreach ($voteOptions as $voteOption) {
-                            $voteOptionModel = new VoteOptions([
-                                'question_id' => $voteQuestionModel->id,
-                                'option' => $voteOption['answer_value'],
-                            ]);
-                            $voteOptionModel->save();
-                        }
+                    // case 4:
+                        // $voteQuestionModel = new VoteQuestions([
+                        //     'vote_id' => $vote->id,
+                        //     'question' => $question['question'],
+                        //     'type' => $question['type'],
+                        //     'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
+                        // ]);
+                        // $voteQuestionModel->save();
+                        // $voteOptions = $question['options'];
+                        // foreach ($voteOptions as $voteOption) {
+                        //     $voteOptionModel = new VoteOptions([
+                        //         'question_id' => $voteQuestionModel->id,
+                        //         'option' => $voteOption['answer_value'],
+                        //     ]);
+                        //     $voteOptionModel->save();
+                        // }
                         break;
                     
                     default:
@@ -356,7 +364,7 @@ class VoteController extends Controller
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
-            'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+            'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.is_required as is_required', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $voteId)
@@ -373,6 +381,7 @@ class VoteController extends Controller
             $result[$item->id]['title'] = $item->title;
             $result[$item->id]['status'] = $item->status;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
+            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
@@ -390,6 +399,63 @@ class VoteController extends Controller
         return response()->json($response);
     }
 
+    public function search(Request $request)
+    {
+        $keyword = $request->input('search');
+        $keyword = $keyword ?? null;
+        if ($keyword == null) {
+            $response = [
+                "status"=> 200,
+                "message"=>"success",
+                "data"=>['voteInfo'=>[]],
+                "success"=>true
+            ];
+            return response()->json($response);
+        }
+        $data = Vote::select(
+            'vote.id', 
+            'vote.status', 
+            'vote.title',
+            'vote_questions.question as question',
+            'vote_questions.type as type',
+            'vote_questions.is_required as is_required',
+            'vote_questions.id as question_id',
+            'vote_options.option as option',
+            'vote_options.id as option_id',
+            'vote_options.total_voted as total_voted'
+        )
+        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->where('vote.title', 'LIKE', "%".$keyword."%") // Sử dụng 'LIKE' ở đây
+        ->get();
+
+        $user = $request->user();
+       
+
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id]['vote_id'] = $item->id;
+            $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['status'] = $item->status;
+            $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
+            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
+            $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
+            $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
+            $result[$item->id]['questions'][$item->question_id]['options'][] = [
+                'option_id'=>$item->option_id,
+                'option'=>$item->option,
+                'total_voted'=>$item->total_voted
+            ];
+        }
+        $response = [
+            "status"=> 200,
+            "message"=>"success",
+            "data"=>['voteInfo'=>$result],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+
     public function getAll(Request $request)
     {
         $data = Vote::select(
@@ -398,6 +464,7 @@ class VoteController extends Controller
             'vote.title',
             'vote_questions.question as question',
             'vote_questions.type as type',
+            'vote_questions.is_required as is_required',
             'vote_questions.id as question_id',
             'vote_options.option as option',
             'vote_options.id as option_id',
@@ -427,6 +494,7 @@ class VoteController extends Controller
             $result[$item->id]['title'] = $item->title;
             $result[$item->id]['status'] = $item->status;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
+            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
             $answer = $item->answer != "[null]" ? utf8_encode($item->answer) : [];
