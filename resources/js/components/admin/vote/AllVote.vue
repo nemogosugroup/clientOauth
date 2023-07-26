@@ -169,14 +169,14 @@ export default {
         </div>
       </div>
       <div class="row">
-        <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
+        <div class="col-lg-6" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
             <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-lg-6">
+              <div class="row align-items-center justify-content-center text-center">
+                <div class="col-md-12 mb-3">
                   <h3 class="card-title mb-0">{{ vote.title }}</h3>
                 </div>
-                <div class="col-lg-6 text-right">
+                <div class="col-md-12">
                   <router-link :to="{ path: `/admin/detail-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-dark mr-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
                   </router-link>
@@ -186,7 +186,7 @@ export default {
                   <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
-                  <button class="btn btn-info float-right"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
+                  <button class="btn btn-info"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
                 </div>
               </div> 
             </div>
