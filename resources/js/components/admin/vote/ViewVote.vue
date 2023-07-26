@@ -161,42 +161,45 @@ export default {
       console.log(formVoteData);
     },
     updateData() {
-      let token = this.$store.getters.accessToken;
-      axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      })
-      .then((response) => {
-        if (response.data.status === 200 && response.data.success) {
-          // Cập nhật dữ liệu vào state hoặc các biến khác của component
-          const voteInfo = response.data.data.voteInfo;
-          this.isVoted = response.data.data.is_voted;
-          const voteId = Object.keys(voteInfo)[0];
-          const voteData = voteInfo[voteId];
-          this.status = voteData.status == 1;
-          this.title_vote = voteData.title;
-
-          // Cập nhật lại các giá trị total_voted của câu hỏi
-          for (const questionKey in voteData.questions) {
-            let question_total_voted = 0;
-            let question = voteData.questions[questionKey];
-            for (const option of question.options) {
-              question_total_voted += option.total_voted;
-            }
-            if (question_total_voted == 0) {
-              question_total_voted = 1;
-            }
-            question.total_voted = question_total_voted;
+      if(this.$route.params.id && this.$route.params.id >0){
+        let token = this.$store.getters.accessToken;
+        axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
+          headers: {
+            Authorization: 'Bearer ' + token
           }
+        })
+        .then((response) => {
+          if (response.data.status === 200 && response.data.success) {
+            // Cập nhật dữ liệu vào state hoặc các biến khác của component
+            const voteInfo = response.data.data.voteInfo;
+            this.isVoted = response.data.data.is_voted;
+            const voteId = Object.keys(voteInfo)[0];
+            const voteData = voteInfo[voteId];
+            this.status = voteData.status == 1;
+            this.title_vote = voteData.title;
 
-          // Gán lại giá trị cho group_question
-          this.group_question = Object.values(voteData.questions);
-        }
-      })
-      .catch((error) => {
-        console.log('Error:', error);
-      });
+            // Cập nhật lại các giá trị total_voted của câu hỏi
+            for (const questionKey in voteData.questions) {
+              let question_total_voted = 0;
+              let question = voteData.questions[questionKey];
+              for (const option of question.options) {
+                question_total_voted += option.total_voted;
+              }
+              if (question_total_voted == 0) {
+                question_total_voted = 1;
+              }
+              question.total_voted = question_total_voted;
+            }
+
+            // Gán lại giá trị cho group_question
+            this.group_question = Object.values(voteData.questions);
+          }
+        })
+        .catch((error) => {
+          console.log('Error:', error);
+        });
+      }
+      
     },
 
 
