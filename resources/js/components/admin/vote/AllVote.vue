@@ -2,6 +2,7 @@
 /**
  * Form-element component
  */
+
 export default {
     data() {
         return {
@@ -12,6 +13,7 @@ export default {
             isLoaded: false,
             status:false,
             searchTerm: '',
+            toastCount: 0,
         };
     },
     created() {
@@ -115,6 +117,36 @@ export default {
           }
         });
       },
+
+      copyLinkToClipboard(vote_id) {
+        const currentURL = window.location.href; // Lấy địa chỉ URL hiện tại
+        const urlObject = new URL(currentURL);
+        const domain = urlObject.hostname;
+        const dynamicLink = `${domain}/voting/${vote_id}`; // Thêm tham số động vào link
+
+        const textarea = document.createElement("textarea");
+        textarea.style.position = "fixed";
+        textarea.style.top = 0;
+        textarea.style.left = 0;
+        textarea.style.opacity = 0;
+        textarea.value = dynamicLink;
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+        document.execCommand("copy");
+
+        document.body.removeChild(textarea);
+
+        this.showToast();
+        // alert("Liên kết đã được sao chép!");
+      },
+
+      showToast() {
+        this.$toast.success('Liên kết đã được sao chép', {
+          autoClose: 1500,
+        });
+      },
     },
 };
 </script>
@@ -141,19 +173,20 @@ export default {
           <div class="card">
             <div class="card-body">
               <div class="row align-items-center">
-                <div class="col-lg-8">
+                <div class="col-lg-6">
                   <h3 class="card-title mb-0">{{ vote.title }}</h3>
                 </div>
-                <div class="col-lg-4 text-right">
+                <div class="col-lg-6 text-right">
                   <router-link :to="{ path: `/admin/detail-vote/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-dark mr-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
                   </router-link>
                   <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
-                    <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Hiển thị</button>
+                    <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
                   </router-link>
-                  <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" @click="toggleStatus(vote)">
+                  <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
+                  <button class="btn btn-info float-right"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
                 </div>
               </div> 
             </div>

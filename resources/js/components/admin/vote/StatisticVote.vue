@@ -129,17 +129,17 @@ export default {
             sticky-header
         >
         <template #cell(options)="row">
-            <ol class="mb-0">
+            <ul class="mb-0">
                 <!-- {{ row.value }} -->
                 <li class="mb-1" v-for="option in row.value" :key="option.option_id">
                     <!-- Sử dụng row.type để lọc các option dựa trên type -->
                     <template v-if="row.item.type === 3">
                         <span>
-                            <ul>
+                            <ol>
                                 <li v-for="answerItem in parseAnswer(option.answer)">
                                     {{ answerItem }}
                                 </li>
-                            </ul>
+                            </ol>
                         </span>
                     </template>
                     <template v-else-if="row.item.type !== 3">
@@ -147,7 +147,7 @@ export default {
                     </template>
                     <!-- Các type khác nếu có -->
                 </li>
-            </ol>
+            </ul>
         </template>
         </b-table>
       </b-modal>
