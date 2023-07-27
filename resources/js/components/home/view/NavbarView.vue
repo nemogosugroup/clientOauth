@@ -15,12 +15,6 @@
         </div>
       </div>
       <div class="d-flex pe-0 pe-lg-3">
-        <div class="dropdown d-none d-lg-inline-block ml-1">
-          <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
-            <i class="ri-fullscreen-line"></i>
-          </button>
-        </div>
-
         <div class="dropdown d-inline-block user-dropdown" v-if=true>
           <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">

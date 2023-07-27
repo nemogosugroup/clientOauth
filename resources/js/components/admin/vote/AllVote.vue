@@ -17,25 +17,7 @@ export default {
         };
     },
     created() {
-        let token = this.$store.getters.accessToken;
-        this.axios.get(`/api/vote/get-all`,{
-          headers: {
-            'Authorization': 'Bearer ' + token
-          }
-        })
-        .then((response) => {
-          if (response.data.status === 200) {
-            this.group_vote = response.data.data.voteInfo;
-          }
-        })
-        .catch((error) => {
-          if (error.response.status == 403) {
-            console.log('Error:', error);
-          }
-          if (error.response.status == 401) {
-            console.log('Error:', error);
-          }
-        });
+      this.getAllVote();
     },
     methods: {
       toggleStatus(vote) {
@@ -89,19 +71,12 @@ export default {
         });
       },
 
-      searchVotes() {
-      let token = this.$store.getters.accessToken;
-      let searchTerm = this.searchTerm.trim(); 
-
-      // Add the searchTerm as a query parameter to the API call
-      this.axios
-        .get(`/api/vote/search`, {
-          params: {
-            search: searchTerm,
-          },
+      getAllVote(){
+        let token = this.$store.getters.accessToken;
+        this.axios.get(`/api/vote/get-all`,{
           headers: {
             'Authorization': 'Bearer ' + token
-          },
+          }
         })
         .then((response) => {
           if (response.data.status === 200) {
@@ -116,6 +91,40 @@ export default {
             console.log('Error:', error);
           }
         });
+      },
+
+      searchVotes() {
+        let token = this.$store.getters.accessToken;
+        let searchTerm = this.searchTerm.trim(); 
+
+        if (searchTerm === '') {
+          this.getAllVote();
+          return;
+        }
+
+        // Add the searchTerm as a query parameter to the API call
+        this.axios
+          .get(`/api/vote/search`, {
+            params: {
+              search: searchTerm,
+            },
+            headers: {
+              'Authorization': 'Bearer ' + token
+            },
+          })
+          .then((response) => {
+            if (response.data.status === 200) {
+              this.group_vote = response.data.data.voteInfo;
+            }
+          })
+          .catch((error) => {
+            if (error.response.status == 403) {
+              console.log('Error:', error);
+            }
+            if (error.response.status == 401) {
+              console.log('Error:', error);
+            }
+          });
       },
 
       copyLinkToClipboard(vote_id) {
