@@ -236,7 +236,7 @@ export default {
                   <button v-if="vote.is_public" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2 mb-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
-                  <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
+                  <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
               </div>
             </div>
           </div>
