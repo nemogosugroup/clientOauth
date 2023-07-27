@@ -81,6 +81,7 @@ export default {
       },
 
       searchVotes(limit) {
+
         this.visibleRowCount = limit;
         this.isLoadMore = true;
         let token = this.$store.getters.accessToken;
@@ -91,7 +92,7 @@ export default {
           .get(`/api/vote/search`, {
             params: {
               search: searchTerm,
-              limit: this.visibleRowCount
+              limit: limit
             },
             headers: {
               'Authorization': 'Bearer ' + token
@@ -106,41 +107,6 @@ export default {
               if (response.data.data.countVoteInfo < this.visibleRowCount){
                 this.isLoadMore = false;
               }
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 403) {
-              console.log('Error:', error);
-            }
-            if (error.response.status == 401) {
-              console.log('Error:', error);
-            }
-          });
-      },
-
-      searchVotes(limit) {
-        let token = this.$store.getters.accessToken;
-        let searchTerm = this.searchTerm.trim(); 
-
-        // if (searchTerm === '') {
-        //   this.searchVotes(5);
-        //   return;
-        // }
-
-        // Add the searchTerm as a query parameter to the API call
-        this.axios
-          .get(`/api/vote/search`, {
-            params: {
-              search: searchTerm,
-              limit: limit
-            },
-            headers: {
-              'Authorization': 'Bearer ' + token
-            },
-          })
-          .then((response) => {
-            if (response.data.status === 200) {
-              this.group_vote = response.data.data.voteInfo;
             }
           })
           .catch((error) => {

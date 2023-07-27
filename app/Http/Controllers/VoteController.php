@@ -34,6 +34,7 @@ class VoteController extends Controller
     public function add(Request $request)
     {
         $title = $request->input('title');
+        $isAnonymous = $request->input('is_anonymous') == true ? 1 : 0;
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -143,6 +144,7 @@ class VoteController extends Controller
                 'typeView' => $typeView,
                 'banner' => $filePathBanner ?? "",
                 'logo' => $filePathLogo ?? "",
+                'is_anonymous' => $isAnonymous,
             ]);
             $vote->save();
             foreach ($questions as $question) {
@@ -260,6 +262,7 @@ class VoteController extends Controller
         $voteId = $request->input('vote_id');
         $type_view = $request->input('type_view');
         $title = $request->input('title');
+        $isAnonymous = $request->input('is_anonymous');
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -292,6 +295,7 @@ class VoteController extends Controller
             return response()->json($response);
         }
         $vote->title = $title;
+        $vote->is_anonymous = $isAnonymous;
         $vote->save();
         foreach ($questions as $question) {
             if (isset($question['sub_type']) && $question['sub_type'] === 'new') {
@@ -575,6 +579,7 @@ class VoteController extends Controller
             'vote.logo', 
             'vote.is_public', 
             'vote.title',
+            'vote.is_anonymous',
             'vote_questions.question as question', 
             'vote_questions.type as type', 
             'vote_questions.is_required as is_required', 
@@ -596,6 +601,7 @@ class VoteController extends Controller
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['is_anonymous'] = $item->is_anonymous == 1;
             $result[$item->id]['banner'] = $item->banner;
             $result[$item->id]['logo'] = $item->logo;
             $result[$item->id]['status'] = $item->status;
@@ -637,10 +643,7 @@ class VoteController extends Controller
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
-            'vote.title',
-            'vote.is_public',
-            'vote.banner',
-            'vote.logo',
+            'vote.title'
         );
         if($keyword) {
             $data->where('vote.title', 'LIKE', "%".$keyword."%"); // Sử dụng 'LIKE' ở đây
