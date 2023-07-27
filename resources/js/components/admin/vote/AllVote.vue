@@ -150,13 +150,13 @@ export default {
       },
 
       publishVote(vote) {
-        let is_public = 'off';
-        if(vote.isPublishing == 0 ){
-          is_public = 'on';
+        let action = 'off';
+        if(vote.is_public == 0 ){
+          action = 'on';
         }
         let formDataPublic = {
             id: vote.id,
-            action: is_public // Assuming 'on' represents the published state.
+            action: action // Assuming 'on' represents the published state.
         };
 
         let token = this.$store.getters.accessToken;

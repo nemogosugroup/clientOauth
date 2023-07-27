@@ -643,7 +643,10 @@ class VoteController extends Controller
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
-            'vote.title'
+            'vote.title',
+            'vote.is_public',
+            'vote.banner',
+            'vote.logo'
         );
         if($keyword) {
             $data->where('vote.title', 'LIKE', "%".$keyword."%"); // Sử dụng 'LIKE' ở đây
