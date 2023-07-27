@@ -332,7 +332,7 @@ export default {
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-bind:class="{ 'disabled-button': isVoted || !status }">Gửi Đánh Giá</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" :disabled="isVoted || !status">Gửi Đánh Giá</button>
         </form>
       </div>
     </div>

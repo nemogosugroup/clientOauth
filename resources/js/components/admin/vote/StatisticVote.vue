@@ -20,6 +20,7 @@ export default {
             visibleRowCount:5,
             isLoadMore : true,
             voteModal: {'question': null},
+            banner_default: '/images/banner-default.jpg',
         };
     },
     created() {
@@ -120,6 +121,42 @@ export default {
                 console.log("vote/get error: ", error);
             });
         },
+
+        searchVotes(limit) {
+            let token = this.$store.getters.accessToken;
+            let searchTerm = this.searchTerm.trim(); 
+
+            // if (searchTerm === '') {
+            //   this.searchVotes(5);
+            //   return;
+            // }
+
+            // Add the searchTerm as a query parameter to the API call
+            this.axios
+            .get(`/api/vote/search`, {
+                params: {
+                search: searchTerm,
+                limit: limit
+                },
+                headers: {
+                'Authorization': 'Bearer ' + token
+                },
+            })
+            .then((response) => {
+                if (response.data.status === 200) {
+                this.group_vote = response.data.data.voteInfo;
+                }
+            })
+            .catch((error) => {
+                if (error.response.status == 403) {
+                console.log('Error:', error);
+                }
+                if (error.response.status == 401) {
+                console.log('Error:', error);
+                }
+            });
+        },
+
         parseAnswer(answer) {
             try {
                 // Unescape chuỗi JSON trước khi parse
@@ -138,26 +175,38 @@ export default {
 </script>
 
 <template>
-    <div class="container mb-5">
-      <div class="row">
-        <div class="col-md-12" v-for="(vote, voteId) in group_vote" :key="voteId">
-          <div class="card">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-lg-9">
-                            <h3 class="card-title mb-0">{{ vote.title }}</h3>
-                        </div>
-                        <div class="col-lg-3 text-right">
-                            <b-button @click="openModals(vote.id)" variant="primary">
-                                <i class="ri-line-chart-fill"></i>&nbsp;Thống kê
-                            </b-button>   
-                        </div>
+    <div class="container mb-5 statistic-vote">
+        <div class="row justify-content-between mb-4 align-items-center">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-4">
+                <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes(5)">
+                    <div class="position-relative">
+                    <input type="text" class="form-control" v-model="searchTerm" placeholder="Tìm kiếm..." />
+                    <span class="ri-search-line"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" v-for="(vote, voteId) in group_vote" :key="voteId">
+                <div class="card">
+                    <img class="card-img-top img-fluid" v-if="vote.banner === null || vote.banner === ''" :src="banner_default" alt="Card image cap">
+                    <img class="card-img-top img-fluid" v-else :src="vote.banner" alt="Card image cap">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ vote.title }}</h3>
+                        <b-button @click="openModals(vote.id)" variant="primary" class="btn-block mt-3">
+                            <i class="ri-line-chart-fill"></i>&nbsp;Thống kê
+                        </b-button>
                     </div>
                 </div>
             </div>
         </div>
-        <button @click="loadmore" v-if="isLoadMore">Xem thêm</button>
-      </div>
+        <div class="row load-more mt-4">
+            <div class="col text-center">
+                <button class="btn btn-primary" @click="loadmore" v-if="isLoadMore && group_vote.length >= 5">Xem thêm</button>
+            </div>
+        </div>
       <b-modal  :scrollable="true" :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
         <div class="row justify-content-end">
             <div class="col-lg-9"></div>
@@ -203,3 +252,14 @@ export default {
       
     </div>
 </template>
+
+<style>
+.statistic-vote .app-search input{
+  border: 1px solid #ced4da;
+}
+
+.statistic-vote .card img.card-img-top{
+  object-fit: cover;
+  height: 230px;
+}
+</style>

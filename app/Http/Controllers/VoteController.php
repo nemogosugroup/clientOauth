@@ -542,6 +542,7 @@ class VoteController extends Controller
 
     public function votePublic(Request $request)
     {
+        $id = $request->input('id');
         $vote = Vote::where("id", $id)->first();
         if(!$vote){
             $response = [
@@ -636,7 +637,10 @@ class VoteController extends Controller
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
-            'vote.title'
+            'vote.title',
+            'vote.is_public',
+            'vote.banner',
+            'vote.logo',
         );
         if($keyword) {
             $data->where('vote.title', 'LIKE', "%".$keyword."%"); // Sử dụng 'LIKE' ở đây
