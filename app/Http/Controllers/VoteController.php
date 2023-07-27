@@ -50,39 +50,65 @@ class VoteController extends Controller
 
         $allowedExtensions = ['jpg', 'png', 'jpeg', 'gif'];
         $maxFileSize = 2097152; // 2MB
-        if ($request->hasFile('banner') || $request->hasFile('logo')) {
+        if ($request->hasFile('banner')) {
             $banner = $request->file('banner');
+            
             $extensionBanner = $banner->getClientOriginalExtension();
             $fileSizeBanner = $banner->getSize();
 
             if (!in_array($extensionBanner, $allowedExtensions)) {
-                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
             if ($fileSizeBanner > $maxFileSize) {
-                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
+            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $banner->move(public_path('uploads'), $fileBannerName);
+            $filePathBanner = '/uploads/' . $fileBannerName;
+        }
+
+        if($request->hasFile('logo')){
             $logo = $request->file('logo');
 
             $extensionLogo = $logo->getClientOriginalExtension();
             $fileSizeLogo = $logo->getSize();
 
             if (!in_array($extensionLogo, $allowedExtensions)) {
-                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
             if ($fileSizeLogo > $maxFileSize) {
-                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
-            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
             $fileLogoName = time() . '_' . $logo->getClientOriginalName();
-
-            $banner->move(public_path('uploads'), $fileBannerName);
             $logo->move(public_path('uploads'), $fileLogoName);
-
-            $filePathBanner = '/uploads/' . $fileBannerName;
             $filePathLogo = '/uploads/' . $fileLogoName;
         }
         // $vote = new Vote([
@@ -115,8 +141,8 @@ class VoteController extends Controller
             $vote = new Vote([
                 'title' => $title,
                 'typeView' => $typeView,
-                'banner' => $filePathBanner,
-                'logo' => $filePathLogo,
+                'banner' => $filePathBanner ?? "",
+                'logo' => $filePathLogo ?? "",
             ]);
             $vote->save();
             foreach ($questions as $question) {
@@ -513,6 +539,31 @@ class VoteController extends Controller
         ];
         return response()->json($response);
     }
+
+    public function votePublic(Request $request)
+    {
+        $vote = Vote::where("id", $id)->first();
+        if(!$vote){
+            $response = [
+                "status"=> 200,
+                "message"=>"Không tìm thấy!",
+                "data"=>[],
+                "success"=>false
+            ];
+            return response()->json($response);
+        }
+        $vote->is_public = 1;
+        $vote->save();
+        
+        $response = [
+            "status"=> 200,
+            "message"=>"Success",
+            "data"=>[],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+
     public function getInfo(Request $request)
     {
         $voteId = $request->input('id');

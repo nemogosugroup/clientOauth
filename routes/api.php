@@ -27,6 +27,7 @@ Route::middleware('auth:api')->get('/vote/get-info', [App\Http\Controllers\VoteC
 Route::middleware('auth:api')->get('/vote/search', [App\Http\Controllers\VoteController::class, 'search'])->name('search');
 Route::middleware('auth:api')->get('/vote/count-vote', [App\Http\Controllers\VoteController::class, 'getCountVote'])->name('get-count-vote');
 Route::middleware('auth:api','roles:ROLE_ADMIN')->post('/vote/set-status', [App\Http\Controllers\VoteController::class, 'setStatus'])->name('set-status');
+Route::middleware('auth:api','roles:ROLE_ADMIN')->post('/vote/vote-public', [App\Http\Controllers\VoteController::class, 'votePublic'])->name('vote-public');
 Route::middleware('auth:api','roles:ROLE_ADMIN')->get('/vote/get-all', [App\Http\Controllers\VoteController::class, 'getAll'])->name('get-vote-all');
 Route::middleware('auth:api')->post('/vote/vote', [App\Http\Controllers\VoteController::class, 'vote'])->name('vote');
 // Route::post('/permissions',  [App\Http\Controllers\PermissionController::class, 'store']);

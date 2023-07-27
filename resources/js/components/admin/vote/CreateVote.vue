@@ -79,7 +79,7 @@ export default {
       formData.append('questions', dataQuestion);
       formData.append('banner', this.selected_banner_File);
       formData.append('logo', this.selected_logo_File);
-      console.log(formData);
+      console.log("formData",formData);
       let token = this.$store.getters.accessToken;
       axios.post('/api/vote/add', formData, {
         headers: {
