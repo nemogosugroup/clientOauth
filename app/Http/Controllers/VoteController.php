@@ -50,39 +50,65 @@ class VoteController extends Controller
 
         $allowedExtensions = ['jpg', 'png', 'jpeg', 'gif'];
         $maxFileSize = 2097152; // 2MB
-        if ($request->hasFile('banner') || $request->hasFile('logo')) {
+        if ($request->hasFile('banner')) {
             $banner = $request->file('banner');
+            
             $extensionBanner = $banner->getClientOriginalExtension();
             $fileSizeBanner = $banner->getSize();
 
             if (!in_array($extensionBanner, $allowedExtensions)) {
-                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
             if ($fileSizeBanner > $maxFileSize) {
-                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
+            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $banner->move(public_path('uploads'), $fileBannerName);
+            $filePathBanner = '/uploads/' . $fileBannerName;
+        }
+
+        if($request->hasFile('logo')){
             $logo = $request->file('logo');
 
             $extensionLogo = $logo->getClientOriginalExtension();
             $fileSizeLogo = $logo->getSize();
 
             if (!in_array($extensionLogo, $allowedExtensions)) {
-                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
             if ($fileSizeLogo > $maxFileSize) {
-                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
             }
 
-            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
             $fileLogoName = time() . '_' . $logo->getClientOriginalName();
-
-            $banner->move(public_path('uploads'), $fileBannerName);
             $logo->move(public_path('uploads'), $fileLogoName);
-
-            $filePathBanner = '/uploads/' . $fileBannerName;
             $filePathLogo = '/uploads/' . $fileLogoName;
         }
         // $vote = new Vote([
@@ -115,8 +141,8 @@ class VoteController extends Controller
             $vote = new Vote([
                 'title' => $title,
                 'typeView' => $typeView,
-                'banner' => $filePathBanner,
-                'logo' => $filePathLogo,
+                'banner' => $filePathBanner ?? "",
+                'logo' => $filePathLogo ?? "",
             ]);
             $vote->save();
             foreach ($questions as $question) {
@@ -230,8 +256,10 @@ class VoteController extends Controller
 
     public function update(Request $request)
     {
+
         $voteId = $request->input('vote_id');
         $type_view = $request->input('type_view');
+        $title = $request->input('title');
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -242,7 +270,6 @@ class VoteController extends Controller
                 "success" => false
             ];
             return response()->json($response);
-            
         }
         $typeView = $request->input('type_view');
         $vote = Vote::where("id", $voteId)->first();
@@ -255,101 +282,215 @@ class VoteController extends Controller
             ];
             return response()->json($response);
         }
-        foreach ($questions as $question) {
-            if($question['options'] && count($question['options']) >0 ){
-                $questionId = $question['question_id'] ?? 0;
-                if($questionId > 0){
-                    $voteQuestionModel = VoteQuestions::where("id", $question['question_id'])->where("vote_id", $voteId)->first();
-                    if(!$voteQuestionModel){
-                        $response = [
-                            "status"=> 200,
-                            "message"=>"Không tìm thấy!",
-                            "data"=>[],
-                            "success"=>false
-                        ];
-                        return response()->json($response);
-                    }
-                }else{
-                    $voteQuestionModel = new VoteQuestions([
-                        'vote_id' => $vote->id,
-                        'question' => $question['question'],
-                        'type' => $question['type'],
-                    ]);
-                    $voteQuestionModel->save();
-                }
-    
-                $voteOptions = $question['options'];
-                foreach ($voteOptions as $voteOption) {
-                    $voteOptionModel = new VoteOptions([
-                        'question_id' => $voteQuestionModel->id,
-                        'option' => $voteOption['answer_value'],
-                    ]);
-                    $voteOptionModel->save();
-                }
-            }
-            
-        }
-
-
-        // ----
-        DB::beginTransaction();
-
-        try {
-            $vote = Vote::where("id", $voteId)->first();
-            if(!$vote){
-                $response = [
-                    "status"=> 200,
-                    "message"=>"Không tìm thấy!",
-                    "data"=>[],
-                    "success"=>false
-                ];
-                return response()->json($response);
-            }
-            foreach ($questions as $question) {
-                if($question['options'] && count($question['options']) >0 ){
-                    $questionId = $question['question_id'] ?? 0;
-                    if($questionId > 0){
-                        $voteQuestionModel = VoteQuestions::where("id", $question['question_id'])->where("vote_id", $voteId)->first();
-                        if(!$voteQuestionModel){
-                            $response = [
-                                "status"=> 200,
-                                "message"=>"Không tìm thấy!",
-                                "data"=>[],
-                                "success"=>false
-                            ];
-                            return response()->json($response);
-                        }
-                    }else{
-                        $voteQuestionModel = new VoteQuestions([
-                            'vote_id' => $vote->id,
-                            'question' => $question['question'],
-                            'type' => $question['type'],
-                        ]);
-                        $voteQuestionModel->save();
-                    }
-        
-                    $voteOptions = $question['options'];
-                    foreach ($voteOptions as $voteOption) {
-                        $voteOptionModel = new VoteOptions([
-                            'question_id' => $voteQuestionModel->id,
-                            'option' => $voteOption['answer_value'],
-                        ]);
-                        $voteOptionModel->save();
-                    }
-                }
-                
-            }
-        } catch (\Exception $e) {
-            DB::rollback();
-
+        if ($vote->is_public !== 0) {
             $response = [
-                "status" => 500,
-                "message" => "error",
+                "status" => 200,
+                "message" => "Trang vote đã được public, không được phép xoá.",
                 "data" => [],
                 "success" => false
             ];
             return response()->json($response);
         }
+        $vote->title = $title;
+        $vote->save();
+        foreach ($questions as $question) {
+            if (isset($question['sub_type']) && $question['sub_type'] === 'new') {
+                // thêm mới question
+                switch ($question['type']) {
+                    case 1:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptions = $question['options'];
+                        foreach ($voteOptions as $voteOption) {
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $voteOption['option'],
+                            ]);
+                            $voteOptionModel->save();
+                        }
+                        break;
+                    case 2:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptions = $question['options'];
+                        foreach ($voteOptions as $voteOption) {
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $voteOption['answer_value'],
+                            ]);
+                            $voteOptionModel->save();
+                        }
+                        break;
+                    case 3:
+                        $voteQuestionModel = new VoteQuestions([
+                            'vote_id' => $vote->id,
+                            'question' => $question['question'],
+                            'type' => $question['type'],
+                            'is_required' => isset($question['is_required']) && $question['is_required'] == true ? 1 : 0,
+
+                        ]);
+                        $voteQuestionModel->save();
+                        $voteOptionModel = new VoteOptions([
+                            'question_id' => $voteQuestionModel->id,
+                            'option' => $question['question'],
+                        ]);
+                        $voteOptionModel->save();
+                        break;
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
+            }elseif(isset($question['sub_type']) && $question['sub_type'] == 'remove'){
+                // xoá question.
+
+                // 1. xoá history nếu có
+                VoteHistory::join('vote_options', 'vote_history.vote_option_id', '=', 'vote_options.id')
+                ->where('vote_options.question_id', '=', $question['question_id'])
+                ->delete();
+                // 2. xoá các option
+                VoteOptions::where('vote_options.question_id', '=', $question['question_id'])
+                ->delete();
+                // 3. xoá question
+                VoteQuestions::where('vote_questions.id', '=', $question['question_id'])
+                ->delete();
+            }else{
+                //update
+                $voteQuestionModel = VoteQuestions::where("vote_id", $voteId)->where("id", $question['question_id'])->first();
+                if($voteQuestionModel){
+                    $voteQuestionModel->question = $question['question'];
+                    $voteQuestionModel->type = $question['type'];
+                    $voteQuestionModel->is_required = $question['is_required'];
+                    $voteQuestionModel->save();
+                    switch ($question['type']) {
+                        case 1:
+                            // update question
+                            
+                            if($voteQuestionModel){
+                                $voteOptions = $question['options'];
+    
+                                foreach ($voteOptions as $voteOption) {
+                                    if(isset($voteOption['sub_type']) && $voteOption['sub_type'] === 'new'){
+                                        // thêm mới option
+                                        $voteOptionModel = new VoteOptions([
+                                            'question_id' => $voteQuestionModel->id,
+                                            'option' => $voteOption['option'],
+                                        ]);
+                                        $voteOptionModel->save();
+                                    }elseif(isset($voteOption['sub_type']) && $voteOption['sub_type'] == 'remove'){
+                                        // 1. xoá history nếu có
+                                        VoteHistory::join('vote_options', 'vote_history.vote_option_id', '=', 'vote_options.id')
+                                        ->where('vote_options.question_id', '=', $voteQuestionModel->id)
+                                        ->where('vote_options.id', '=', $voteOption['option_id'])
+                                        ->delete();
+                                        // 2. xoá các option
+                                        VoteOptions::where('vote_options.question_id', '=', $voteQuestionModel->id)
+                                        ->where('vote_options.id', '=', $voteOption['option_id'])
+                                        ->delete();
+                                    }else{
+                                        //update
+                                        $voteOptionModel = VoteOptions::where("id", $voteOption['option_id'])->first();
+                                        if($voteOptionModel){
+                                            $voteOptionModel->option = $voteOption['option'];
+                                            $voteOptionModel->save();
+                                        }
+                                    } 
+                                }
+                            }
+                            
+                            break;
+                        case 2:
+                            if($voteQuestionModel){
+                                $voteOptions = $question['options'];
+    
+                                foreach ($voteOptions as $voteOption) {
+                                    if(isset($voteOption['sub_type']) && $voteOption['sub_type'] === 'new'){
+                                        // thêm mới option
+                                        $voteOptionModel = new VoteOptions([
+                                            'question_id' => $voteQuestionModel->id,
+                                            'option' => $voteOption['option'],
+                                        ]);
+                                        $voteOptionModel->save();
+                                    }elseif(isset($voteOption['sub_type']) && $voteOption['sub_type'] == 'remove'){
+                                        // 1. xoá history nếu có
+                                        VoteHistory::join('vote_options', 'vote_history.vote_option_id', '=', 'vote_options.id')
+                                        ->where('vote_options.question_id', '=', $voteQuestionModel->id)
+                                        ->where('vote_options.id', '=', $voteOption['option_id'])
+                                        ->delete();
+                                        // 2. xoá các option
+                                        VoteOptions::where('vote_options.question_id', '=', $voteQuestionModel->id)
+                                        ->where('vote_options.id', '=', $voteOption['option_id'])
+                                        ->delete();
+                                    }else{
+                                        //update
+                                        $voteOptionModel = VoteOptions::where("id", $voteOption['option_id'])->first();
+                                        if($voteOptionModel){
+                                            $voteOptionModel->option = $voteOption['option'];
+                                            $voteOptionModel->save();
+                                        }
+                                    } 
+                                }
+                            }
+                            break;
+                        case 3:
+                            // 1. xoá history nếu có
+                            VoteHistory::join('vote_options', 'vote_history.vote_option_id', '=', 'vote_options.id')
+                            ->where('vote_options.question_id', '=', $voteQuestionModel->id)
+                            ->delete();
+                            // 2. xoá các option
+                            VoteOptions::where('vote_options.question_id', '=', $voteQuestionModel->id)
+                            ->delete();
+                            $voteOptionModel = new VoteOptions([
+                                'question_id' => $voteQuestionModel->id,
+                                'option' => $question['question'],
+                            ]);
+                            $voteOptionModel->save();
+                            break;
+                        default:
+                            # code...
+                            break;
+                    }
+                }
+                
+            }
+        }
+        // DB::beginTransaction();
+
+        // try {
+            
+
+        //     DB::commit();
+
+        //     $response = [
+        //         "status" => 200,
+        //         "message" => "success",
+        //         "data" => [],
+        //         "success" => true
+        //     ];
+        //     return response()->json($response);
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+
+        //     $response = [
+        //         "status" => 500,
+        //         "message" => "error",
+        //         "data" => $e,
+        //         "success" => false
+        //     ];
+        //     return response()->json($response);
+        // }
         // ----
         $response = [
             "status"=> 200,
@@ -398,6 +539,31 @@ class VoteController extends Controller
         ];
         return response()->json($response);
     }
+
+    public function votePublic(Request $request)
+    {
+        $vote = Vote::where("id", $id)->first();
+        if(!$vote){
+            $response = [
+                "status"=> 200,
+                "message"=>"Không tìm thấy!",
+                "data"=>[],
+                "success"=>false
+            ];
+            return response()->json($response);
+        }
+        $vote->is_public = 1;
+        $vote->save();
+        
+        $response = [
+            "status"=> 200,
+            "message"=>"Success",
+            "data"=>[],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+
     public function getInfo(Request $request)
     {
         $voteId = $request->input('id');
@@ -406,7 +572,15 @@ class VoteController extends Controller
             'vote.status',
             'vote.banner',
             'vote.logo', 
-            'vote.title','vote_questions.question as question', 'vote_questions.type as type', 'vote_questions.is_required as is_required', 'vote_questions.id as question_id', 'vote_options.option as option', 'vote_options.id as option_id','vote_options.total_voted as total_voted')
+            'vote.is_public', 
+            'vote.title',
+            'vote_questions.question as question', 
+            'vote_questions.type as type', 
+            'vote_questions.is_required as is_required', 
+            'vote_questions.id as question_id', 
+            'vote_options.option as option', 
+            'vote_options.id as option_id',
+            'vote_options.total_voted as total_voted')
         ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $voteId)
@@ -424,8 +598,9 @@ class VoteController extends Controller
             $result[$item->id]['banner'] = $item->banner;
             $result[$item->id]['logo'] = $item->logo;
             $result[$item->id]['status'] = $item->status;
+            $result[$item->id]['is_public'] = $item->is_public;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
-            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
+            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required == 1;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
@@ -447,54 +622,39 @@ class VoteController extends Controller
     {
         $keyword = $request->input('search');
         $keyword = $keyword ?? null;
-        if ($keyword == null) {
-            $response = [
-                "status"=> 200,
-                "message"=>"success",
-                "data"=>['voteInfo'=>[]],
-                "success"=>true
-            ];
-            return response()->json($response);
-        }
+        
+        // if ($keyword == null) {
+        //     $response = [
+        //         "status"=> 200,
+        //         "message"=>"success",
+        //         "data"=>['voteInfo'=>[]],
+        //         "success"=>true
+        //     ];
+        //     return response()->json($response);
+        // }
+        $limit = $request->input('limit');
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
-            'vote.title',
-            'vote_questions.question as question',
-            'vote_questions.type as type',
-            'vote_questions.is_required as is_required',
-            'vote_questions.id as question_id',
-            'vote_options.option as option',
-            'vote_options.id as option_id',
-            'vote_options.total_voted as total_voted'
-        )
-        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
-        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
-        ->where('vote.title', 'LIKE', "%".$keyword."%") // Sử dụng 'LIKE' ở đây
-        ->get();
-
-        $user = $request->user();
+            'vote.title'
+        );
+        if($keyword) {
+            $data->where('vote.title', 'LIKE', "%".$keyword."%"); // Sử dụng 'LIKE' ở đây
+        }
+        // Nếu $limit có giá trị, thì giới hạn số lượng kết quả trả về
+        $data->orderBy('vote.id', 'desc');
+        if ($limit) {
+            $data = $data->limit((int)$limit)->get();
+        } else {
+            $data = $data->get();
+        }
        
 
         $result = [];
-        foreach ($data as $item) {
-            $result[$item->id]['vote_id'] = $item->id;
-            $result[$item->id]['title'] = $item->title;
-            $result[$item->id]['status'] = $item->status;
-            $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
-            $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
-            $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
-            $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
-            $result[$item->id]['questions'][$item->question_id]['options'][] = [
-                'option_id'=>$item->option_id,
-                'option'=>$item->option,
-                'total_voted'=>$item->total_voted
-            ];
-        }
         $response = [
             "status"=> 200,
             "message"=>"success",
-            "data"=>['voteInfo'=>$result],
+            "data"=>['voteInfo'=>$data,'countVoteInfo'=>count($data)],
             "success"=>true
         ];
         return response()->json($response);
