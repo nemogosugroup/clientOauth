@@ -137,7 +137,7 @@ export default {
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" class="custom-control-input" id="is_anonymous" v-model="is_anonymous"
                         style="z-index: 99;">
-                      <label class="custom-control-label">Vote ẩn danh</label>
+                      <label class="custom-control-label">Đánh giá ẩn danh</label>
                     </div>
                   </div>
                 </div>

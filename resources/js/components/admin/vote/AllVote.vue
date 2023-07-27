@@ -5,18 +5,20 @@
 
 export default {
     data() {
-        return {
-            data_json:'',
-            textContent: '', 
-            minHeight: 'auto',
-            group_vote: [],
-            isLoaded: false,
-            status:false,
-            searchTerm: '',
-            visibleRowCount:5,
-            toastCount: 0,
-            isLoadMore : true,
-        };
+      return {
+          data_json:'',
+          textContent: '', 
+          minHeight: 'auto',
+          group_vote: [],
+          isLoaded: false,
+          status:false,
+          searchTerm: '',
+          visibleRowCount:5,
+          toastCount: 0,
+          isLoadMore : true,
+          is_public: false,
+          banner_default: '/images/banner-default.jpg',
+      };
     },
     created() {
         this.searchVotes(5);
@@ -146,6 +148,53 @@ export default {
           autoClose: 1500,
         });
       },
+
+      publishVote(vote) {
+        let action = 'off';
+        if(vote.is_public == 0 ){
+          action = 'on';
+        }
+        let formDataPublic = {
+            id: vote.id,
+            action: action // Assuming 'on' represents the published state.
+        };
+
+        let token = this.$store.getters.accessToken;
+
+        this.axios.post(`/api/vote/vote-public`, formDataPublic, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then((response) => {
+            if (response.data.status === 200 && response.data.success == true) {
+                vote.is_public = !vote.is_public; // Update the status of the specific vote to 'published'
+                this.$swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Bạn đã xuất bản thành công",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                this.$swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: response.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })
+        .catch((error) => {
+            if (error.response.status == 403) {
+                console.log('Error:', error);
+            }
+            if (error.response.status == 401) {
+                console.log('Error:', error);
+            }
+        });
+      },
     },
 };
 </script>
@@ -167,31 +216,36 @@ export default {
           </form>
         </div>
       </div>
-      <div class="row">
-        <div class="col-lg-6" v-for="(vote, voteId) in group_vote" :key="voteId">
+      <div class="row card-all-vote">
+        <div class="col-md-6" v-for="(vote, voteId) in group_vote" :key="voteId">
           <div class="card">
+            <img class="card-img-top img-fluid" v-if="vote.banner === null || vote.banner === ''" :src="banner_default" alt="Card image cap">
+            <img class="card-img-top img-fluid" v-else :src="vote.banner" alt="Card image cap">
             <div class="card-body">
-              <div class="row align-items-center justify-content-center text-center">
-                <div class="col-md-12 mb-3">
-                  <h3 class="card-title mb-0">{{ vote.title }}</h3>
-                </div>
-                <div class="col-md-12">
+              <h3 class="card-title">{{ vote.title }}</h3>
+              <div class="action-btn">
                   <router-link :to="{ path: `/admin/detail-vote/` + vote.id, params: { id: vote.id } }">
-                    <button class="btn btn-dark mr-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
+                    <button class="btn btn-dark mr-2 mb-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
                   </router-link>
                   <router-link :to="{ path: `/voting/` + vote.id, params: { id: vote.id } }">
-                    <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
+                    <button class="btn btn-primary mr-2 mb-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
                   </router-link>
-                  <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2" @click="toggleStatus(vote)">
+                  <button v-if="!vote.is_public" class="btn btn-success mr-2 mb-2" @click="publishVote(vote)">
+                    <i class="ri-earth-line"></i>&nbsp;Xuất bản
+                  </button>
+                  <button v-if="vote.is_public" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2 mb-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
-                  <button class="btn btn-info"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
-                </div>
-              </div> 
+                  <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
+              </div>
             </div>
           </div>
         </div>
-        <button @click="loadmore" v-if="isLoadMore">Xem thêm</button>
+      </div>
+      <div class="row load-more mt-4">
+        <div class="col text-center">
+          <button class="btn btn-primary" @click="loadmore" v-if="isLoadMore && group_vote.length >= 5">Xem thêm</button>
+        </div>
       </div>
     </div>
     
@@ -200,5 +254,18 @@ export default {
 <style>
 .all-vote .app-search input{
   border: 1px solid #ced4da;
+}
+
+.card-all-vote .card{
+  overflow: hidden;
+}
+
+.card-all-vote .card .img{
+  
+}
+
+.card-all-vote img.card-img-top{
+  object-fit: cover;
+  height: 230px;
 }
 </style>
