@@ -34,7 +34,7 @@ class VoteController extends Controller
     public function add(Request $request)
     {
         $title = $request->input('title');
-        $isAnonymous = $request->input('is_anonymous') == true ? 1 : 0;
+        $isAnonymous = $request->input('is_anonymous') === 'true' || $request->input('is_anonymous') === true ? 1 : 0;
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -262,7 +262,7 @@ class VoteController extends Controller
         $voteId = $request->input('vote_id');
         $type_view = $request->input('type_view');
         $title = $request->input('title');
-        $isAnonymous = $request->input('is_anonymous');
+        $isAnonymous = $request->input('is_anonymous') === 'true' || $request->input('is_anonymous') === true ? 1 : 0;
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -285,6 +285,79 @@ class VoteController extends Controller
             ];
             return response()->json($response);
         }
+
+        $allowedExtensions = ['jpg', 'png', 'jpeg', 'gif'];
+        $maxFileSize = 2097152; // 2MB
+
+        $filePathBanner = "";
+        if ($request->hasFile('banner')) {
+            $banner = $request->file('banner');
+            
+            $extensionBanner = $banner->getClientOriginalExtension();
+            $fileSizeBanner = $banner->getSize();
+
+            if (!in_array($extensionBanner, $allowedExtensions)) {
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
+            }
+
+            if ($fileSizeBanner > $maxFileSize) {
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
+            }
+
+            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $banner->move(public_path('uploads'), $fileBannerName);
+            $filePathBanner = '/uploads/' . $fileBannerName;
+        }
+        if($filePathBanner == "" && ($request->input('is_remove_logo')!==true && $request->input('is_remove_logo') !== "")){
+            $filePathBanner = $vote->banner;
+        }
+        $filePathLogo = "";
+        if($request->hasFile('logo')){
+            $logo = $request->file('logo');
+
+            $extensionLogo = $logo->getClientOriginalExtension();
+            $fileSizeLogo = $logo->getSize();
+
+            if (!in_array($extensionLogo, $allowedExtensions)) {
+                $response = [
+                    "status" => 200,
+                    "message" => "Định dạng tập tin không hợp lệ.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
+            }
+
+            if ($fileSizeLogo > $maxFileSize) {
+                $response = [
+                    "status" => 200,
+                    "message" => "Kích thước tập tin quá lớn.",
+                    "data" => [],
+                    "success" => false
+                ];
+                return response()->json($response);
+            }
+
+            $fileLogoName = time() . '_' . $logo->getClientOriginalName();
+            $logo->move(public_path('uploads'), $fileLogoName);
+            $filePathLogo = '/uploads/' . $fileLogoName;
+        }
+        if($filePathLogo == "" && ($request->input('is_remove_logo')!==true && $request->input('is_remove_logo') !== "")){
+            $filePathLogo = $vote->logo;
+        }
+
         if ($vote->is_public !== 0) {
             $response = [
                 "status" => 200,
@@ -296,6 +369,8 @@ class VoteController extends Controller
         }
         $vote->title = $title;
         $vote->is_anonymous = $isAnonymous;
+        $vote->logo = $filePathLogo;
+        $vote->banner = $filePathBanner;
         $vote->save();
         foreach ($questions as $question) {
             if (isset($question['sub_type']) && $question['sub_type'] === 'new') {

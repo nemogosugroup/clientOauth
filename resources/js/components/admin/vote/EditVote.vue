@@ -16,6 +16,10 @@ export default {
         vote_id: null,
         questions: null
       },
+      selected_banner_File: null,
+      selected_logo_File: null,
+      image_banner_Url: null,
+      image_logo_Url: null,
     };
   },
   methods: {
@@ -56,13 +60,17 @@ export default {
       // this.position();
       // let dataQuestion = JSON.stringify(this.group_question);
       console.log("check this.voteData", this.voteData);
-      let formCreateVote = {
-        title: this.voteData.title,
-        is_anonymous: this.voteData.is_anonymous,
-        type_view: 1,
-        questions: JSON.stringify(this.voteData.questions),
-        vote_id: this.voteData.vote_id,
-      };
+      
+      let formCreateVote = new FormData();
+      formCreateVote.append('banner', this.selected_banner_File);
+      formCreateVote.append('is_remove_banner', this.image_banner_Url == null);
+      formCreateVote.append('logo', this.selected_logo_File);
+      formCreateVote.append('is_remove_logo', this.image_logo_Url == null);
+      formCreateVote.append('title', this.voteData.title);
+      formCreateVote.append('is_anonymous', this.voteData.is_anonymous);
+      formCreateVote.append('type_view', 1);
+      formCreateVote.append('questions', JSON.stringify(this.voteData.questions));
+      formCreateVote.append('vote_id', this.voteData.vote_id);
       console.log("formCreateVote", formCreateVote);
       let token = this.$store.getters.accessToken;
       axios.post('/api/vote/update', formCreateVote, {
@@ -108,7 +116,39 @@ export default {
       // Kiểm tra xem có hơn 1 câu hỏi hợp lệ hay không
       return validQuestions.length > 1;
       // return questions.filter(question => question.sub_type !== 'remove').length > 1;
-    }
+    },
+    onBannerFileChange(event) {
+      console.log("check onBannerFileChange");
+      // Lấy tập tin ảnh từ sự kiện change
+      this.selected_banner_File = event.target.files[0];
+
+      // Hiển thị ảnh được chọn trước khi tải lên (tuỳ chọn)
+      if (this.selected_banner_File) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.image_banner_Url = e.target.result;
+        };
+        reader.readAsDataURL(this.selected_banner_File);
+      }else{
+        this.image_banner_Url = this.voteData.banner;
+      }
+    },
+
+    onLogoFileChange(event) {
+      // Lấy tập tin ảnh từ sự kiện change
+      this.selected_logo_File = event.target.files[0];
+
+      // Hiển thị ảnh được chọn trước khi tải lên (tuỳ chọn)
+      if (this.selected_logo_File) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.image_logo_Url = e.target.result;
+        };
+        reader.readAsDataURL(this.selected_logo_File);
+      }else{
+        this.image_logo_Url = this.voteData.logo;
+      }
+    },
 
   },
   created() {
@@ -124,6 +164,9 @@ export default {
           const voteInfo = response.data.data.voteInfo;
           const voteId = Object.keys(voteInfo)[0];
           this.voteData = voteInfo[voteId];
+          this.image_banner_Url = this.voteData.banner;
+          this.image_logo_Url = this.voteData.logo;
+          console.log("this.image_banner_Url",this.image_banner_Url);
           console.log("this.voteData", this.voteData);
         }
       })
@@ -153,8 +196,38 @@ export default {
                   <div class="mt-3">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" class="custom-control-input" id="is_anonymous"
-                        v-model="voteData.is_anonymous" style="z-index: 99;">
+                        v-model="voteData.is_anonymous" style="z-index: 99;" :disabled="voteData.is_public == 1">
                       <label class="custom-control-label">Vote ẩn danh</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card add-banner">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <label class="card-title">Ảnh bìa (Banner):</label>
+                  <div class="input-banner">
+                    <input type="file" ref="fileInput" @change="onBannerFileChange" class="my-3" />
+                    <img v-if="image_banner_Url" :src="image_banner_Url" alt="Uploaded Image" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card add-logo">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <label class="card-title">Logo:</label>
+                  <div class="row input-logo">
+                    <div class="col-md-12">
+                      <input type="file" ref="fileInput" @change="onLogoFileChange" class="my-3" />
+                    </div>
+                    <div class="col-md-12 text-center" v-if="image_logo_Url">
+                      <img :src="image_logo_Url" alt="Uploaded Image" />
                     </div>
                   </div>
                 </div>

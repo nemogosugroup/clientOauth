@@ -33,7 +33,7 @@ export default {
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <router-link :to="{ name: 'All Vote' }" >
+                    <!-- <router-link :to="{ name: 'All Vote' }" > -->
                         <div class="media">
                             <div class="media-body overflow-hidden">
                                 <p class="text-truncate font-size-14 mb-2">Tổng số đợt bình chọn</p>
@@ -43,7 +43,7 @@ export default {
                                 <i class="ri-stack-line font-size-24"></i>
                             </div>
                         </div>
-                    </router-link>
+                    <!-- </router-link> -->
                 </div>
             </div>
         </div>
