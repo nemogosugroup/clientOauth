@@ -14,6 +14,7 @@ export default {
             status:false,
             searchTerm: '',
             toastCount: 0,
+            isPublishing: false,
         };
     },
     created() {
@@ -156,6 +157,14 @@ export default {
           autoClose: 1500,
         });
       },
+
+      publishVote() {
+        // You can add any necessary logic here before setting isPublishing to true.
+        // For example, you can show a confirmation dialog before publishing.
+
+        // Set isPublishing to true to show the "Open/Close" button.
+        this.isPublishing = true;
+      },
     },
 };
 </script>
@@ -192,7 +201,10 @@ export default {
                   <router-link :to="{ path: `/voting/` + vote.vote_id, params: { id: vote.vote_id } }">
                     <button class="btn btn-primary mr-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
                   </router-link>
-                  <button :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2" @click="toggleStatus(vote)">
+                  <button v-if="!isPublishing" class="btn btn-success mr-2" @click="publishVote(vote)">
+                    <i class="ri-earth-line"></i>&nbsp;Publish
+                  </button>
+                  <button v-if="isPublishing" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
                   <button class="btn btn-info"  @click="copyLinkToClipboard(vote.vote_id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
