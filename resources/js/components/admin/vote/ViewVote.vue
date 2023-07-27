@@ -20,6 +20,7 @@ export default {
       optionstogetTotal: [],
       isVoted: false,
       status: false,
+      isPublic: false,
       scaleValue: {},
       logo_vote: '',
       banner_default: '/images/banner-default.jpg',
@@ -44,6 +45,7 @@ export default {
           const voteId = Object.keys(voteInfo)[0];
           const voteData = voteInfo[voteId];
           this.status = voteData.status == 1 ? true : false;
+          this.isPublic = voteData.is_public == 1 ? true : false;
           console.log("check this.status",this.status)
           this.title_vote = voteData.title;
           this.banner_vote = voteData.banner;
@@ -282,7 +284,7 @@ export default {
                     <div class="col-md-12 mb-3" v-for="(answer) in question.options" :key="answer.option_id">
                       <div class="custom-control custom-checkbox mb-2">
                         <input type="checkbox" class="custom-control-input" :name="'checkbox_' + answer.option_id"
-                          :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" :disabled="isVoted || !status"/>
+                          :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" :disabled="isVoted || !status || !isPublic"/>
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option}}</label>
                       </div>
                       <b-progress :max="100" height="14px">
@@ -296,7 +298,7 @@ export default {
                       <div class="custom-control custom-radio mb-2">
                         <input type="radio" class="custom-control-input" :name="'radio_' + answer.option_id"
                           :id="answer.option_id" :value="answer.option_id"
-                          v-model="selected_radio[question.question_id]" :disabled="isVoted || !status"/>
+                          v-model="selected_radio[question.question_id]" :disabled="isVoted || !status || !isPublic"/>
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option
                         }}</label>
                       </div>
@@ -310,7 +312,7 @@ export default {
                     <div class="col-md-12">
                       <div class="mb-3">
                         <textarea v-model="textContents[question.question_id]" class="form-control" rows="2"
-                          placeholder="Nhập câu trả lời ..." name="textarea" :disabled="isVoted || !status"></textarea>
+                          placeholder="Nhập câu trả lời ..." name="textarea" :disabled="isVoted || !status || !isPublic"></textarea>
                       </div>
                     </div>
                   </div>
@@ -332,7 +334,10 @@ export default {
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-bind:class="{ 'disabled-button': isVoted || !status }">Gửi Đánh Giá</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-if="!isPublic" :disabled="true">Chưa public</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-else-if="isVoted" :disabled="true">Bạn đã thực hiện khảo sát</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-else-if="!status" :disabled="true">Đợt khảo sát đã kết thúc</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-else>Gửi Đánh Giá</button>
         </form>
       </div>
     </div>
