@@ -20,7 +20,7 @@ export default {
       title_vote:"",
       statuscode: null,
       selected_banner_File: null,
-      selected_logo_File: null,  // Lưu trữ tập tin ảnh được chọn
+      selected_logo_File: null, 
       image_banner_Url: null,
       image_logo_Url: null,
     };
@@ -39,48 +39,6 @@ export default {
     },
     removeQuestion(index) {
       this.group_question.splice(index, 1);
-    },
-
-    saveData(){
-        // this.position();
-      let dataQuestion = JSON.stringify(this.group_question);
-      let formCreateVote = {
-        title: this.title_vote,
-        type_view: 1,
-        questions: dataQuestion,
-      };
-      console.log(formCreateVote);
-      let token = this.$store.getters.accessToken;
-      axios.post('/api/vote/add', formCreateVote, {
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      })
-      .then(function (response) {
-        console.log("vote/add: ", response.data);
-        if (response.data.status === 200 && response.data.success == true) {
-          this.$swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Bạn đã tạo biểu mẫu thành công",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.$router.push({ name: 'All Vote' });
-        }else{
-          this.$swal.fire({
-            position: "center",
-            icon: "error",
-            title: response.data.message,
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.$router.push({ name: 'All Vote' });
-        }
-      }.bind(this))
-      .catch(function (error) {
-        console.log("vote/add error: ", error);
-      });
     },
 
     onBannerFileChange(event) {
@@ -109,6 +67,49 @@ export default {
         };
         reader.readAsDataURL(this.selected_logo_File);
       }
+    },
+
+    saveData(){
+        // this.position();
+      let dataQuestion = JSON.stringify(this.group_question);
+      console.log(this.selected_banner_File);
+      let formData = new FormData(); 
+      formData.append('title', this.title_vote);
+      formData.append('type_view', 1);
+      formData.append('questions', dataQuestion);
+      formData.append('banner', this.selected_banner_File);
+      formData.append('logo', this.selected_logo_File);
+      console.log(formData);
+      let token = this.$store.getters.accessToken;
+      axios.post('/api/vote/add', formData, {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(function (response) {
+        console.log("vote/add: ", response.data);
+        if (response.data.status === 200 && response.data.success == true) {
+          this.$swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Bạn đã tạo biểu mẫu thành công",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          this.$router.push({ name: 'All Vote' });
+        }else{
+          this.$swal.fire({
+            position: "center",
+            icon: "error",
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
+      }.bind(this))
+      .catch(function (error) {
+        console.log("vote/add error: ", error);
+      });
     },
   },
 };

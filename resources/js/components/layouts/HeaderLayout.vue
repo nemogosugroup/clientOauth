@@ -22,9 +22,7 @@
                     </router-link>
                 </div>
 
-                <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn">
-                    <i class="ri-menu-2-line align-middle"></i>
-                </button>
+                
             </div>
 
             <div class="d-flex">
@@ -51,11 +49,7 @@
                     </div>
                 </div>
 
-                <div class="dropdown d-none d-lg-inline-block ml-1">
-                    <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
-                        <i class="ri-fullscreen-line"></i>
-                    </button>
-                </div>
+                
 
                 <div class="dropdown d-inline-block user-dropdown">
                     <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"

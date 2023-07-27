@@ -17,6 +17,8 @@ class Vote extends Model
         'type_view',
         'status',
         'is_public',
+        'banner',
+        'logo',
         'is_anonymous'
     ];
     

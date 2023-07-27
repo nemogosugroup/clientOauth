@@ -47,6 +47,67 @@ class VoteController extends Controller
             
         }
         $typeView = $request->input('type_view');
+
+        $allowedExtensions = ['jpg', 'png', 'jpeg', 'gif'];
+        $maxFileSize = 2097152; // 2MB
+        if ($request->hasFile('banner') || $request->hasFile('logo')) {
+            $banner = $request->file('banner');
+            $extensionBanner = $banner->getClientOriginalExtension();
+            $fileSizeBanner = $banner->getSize();
+
+            if (!in_array($extensionBanner, $allowedExtensions)) {
+                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+            }
+
+            if ($fileSizeBanner > $maxFileSize) {
+                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+            }
+
+            $logo = $request->file('logo');
+
+            $extensionLogo = $logo->getClientOriginalExtension();
+            $fileSizeLogo = $logo->getSize();
+
+            if (!in_array($extensionLogo, $allowedExtensions)) {
+                return response()->json(['error' => 'Định dạng tập tin không hợp lệ.']);
+            }
+
+            if ($fileSizeLogo > $maxFileSize) {
+                return response()->json(['error' => 'Kích thước tập tin quá lớn.']);
+            }
+
+            $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $fileLogoName = time() . '_' . $logo->getClientOriginalName();
+
+            $banner->move(public_path('uploads'), $fileBannerName);
+            $logo->move(public_path('uploads'), $fileLogoName);
+
+            $filePathBanner = '/uploads/' . $fileBannerName;
+            $filePathLogo = '/uploads/' . $fileLogoName;
+        }
+        // $vote = new Vote([
+        //     'title' => $title,
+        //     'typeView' => $typeView,
+        // ]);
+        // $vote->save();
+        // foreach ($questions as $question) {
+        //     $voteQuestionModel = new VoteQuestions([
+        //         'vote_id' => $vote->id,
+        //         'question' => $question['question'],
+        //         'type' => $question['type'],
+        //     ]);
+        //     $voteQuestionModel->save();
+        //     $voteOptions = $question['options'];
+        //     foreach ($voteOptions as $voteOption) {
+        //         $voteOptionModel = new VoteOptions([
+        //             'question_id' => $voteQuestionModel->id,
+        //             'option' => $voteOption['answer_value'],
+        //         ]);
+        //         $voteOptionModel->save();
+        //     }
+        // }
+
+
         // ----
         DB::beginTransaction();
 
@@ -54,6 +115,8 @@ class VoteController extends Controller
             $vote = new Vote([
                 'title' => $title,
                 'typeView' => $typeView,
+                'banner' => $filePathBanner,
+                'logo' => $filePathLogo,
             ]);
             $vote->save();
             foreach ($questions as $question) {
@@ -150,7 +213,7 @@ class VoteController extends Controller
             $response = [
                 "status" => 500,
                 "message" => "error",
-                "data" => [],
+                "data" => $e->getMessage(),
                 "success" => false
             ];
             return response()->json($response);
@@ -455,7 +518,9 @@ class VoteController extends Controller
         $voteId = $request->input('id');
         $data = Vote::select(
             'vote.id', 
-            'vote.status', 
+            'vote.status',
+            'vote.banner',
+            'vote.logo', 
             'vote.is_public', 
             'vote.title',
             'vote_questions.question as question', 
@@ -479,6 +544,8 @@ class VoteController extends Controller
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['banner'] = $item->banner;
+            $result[$item->id]['logo'] = $item->logo;
             $result[$item->id]['status'] = $item->status;
             $result[$item->id]['is_public'] = $item->is_public;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;

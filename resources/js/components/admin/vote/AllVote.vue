@@ -116,6 +116,40 @@ export default {
           });
       },
 
+      searchVotes() {
+        let token = this.$store.getters.accessToken;
+        let searchTerm = this.searchTerm.trim(); 
+
+        if (searchTerm === '') {
+          this.getAllVote();
+          return;
+        }
+
+        // Add the searchTerm as a query parameter to the API call
+        this.axios
+          .get(`/api/vote/search`, {
+            params: {
+              search: searchTerm,
+            },
+            headers: {
+              'Authorization': 'Bearer ' + token
+            },
+          })
+          .then((response) => {
+            if (response.data.status === 200) {
+              this.group_vote = response.data.data.voteInfo;
+            }
+          })
+          .catch((error) => {
+            if (error.response.status == 403) {
+              console.log('Error:', error);
+            }
+            if (error.response.status == 401) {
+              console.log('Error:', error);
+            }
+          });
+      },
+
       copyLinkToClipboard(vote_id) {
         const currentURL = window.location.href; // Lấy địa chỉ URL hiện tại
         const urlObject = new URL(currentURL);

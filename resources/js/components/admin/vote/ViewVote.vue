@@ -21,7 +21,10 @@ export default {
       isVoted: false,
       status: false,
       scaleValue: {},
-      logo_vote: '/images/logo_2023.png',
+      logo_vote: '',
+      banner_default: '/images/banner-default.jpg',
+      logo_default: '/images/logo-default.jpg',
+      banner_vote:'',
     };
   },
   created() {
@@ -43,6 +46,9 @@ export default {
           this.status = voteData.status == 1 ? true : false;
           console.log("check this.status",this.status)
           this.title_vote = voteData.title;
+          this.banner_vote = voteData.banner;
+          this.logo_vote = voteData.logo;
+          
           for (const questionKey in voteData.questions) {
             let question_total_voted = 0;
             let question = voteData.questions[questionKey];
@@ -240,15 +246,23 @@ export default {
 
   },
   computed: {
+    bannerImageUrl() {
+      let banner_vote = this.banner_vote;
+      if(banner_vote === null || banner_vote === ""){
+        banner_vote = this.banner_default
+      }
+      return `url(${banner_vote})`;
+    },
   },
 };
 </script>
 
 <template>
   <div class="container mb-5 mt-5">
-    <div class="card banner" style="background: url(https://gosucorp.vn/assets/frontend/home/assets/images/slogan-home/bg-slhome.jpg) center no-repeat; background-size: cover;">
+    <div class="card banner" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl }">
         <div class="logo-vote">
-          <img :src="logo_vote" alt="Logo Vote">
+          <img v-if="logo_vote" :src="logo_vote" alt="Logo Vote">
+          <img v-else :src="logo_default" alt="Logo Vote">
         </div>
     </div>
     <div class="card">
@@ -340,7 +354,7 @@ export default {
   bottom: -25%;
   left: 10%;
   border-radius: 100%;
-  box-shadow: 0px 5px 20px 0px rgba(24, 24, 24, 0.6);
+  box-shadow: 0px 5px 20px 0px rgba(24, 24, 24, 0.637);
   overflow: hidden;
 }
 
