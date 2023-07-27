@@ -87,7 +87,7 @@ export default {
               showConfirmButton: false,
               timer: 1500
             });
-            this.$router.push({ name: 'All Vote' });
+            // this.$router.push({ name: 'All Vote' });
           }
         }.bind(this))
         .catch(function (error) {
@@ -123,6 +123,7 @@ export default {
           const voteInfo = response.data.data.voteInfo;
           const voteId = Object.keys(voteInfo)[0];
           this.voteData = voteInfo[voteId];
+          console.log("this.voteData.is_public",this.voteData.is_public);
         }
       })
       .catch((error) => {
@@ -144,7 +145,7 @@ export default {
                   <label class="card-title">Nhập tiêu đề<span class="text-danger">*</span></label>
                   <!-- <b-form-group id="title-text" :state="voteData.title ? false : null" :invalid-feedback="voteData.title"> -->
                   <b-form-input for="text" v-model="voteData.title" name="title-text" id="title-text" placeholder=""
-                    required></b-form-input>
+                    required :disabled="voteData.is_public ==1"></b-form-input>
                   <!-- </b-form-group> -->
                 </div>
               </div>
@@ -158,19 +159,19 @@ export default {
                     <label class="card-title">Nhập câu hỏi<span class="text-danger">*</span></label>
                     <!-- <b-form-group :state="question.question ? false : null" :invalid-feedback="question.question"> -->
                     <b-form-input name="question-text" id="question-text" v-model="question.question" placeholder=""
-                      required>{{
+                      required :disabled="voteData.is_public ==1">{{
                         question }}</b-form-input>
                     <!-- </b-form-group> -->
                   </div>
                   <div class="col-lg-3">
                     <label>Loại:</label>
-                    <select class="form-control select2" v-model="question.type">
+                    <select class="form-control select2" v-model="question.type"  :disabled="voteData.is_public ==1">
                       <option v-for="value in type_options" :key="value.id" :value="value.id">{{ value.option }}</option>
                     </select>
                   </div>
                   <div class="col-lg-1">
                     <label>*:</label>
-                    <input type="checkbox" v-model="question.is_required">
+                    <input type="checkbox" v-model="question.is_required"  :disabled="voteData.is_public ==1">
                   </div>
                 </div>
                 <label class="card-title" v-if="question.type !== 3 && question.type !== 4">Nhập câu trả lời</label>
@@ -178,28 +179,28 @@ export default {
                 <div class="row" v-if="question.type !== 3" v-for="(option, index) in question.options" :key="index">
                   <div class="col-lg-9" ref="lastInput" v-if="option.sub_type !== 'remove'">
                     <b-form-input id="answer-text" name="answer-text" v-model="option.option" placeholder=""
-                      @keypress.enter.prevent @keyup.enter="addAnswer(question)" required></b-form-input>
+                      @keypress.enter.prevent @keyup.enter="addAnswer(question)" required  :disabled="voteData.is_public ==1"></b-form-input>
                   </div>
                   <!-- <a v-if="question.options.length > 1" class="text-danger mt-1" @click="removeAnswer(question.options, index)"
                     href="javascript:void(0);"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a> -->
-                  <a v-if="filteredOptions(question.options) && option.sub_type !== 'remove'" class="text-danger mt-1" @click="removeAnswer(question.options, index)"
+                  <a v-if="(filteredOptions(question.options) && option.sub_type !== 'remove') && voteData.is_public ==0" class="text-danger mt-1" @click="removeAnswer(question.options, index)"
                     href="javascript:void(0);"><i class="fas fa-trash-alt"></i>&nbsp;Xoá</a>
                 </div>
-                <a href="javascript:void(0);" @click="addAnswer(question)" v-if="question.type !== 3"><i
+                <a href="javascript:void(0);" @click="addAnswer(question)" v-if="question.type !== 3 && voteData.is_public ==0"><i
                     class="fas fa-plus"></i>&nbsp;&nbsp;Thêm câu trả lời</a>
                 <div class="row float-right">
-                  <div v-if="filteredQuestions(voteData.questions)" class="mr-3">
+                  <div v-if="filteredQuestions(voteData.questions) && voteData.is_public ==0" class="mr-3">
                     <a class="text-danger" href="javascript:void(0);" @click="removeQuestion(question.question_id)"><i
                         class="fas fa-trash-alt"></i>&nbsp;Xoá câu hỏi</a>
                   </div>
                   <div class="mr-2">
-                    <a href="javascript:void(0);" @click="addQuestion"><i class="fas fa-plus"></i>&nbsp;Thêm câu hỏi</a>
+                    <a href="javascript:void(0);" @click="addQuestion" v-if="voteData.is_public ==0"><i class="fas fa-plus"></i>&nbsp;Thêm câu hỏi</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit">Lưu biểu mẫu</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" :disabled="voteData.is_public ==1">Lưu biểu mẫu</button>
         </form>
       </div>
     </div>

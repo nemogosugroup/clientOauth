@@ -167,6 +167,7 @@ class VoteController extends Controller
 
     public function update(Request $request)
     {
+
         $voteId = $request->input('vote_id');
         $type_view = $request->input('type_view');
         $title = $request->input('title');
@@ -189,6 +190,15 @@ class VoteController extends Controller
                 "message"=>"Không tìm thấy!",
                 "data"=>[],
                 "success"=>false
+            ];
+            return response()->json($response);
+        }
+        if ($vote->is_public !== 0) {
+            $response = [
+                "status" => 200,
+                "message" => "Trang vote đã được public, không được phép xoá.",
+                "data" => [],
+                "success" => false
             ];
             return response()->json($response);
         }

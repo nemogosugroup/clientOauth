@@ -21,6 +21,7 @@ export default {
       isVoted: false,
       status: false,
       scaleValue: {},
+      logo_vote: '/images/logo_2023.png',
     };
   },
   created() {
@@ -92,6 +93,36 @@ export default {
         } else if (question.type === 4) {
           // Loại hình câu hỏi dạng LinearScale
           vote_info[question.question_id] = this.scaleValue[question.question_id] || '';
+        }
+      }
+
+      for (const question of this.group_question) {
+        if (question.is_required === 1) {
+          // Check if the question is answered based on its type
+          let isQuestionAnswered = false;
+          if (question.type === 1) {
+            isQuestionAnswered = this.selected_checkbox.some((option_id) =>
+              question.options.some((option) => option.option_id === option_id)
+            );
+          } else if (question.type === 2) {
+            isQuestionAnswered = !!this.selected_radio[question.question_id];
+          } else if (question.type === 3) {
+            isQuestionAnswered = !!this.textContents[question.question_id];
+          } else if (question.type === 4) {
+            isQuestionAnswered = !!this.scaleValue[question.question_id];
+          }
+
+          if (!isQuestionAnswered) {
+            // Display an error message or handle the validation as needed
+            this.$swal.fire({
+              position: "center",
+              icon: "error",
+              title: `Xin vui lòng trả lời câu hỏi: ${question.question}`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            return; // Stop the form submission if any required question is not answered
+          }
         }
       }
 
@@ -215,6 +246,11 @@ export default {
 
 <template>
   <div class="container mb-5 mt-5">
+    <div class="card banner" style="background: url(https://gosucorp.vn/assets/frontend/home/assets/images/slogan-home/bg-slhome.jpg) center no-repeat; background-size: cover;">
+        <div class="logo-vote">
+          <img :src="logo_vote" alt="Logo Vote">
+        </div>
+    </div>
     <div class="card">
       <div class="card-body">
         <h3 class="text-capitalize mb-0">{{ title_vote }}</h3>
@@ -227,7 +263,7 @@ export default {
             <div class="col-md-12" v-for="(question) in group_question" :key="question.question_id">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}</h5>
+                  <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}<span v-if="question.is_required === 1" class="font-size-18 text-danger">*</span></h5>
                   <div class="row" v-if="question.type === 1">
                     <div class="col-md-12 mb-3" v-for="(answer) in question.options" :key="answer.option_id">
                       <div class="custom-control custom-checkbox mb-2">
@@ -288,3 +324,31 @@ export default {
     </div>
   </div>
 </template>   
+
+<style>
+.card.banner{
+  min-height: 300px;
+  margin-bottom: 100px;
+}
+
+.logo-vote{
+  width: 150px;
+  height: 150px;
+  min-height: 150px;
+  background-color: white;
+  position: absolute;
+  bottom: -25%;
+  left: 10%;
+  border-radius: 100%;
+  box-shadow: 0px 5px 20px 0px rgba(24, 24, 24, 0.6);
+  overflow: hidden;
+}
+
+.logo-vote img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+</style>
