@@ -261,10 +261,10 @@ export default {
 
 <template>
   <div class="container mb-5 mt-5">
-    <div class="card banner" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl }">
+    <div class="card banner fade-in" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl }">
         <div class="logo-vote">
-          <img v-if="logo_vote" :src="logo_vote" alt="Logo Vote">
-          <img v-else :src="logo_default" alt="Logo Vote">
+          <img class="fade-in" v-if="logo_vote" :src="logo_vote" alt="Logo Vote">
+          <img class="fade-in" v-else :src="logo_default" alt="Logo Vote">
         </div>
     </div>
     <div class="card">
@@ -369,5 +369,59 @@ export default {
   object-fit: cover;
   border-radius: 50%;
   display: block;
+}
+
+.fade-in {
+  animation: fadeIn ease 2s;
+  -webkit-animation: fadeIn ease 2s;
+  -moz-animation: fadeIn ease 2s;
+  -o-animation: fadeIn ease 2s;
+  -ms-animation: fadeIn ease 2s;
+}
+
+
+@keyframes fadeIn{
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
 }
 </style>
