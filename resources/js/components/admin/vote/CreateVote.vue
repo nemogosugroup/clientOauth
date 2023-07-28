@@ -15,7 +15,7 @@ export default {
         { id: 1, option: 'Hộp kiểm' },
         { id: 2, option: 'Trắc nghiệm' },
         { id: 3, option: 'Đoạn ngắn' },
-        { id: 4, option: 'Đánh giá điểm' },
+        // { id: 4, option: 'Đánh giá điểm' },
       ],
       title_vote: "",
       is_anonymous: true,

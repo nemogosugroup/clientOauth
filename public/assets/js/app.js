@@ -22449,10 +22449,10 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         id: 3,
         option: 'Đoạn ngắn'
-      }, {
-        id: 4,
-        option: 'Đánh giá điểm'
-      }],
+      }
+      // { id: 4, option: 'Đánh giá điểm' },
+      ],
+
       title_vote: "",
       is_anonymous: true,
       statuscode: null,
@@ -23181,7 +23181,7 @@ function _arrayLikeToArray(arr, len) {
       try {
         var _loop2 = function _loop2() {
           var question = _step3.value;
-          if (question.is_required === 1) {
+          if (question.is_required === true) {
             // Check if the question is answered based on its type
             var isQuestionAnswered = false;
             if (question.type === 1) {
@@ -24120,7 +24120,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return [_hoisted_15];
       }),
       _: 2 /* DYNAMIC */
-    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"]), !vote.is_public ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_router_link, {
+      key: 0,
       to: {
         path: "/voting/" + vote.id,
         params: {
@@ -24132,14 +24133,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return [_hoisted_16];
       }),
       _: 2 /* DYNAMIC */
-    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"]), !vote.is_public ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-      key: 0,
+    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), !vote.is_public ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+      key: 1,
       "class": "btn btn-success mr-2 mb-2",
       onClick: function onClick($event) {
         return $options.publishVote(vote);
       }
     }, [_hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Xuất bản ")], 8 /* PROPS */, _hoisted_17)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), vote.is_public ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-      key: 1,
+      key: 2,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([['btn', {
         'btn-success': vote.status,
         'btn-danger': !vote.status
@@ -24150,7 +24151,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(vote.status ? 'Mở' : 'Đóng'), 1 /* TEXT */)], 10 /* CLASS, PROPS */, _hoisted_19)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-info mb-2",
       onClick: function onClick($event) {
-        return $options.copyLinkToClipboard(vote.vote_id);
+        return $options.copyLinkToClipboard(vote.id);
       }
     }, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Sao chép liên kết")], 8 /* PROPS */, _hoisted_21)])])])]);
   }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [$data.isLoadMore && $data.group_vote.length >= 5 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
@@ -25150,7 +25151,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       "class": "col-md-12",
       key: question.question_id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(question.question), 1 /* TEXT */), question.is_required === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_14, "*")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), question.type === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_15, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(question.options, function (answer) {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(question.question), 1 /* TEXT */), question.is_required === true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_14, "*")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), question.type === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_15, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(question.options, function (answer) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         "class": "col-md-12 mb-3",
         key: answer.option_id
@@ -38687,7 +38688,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.c-orange {\r\n    color: #ee9642 !important;\n}\n.logo-slogan-footer, .text-slogan-footer, .link-footer {\r\n    z-index: 2;\n}\n.main-footer::after{\r\n    background: url(\"/images/img-moon.png\") no-repeat center center;\r\n    content: \"\";\r\n    width: 930px;\r\n    height: 266px;\r\n    top: -102px;\r\n    right: -45px;\r\n    bottom: inherit;\r\n    position: absolute;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.c-orange {\r\n    color: #ee9642 !important;\n}\n.logo-slogan-footer, .text-slogan-footer, .link-footer {\r\n    z-index: 2;\n}\n.main-footer::after{\r\n    background: url(\"/images/m-img-moon.png\") no-repeat center center;\r\n    content: \"\";\r\n    width: 26vw;\r\n    height: 30vh;\r\n    background-size: contain;\r\n    bottom: 0;\r\n    right: 0;\r\n    pointer-events: none;\r\n    position: absolute;\n}\n@media only screen and (min-width: 1024px){\n.main-footer::after{\r\n        background: url(\"/images/img-moon.png\") no-repeat center center;\r\n        width: 930px;\r\n        height: 266px;\r\n        top: -102px;\r\n        right: -45px;\r\n        bottom: inherit;\r\n        position: absolute;\n}\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

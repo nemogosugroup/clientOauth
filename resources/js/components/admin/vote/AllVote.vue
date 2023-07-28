@@ -227,7 +227,7 @@ export default {
                   <router-link :to="{ path: `/admin/detail-vote/` + vote.id, params: { id: vote.id } }">
                     <button class="btn btn-dark mr-2 mb-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
                   </router-link>
-                  <router-link :to="{ path: `/voting/` + vote.id, params: { id: vote.id } }">
+                  <router-link v-if="!vote.is_public" :to="{ path: `/voting/` + vote.id, params: { id: vote.id } }">
                     <button class="btn btn-primary mr-2 mb-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
                   </router-link>
                   <button v-if="!vote.is_public" class="btn btn-success mr-2 mb-2" @click="publishVote(vote)">

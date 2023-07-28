@@ -105,7 +105,7 @@ export default {
       }
 
       for (const question of this.group_question) {
-        if (question.is_required === 1) {
+        if (question.is_required === true) {
           // Check if the question is answered based on its type
           let isQuestionAnswered = false;
           if (question.type === 1) {
@@ -281,7 +281,7 @@ export default {
             <div class="col-md-12" v-for="(question) in group_question" :key="question.question_id">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}<span v-if="question.is_required === 1" class="font-size-18 text-danger">*</span></h5>
+                  <h5 class="font-size-16 mb-4 text-capitalize">{{ question.question }}<span v-if="question.is_required === true" class="font-size-18 text-danger">*</span></h5>
                   <div class="row" v-if="question.type === 1">
                     <div class="col-md-12 mb-3" v-for="(answer) in question.options" :key="answer.option_id">
                       <div class="custom-control custom-checkbox mb-2">

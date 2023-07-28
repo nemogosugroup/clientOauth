@@ -667,11 +667,31 @@ class VoteController extends Controller
             'vote_questions.id as question_id', 
             'vote_options.option as option', 
             'vote_options.id as option_id',
-            'vote_options.total_voted as total_voted')
+            'vote_options.total_voted as total_voted',
+            DB::raw('JSON_UNQUOTE(JSON_ARRAYAGG(vote_history.answer)) as answer')
+            )  
         ->leftJoin('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
         ->leftJoin('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->leftJoin('vote_history', 'vote_history.vote_option_id', '=', 'vote_options.id')
         ->where('vote.id', $voteId)
+        ->groupBy(
+            'vote.id', 
+            'vote.status', 
+            'vote.banner',
+            'vote.logo', 
+            'vote.is_public', 
+            'vote.title', 
+            'vote.is_anonymous', 
+            'vote_questions.question', 
+            'vote_questions.type',
+            'vote_questions.is_required', 
+            'vote_questions.id', 
+            'vote_options.option', 
+            'vote_options.id', 
+            'vote_options.total_voted'
+        )
         ->get();
+
 
         $user = $request->user();
         $isVoted = Voted::where('user_id', $user->id)
@@ -691,10 +711,13 @@ class VoteController extends Controller
             $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required == 1;
             $result[$item->id]['questions'][$item->question_id]['question_id'] = $item->question_id;
             $result[$item->id]['questions'][$item->question_id]['question'] = $item->question;
+            
+            $answer = $item->answer != "[null]" ? utf8_encode($item->answer) : [];
             $result[$item->id]['questions'][$item->question_id]['options'][] = [
                 'option_id'=>$item->option_id,
                 'option'=>$item->option,
-                'total_voted'=>$item->total_voted
+                'total_voted'=>$item->total_voted,
+                'answer'=>$answer
             ];
         }
         $response = [
