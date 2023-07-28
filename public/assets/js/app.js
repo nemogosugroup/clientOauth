@@ -25125,7 +25125,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_b_progress = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("b-progress");
   var _component_LinearScale = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("LinearScale");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "card banner",
+    "class": "card banner fade-in",
     style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)([{
       "background-repeat": "no-repeat",
       "background-position": "center",
@@ -25135,10 +25135,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [$data.logo_vote ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
     key: 0,
+    "class": "fade-in",
     src: $data.logo_vote,
     alt: "Logo Vote"
   }, null, 8 /* PROPS */, _hoisted_3)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
     key: 1,
+    "class": "fade-in",
     src: $data.logo_default,
     alt: "Logo Vote"
   }, null, 8 /* PROPS */, _hoisted_4))])], 4 /* STYLE */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.title_vote), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
@@ -38640,7 +38642,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.card.banner{\r\n  min-height: 300px;\r\n  margin-bottom: 100px;\n}\n.logo-vote{\r\n  width: 150px;\r\n  height: 150px;\r\n  min-height: 150px;\r\n  background-color: white;\r\n  position: absolute;\r\n  bottom: -25%;\r\n  left: 10%;\r\n  border-radius: 100%;\r\n  box-shadow: 0px 5px 20px 0px rgba(24, 24, 24, 0.637);\r\n  overflow: hidden;\n}\n.logo-vote img{\r\n  width: 100%;\r\n  height: 100%;\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n  border-radius: 50%;\r\n  display: block;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.card.banner{\r\n  min-height: 300px;\r\n  margin-bottom: 100px;\n}\n.logo-vote{\r\n  width: 150px;\r\n  height: 150px;\r\n  min-height: 150px;\r\n  background-color: white;\r\n  position: absolute;\r\n  bottom: -25%;\r\n  left: 10%;\r\n  border-radius: 100%;\r\n  box-shadow: 0px 5px 20px 0px rgba(24, 24, 24, 0.637);\r\n  overflow: hidden;\n}\n.logo-vote img{\r\n  width: 100%;\r\n  height: 100%;\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n  border-radius: 50%;\r\n  display: block;\n}\n.fade-in {\r\n  animation: fadeIn ease 2s;\r\n  -webkit-animation: fadeIn ease 2s;\r\n  -moz-animation: fadeIn ease 2s;\r\n  -o-animation: fadeIn ease 2s;\r\n  -ms-animation: fadeIn ease 2s;\n}\n@keyframes fadeIn{\n0% {\r\n    opacity:0;\n}\n100% {\r\n    opacity:1;\n}\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
