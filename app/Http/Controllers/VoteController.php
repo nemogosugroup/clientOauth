@@ -78,6 +78,7 @@ class VoteController extends Controller
             }
 
             $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $fileBannerName = VoteController::removeSpecialCharactersFromFile($fileBannerName);
             $banner->move(public_path('uploads'), $fileBannerName);
             $filePathBanner = '/uploads/' . $fileBannerName;
         }
@@ -109,6 +110,8 @@ class VoteController extends Controller
             }
 
             $fileLogoName = time() . '_' . $logo->getClientOriginalName();
+            
+            $fileLogoName = VoteController::removeSpecialCharactersFromFile($fileLogoName);
             $logo->move(public_path('uploads'), $fileLogoName);
             $filePathLogo = '/uploads/' . $fileLogoName;
         }
@@ -317,6 +320,7 @@ class VoteController extends Controller
             }
 
             $fileBannerName = time() . '_' . $banner->getClientOriginalName();
+            $fileBannerName = VoteController::removeSpecialCharactersFromFile($fileBannerName);
             $banner->move(public_path('uploads'), $fileBannerName);
             $filePathBanner = '/uploads/' . $fileBannerName;
         }
@@ -351,6 +355,8 @@ class VoteController extends Controller
             }
 
             $fileLogoName = time() . '_' . $logo->getClientOriginalName();
+            
+            $fileLogoName = VoteController::removeSpecialCharactersFromFile($fileLogoName);
             $logo->move(public_path('uploads'), $fileLogoName);
             $filePathLogo = '/uploads/' . $fileLogoName;
         }
@@ -662,8 +668,8 @@ class VoteController extends Controller
             'vote_options.option as option', 
             'vote_options.id as option_id',
             'vote_options.total_voted as total_voted')
-        ->join('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
-        ->join('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+        ->leftJoin('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+        ->leftJoin('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
         ->where('vote.id', $voteId)
         ->get();
 
@@ -994,5 +1000,13 @@ class VoteController extends Controller
         ];
         return response()->json($response);
     }
+    private function removeSpecialCharactersFromFile($fileName) {
+        // Các ký tự đặc biệt bạn muốn loại bỏ
+        $specialCharacters = array("(", ")", "*", "_", " ", "\\", ",", ":", "?", "#", "[", "]", "{", "}", "=", "/", "+", "-");
     
+        // Loại bỏ các ký tự đặc biệt khỏi tên tệp
+        $cleanFileName = str_replace($specialCharacters, "", $fileName);
+    
+        return $cleanFileName;
+    }
 }

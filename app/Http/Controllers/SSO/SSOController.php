@@ -38,26 +38,34 @@ class SSOController extends Controller
         $state = $request->session()->pull("state");
         $token = $request->input('token');
         $stateCallback = $request->input('state');
-        if($token && $stateCallback ){
-            throw_unless(strlen($state) > 0 && $state == $stateCallback, InvalidArgumentException::class);
-            $request->session()->put('access_token',$token);
-        }else{
-            throw_unless(strlen($state) > 0 && $state == $request->state, InvalidArgumentException::class);
         
-            $response = Http::asForm()->post(
-                config("auth.sso_host") .  "/oauth/token",
-                [
-                    "grant_type" => "authorization_code",
-                    "client_id" => config("auth.client_id"),
-                    "client_secret" => config("auth.client_secret"),
-                    "redirect_uri" => config("auth.callback") ,
-                    "code" => $request->code
-                ]
-            );
-            // dump($response->json());die;
-            $request->session()->put($response->json());
-        }
-        return redirect(route("sso.connect"));
+        // die;
+        if($state != $stateCallback){
+            return redirect()->route('login')->with('error', 'Trạng thái đã hết hạn. Vui lòng thử lại.');
+        }else{
+            if($token && $stateCallback ){
+        
+                throw_unless(strlen($state) > 0 && $state == $stateCallback, InvalidArgumentException::class);
+                $request->session()->put('access_token',$token);
+            }else{
+                throw_unless(strlen($state) > 0 && $state == $request->state, InvalidArgumentException::class);
+            
+                $response = Http::asForm()->post(
+                    config("auth.sso_host") .  "/oauth/token",
+                    [
+                        "grant_type" => "authorization_code",
+                        "client_id" => config("auth.client_id"),
+                        "client_secret" => config("auth.client_secret"),
+                        "redirect_uri" => config("auth.callback") ,
+                        "code" => $request->code
+                    ]
+                );
+                // dump($response->json());die;
+                $request->session()->put($response->json());
+            }
+            return redirect(route("sso.connect"));
+            }
+        
     }
     public function connectUser(Request $request)
     {
