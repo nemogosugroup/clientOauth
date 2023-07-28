@@ -54,13 +54,26 @@ export default {
 }
 
 .main-footer::after{
-    background: url("/images/img-moon.png") no-repeat center center;
+    background: url("/images/m-img-moon.png") no-repeat center center;
     content: "";
-    width: 930px;
-    height: 266px;
-    top: -102px;
-    right: -45px;
-    bottom: inherit;
+    width: 26vw;
+    height: 30vh;
+    background-size: contain;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
     position: absolute;
+}
+
+@media only screen and (min-width: 1024px){
+    .main-footer::after{
+        background: url("/images/img-moon.png") no-repeat center center;
+        width: 930px;
+        height: 266px;
+        top: -102px;
+        right: -45px;
+        bottom: inherit;
+        position: absolute;
+    }
 }
 </style>
