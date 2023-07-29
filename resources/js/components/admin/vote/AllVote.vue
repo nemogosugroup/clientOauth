@@ -18,6 +18,9 @@ export default {
           isLoadMore : true,
           is_public: false,
           banner_default: '/images/banner-default.jpg',
+          showFormShortLink: false,
+          short_link_text: '',
+          auto_create : 1,
       };
     },
     created() {
@@ -26,7 +29,7 @@ export default {
     methods: {
       loadmore() {
         // Tăng số lượng dòng hiển thị lên
-        this.searchVotes(this.visibleRowCount+5);
+        this.searchVotes(this.visibleRowCount+6);
         // Copy dữ liệu từ allData vào displayedData với số lượng dòng cần hiển thị
       },
       toggleStatus(vote) {
@@ -153,12 +156,17 @@ export default {
           autoClose: 1500,
         });
       },
-      createShortLink(vote_id){
+      createShortLink(vote){
+        let auto_create_value = 0;
+        if(vote.auto_create){
+          auto_create_value = 1;
+        }
         let formData =  {
-          id: vote_id,
-          auto_create:1,
-          short_link: ""
+          id: vote.id,
+          auto_create: auto_create_value,
+          short_link: vote.short_link_text
         };
+        console.log(formData);
         let token = this.$store.getters.accessToken;
         // Add the searchTerm as a query parameter to the API call
         this.axios
@@ -174,7 +182,7 @@ export default {
                 icon = "success";
                 console.log("response.data.data",response.data.data);
                 console.log("this.group_vote",this.group_vote);
-                const elementToUpdate = this.group_vote.find((element) => element.id === vote_id);
+                const elementToUpdate = this.group_vote.find((element) => element.id === vote.id);
                 if (elementToUpdate) {
                   // Cập nhật thông tin của phần tử tìm thấy
                   elementToUpdate['short_link'] = response.data.data.short_link;
@@ -200,6 +208,7 @@ export default {
             console.log('Error:', error);
           });
       },
+
       publishVote(vote) {
         let action = 'off';
         if(vote.is_public == 0 ){
@@ -295,7 +304,21 @@ export default {
                   <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Đang mở' : 'Đang đóng' }}
                 </button>
                 <button class="btn btn-info mb-2" v-if="vote.short_link" @click="copyLinkToClipboard(vote)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
-                  <button class="btn btn-info mb-2" v-else @click="createShortLink(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Tạo Liên kết ngắn</button>
+                <button v-if="!vote.short_link && vote.is_public" @click="vote.showFormShortLink = !vote.showFormShortLink" class="btn btn-secondary mb-2"><i class="ri-external-link-line"></i>&nbsp;Tạo Liên kết ngắn</button>
+                <div class="short-link" v-if="vote.showFormShortLink && !vote.short_link">                 
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="custom-control custom-checkbox mb-2 w-50">
+                        <input type="checkbox" class="custom-control-input" :value="vote.auto_create" v-model="vote.auto_create" id="shortlink-1"/>
+                        <label class="custom-control-label text-capitalize" for="shortlink-1">Tạo tự động</label>
+                      </div>
+                      <b-form-group>
+                        <b-form-input name="shortlink-url" id="shortlink-url" v-model="vote.short_link_text" :disabled="vote.auto_create === true" placeholder=""></b-form-input>
+                      </b-form-group>
+                      <button class="btn btn-primary btn-block" @click="createShortLink(vote)">Tạo</button>
+                    </div>
+                  </div>
+                </div>
             </div>
           </div>
         </div>
@@ -325,5 +348,17 @@ export default {
 .card-all-vote img.card-img-top{
   object-fit: cover;
   height: 230px;
+}
+
+.action-btn{
+  position: relative;
+}
+
+.card-all-vote .short-link{
+  position: absolute;
+  bottom: 75%;
+  left: 28%;
+  max-width: 375px;
+  width: 100%;
 }
 </style>
