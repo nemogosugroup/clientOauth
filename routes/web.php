@@ -27,10 +27,17 @@ Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout
 // Auth::routes(['register' => false, 'reset' => false ]);
 
 Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('voting');
-Route::get('/viewvote/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('viewvote');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+
+Route::get('/error', [App\Http\Controllers\HomeController::class, 'home'])->name('error');
+Route::get('/admin', [App\Http\Controllers\HomeController::class, 'home'])->name('admin');
+Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
+Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
+
+Route::get('/getaccesstoken', [App\Http\Controllers\HomeController::class, 'getAccessToken'])->name('getaccesstoken');
+
 Route::get('/{short_code}', function (Request $request) {
     $vote = Vote::where("short_link", $request->short_code)->first();
     if ($vote) {
@@ -40,9 +47,3 @@ Route::get('/{short_code}', function (Request $request) {
         abort(404); // Trả về lỗi 404 nếu không tìm thấy $vote tương ứng
     }
 });
-Route::get('/error', [App\Http\Controllers\HomeController::class, 'home'])->name('error');
-Route::get('/admin', [App\Http\Controllers\HomeController::class, 'home'])->name('admin');
-Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
-Route::get('admin/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');
-
-Route::get('/getaccesstoken', [App\Http\Controllers\HomeController::class, 'getAccessToken'])->name('getaccesstoken');

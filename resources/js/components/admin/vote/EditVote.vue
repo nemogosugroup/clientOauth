@@ -68,6 +68,7 @@ export default {
       formCreateVote.append('is_remove_logo', this.image_logo_Url == null);
       formCreateVote.append('title', this.voteData.title);
       formCreateVote.append('is_anonymous', this.voteData.is_anonymous);
+      formCreateVote.append('show_results', this.voteData.show_results);
       formCreateVote.append('type_view', 1);
       formCreateVote.append('questions', JSON.stringify(this.voteData.questions));
       formCreateVote.append('vote_id', this.voteData.vote_id);
@@ -221,6 +222,13 @@ export default {
                       <input type="checkbox" class="custom-control-input" id="is_anonymous"
                         v-model="voteData.is_anonymous" style="z-index: 99;" :disabled="voteData.is_public == 1">
                       <label class="custom-control-label">Vote ẩn danh</label>
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="show_results"
+                        v-model="voteData.show_results" style="z-index: 99;" :disabled="voteData.is_public == 1">
+                      <label class="custom-control-label">Hiện kết quả khảo sát</label>
                     </div>
                   </div>
                 </div>

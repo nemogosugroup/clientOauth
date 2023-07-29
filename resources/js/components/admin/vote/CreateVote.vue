@@ -19,6 +19,8 @@ export default {
       ],
       title_vote: "",
       is_anonymous: true,
+      show_results: true,
+      
       statuscode: null,
       selected_banner_File: null,
       selected_logo_File: null,
@@ -87,6 +89,7 @@ export default {
       let formData = new FormData();
       formData.append('title', this.title_vote);
       formData.append('is_anonymous', this.is_anonymous);
+      formData.append('show_results', this.show_results);
       formData.append('type_view', 1);
       formData.append('questions', dataQuestion);
       formData.append('banner', this.selected_banner_File);
@@ -160,6 +163,13 @@ export default {
                       <input type="checkbox" class="custom-control-input" id="is_anonymous" v-model="is_anonymous"
                         style="z-index: 99;">
                       <label class="custom-control-label">Đánh giá ẩn danh</label>
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="show_results" v-model="show_results"
+                        style="z-index: 99;">
+                      <label class="custom-control-label">Hiện kết quả khảo sát</label>
                     </div>
                   </div>
                 </div>

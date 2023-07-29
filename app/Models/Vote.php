@@ -20,6 +20,7 @@ class Vote extends Model
         'banner',
         'logo',
         'is_anonymous',
+        'show_results',
         'short_link'
     ];
     

@@ -13,6 +13,7 @@ export default {
       group_question: [],
       options: [],
       title_vote: "",
+      show_results: true,
       selected_checkbox: [],
       selected_radio: [],
       data_json: '',
@@ -50,7 +51,7 @@ export default {
           this.title_vote = voteData.title;
           this.banner_vote = voteData.banner;
           this.logo_vote = voteData.logo;
-          
+          this.show_results = voteData.show_results == 1;
           for (const questionKey in voteData.questions) {
             let question_total_voted = 0;
             let question = voteData.questions[questionKey];
@@ -289,7 +290,7 @@ export default {
                           :id="answer.option_id" :value="answer.option_id" v-model="selected_checkbox" :disabled="isVoted || !status || !isPublic"/>
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option}}</label>
                       </div>
-                      <b-progress :max="100" height="14px">
+                      <b-progress :max="100" height="14px" v-if="show_results">
                         <b-progress-bar :value="(answer.total_voted / question.total_voted) * 100"
                           :label="`${((answer.total_voted / question.total_voted) * 100).toFixed(0)}%`"></b-progress-bar>
                       </b-progress>

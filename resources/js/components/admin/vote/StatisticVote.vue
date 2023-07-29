@@ -2,6 +2,8 @@
 /**
  * Form-element component
  */
+
+import { saveAs } from "file-saver";
 export default {
     data() {
         return {
@@ -38,8 +40,6 @@ export default {
             this.currentVoteId = voteId;
             this.voteModal = {'question': null};
             this.getInfoVote(voteId);
-
-            console.log('this.datasets',this.chartData.datasets[0].data);
         },
         closeModal() {
             this.modalShow = false;
@@ -172,6 +172,31 @@ export default {
         isNonEmptyArray(arr) {
             return Array.isArray(arr) && arr.length > 0;
         },
+
+        exportExcel(voteId){
+            const formData = new FormData();
+            formData.append("vote_id", voteId);
+            const token = this.$store.getters.accessToken;
+            axios.post("/api/vote/export-excel", formData, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                responseType: "blob",
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    // alert("File export successful");
+                    const blob = new Blob([response.data], {
+                    type: "application/vnd.ms-excel",
+                    });
+                    saveAs(blob, "filecallback.xlsx");
+                }
+            })
+            .catch((error) => {
+                console.log(error);      
+            })
+            .finally();
+            }
     },
 };
 </script>
@@ -206,6 +231,9 @@ export default {
                         <h3 class="card-title">{{ vote.title }}</h3>
                         <b-button @click="openModals(vote.id)" variant="primary" class="btn-block mt-3">
                             <i class="ri-line-chart-fill"></i>&nbsp;Thống kê
+                        </b-button>
+                        <b-button @click="exportExcel(vote.id)" variant="primary" class="btn-block mt-3">
+                            <i class="ri-line-chart-fill"></i>&nbsp;Xuất excel
                         </b-button>
                     </div>
                 </div>

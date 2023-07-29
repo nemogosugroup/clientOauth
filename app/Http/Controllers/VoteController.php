@@ -10,6 +10,9 @@ use App\Models\VoteQuestions;
 use App\Models\VoteOptions;
 use App\Models\VoteHistory;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class VoteController extends Controller
 {
@@ -36,6 +39,7 @@ class VoteController extends Controller
     {
         $title = $request->input('title');
         $isAnonymous = $request->input('is_anonymous') === 'true' || $request->input('is_anonymous') === true ? 1 : 0;
+        $showResults = $request->input('show_results') === 'true' || $request->input('show_results') === true ? 1 : 0;
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -149,6 +153,7 @@ class VoteController extends Controller
                 'banner' => $filePathBanner ?? "",
                 'logo' => $filePathLogo ?? "",
                 'is_anonymous' => $isAnonymous,
+                'show_results' => $showResults,
             ]);
             $vote->save();
             foreach ($questions as $question) {
@@ -267,6 +272,8 @@ class VoteController extends Controller
         $type_view = $request->input('type_view');
         $title = $request->input('title');
         $isAnonymous = $request->input('is_anonymous') === 'true' || $request->input('is_anonymous') === true ? 1 : 0;
+        $showResults = $request->input('show_results') === 'true' || $request->input('show_results') === true ? 1 : 0;
+        
         $questions = $request->input('questions') ?? "[]";
         $questions = json_decode($questions, true);
         if (json_last_error() !== 0) {
@@ -376,6 +383,8 @@ class VoteController extends Controller
         }
         $vote->title = $title;
         $vote->is_anonymous = $isAnonymous;
+        $vote->show_results = $showResults;
+        
         $vote->logo = $filePathLogo;
         $vote->banner = $filePathBanner;
         $vote->save();
@@ -730,6 +739,7 @@ class VoteController extends Controller
             'vote.title',
             'vote.short_link',
             'vote.is_anonymous',
+            'vote.show_results',
             'vote_questions.question as question', 
             'vote_questions.type as type', 
             'vote_questions.is_required as is_required', 
@@ -751,6 +761,7 @@ class VoteController extends Controller
             'vote.is_public', 
             'vote.title', 
             'vote.is_anonymous', 
+            'vote.show_results', 
             'vote_questions.question', 
             'vote_questions.type',
             'vote_questions.is_required', 
@@ -773,6 +784,7 @@ class VoteController extends Controller
             $result[$item->id]['title'] = $item->title;
             $result[$item->id]['short_link'] = $item->short_link;
             $result[$item->id]['is_anonymous'] = $item->is_anonymous == 1;
+            $result[$item->id]['show_results'] = $item->show_results == 1;            
             $result[$item->id]['banner'] = $item->banner;
             $result[$item->id]['logo'] = $item->logo;
             $result[$item->id]['status'] = $item->status;
@@ -803,16 +815,6 @@ class VoteController extends Controller
     {
         $keyword = $request->input('search');
         $keyword = $keyword ?? null;
-        
-        // if ($keyword == null) {
-        //     $response = [
-        //         "status"=> 200,
-        //         "message"=>"success",
-        //         "data"=>['voteInfo'=>[]],
-        //         "success"=>true
-        //     ];
-        //     return response()->json($response);
-        // }
         $limit = $request->input('limit');
         $data = Vote::select(
             'vote.id', 
@@ -1104,5 +1106,133 @@ class VoteController extends Controller
         $cleanFileName = str_replace($specialCharacters, "", $fileName);
     
         return $cleanFileName;
+    }
+    public function exportExcel(Request $request){
+        $voteId = $request->input('vote_id');
+        $fileName = 'filecallback.xlsx';
+        $spreadsheet = new Spreadsheet();
+        $dataExcel = [];
+        if($voteId){
+            $data = Vote::select(
+                'vote.id', 
+                'vote.status',
+                'vote.banner',
+                'vote.logo', 
+                'vote.is_public', 
+                'vote.title',
+                'vote.short_link',
+                'vote.is_anonymous',
+                'vote.show_results',
+                
+                'vote_questions.question as question', 
+                'vote_questions.type as type', 
+                'vote_questions.is_required as is_required', 
+                'vote_questions.id as question_id', 
+                'vote_options.option as option', 
+                'vote_options.id as option_id',
+                'vote_options.total_voted as total_voted',
+                DB::raw('JSON_UNQUOTE(JSON_ARRAYAGG(vote_history.answer)) as answer')
+                )  
+            ->leftJoin('vote_questions', 'vote.id', '=', 'vote_questions.vote_id')
+            ->leftJoin('vote_options', 'vote_questions.id', '=', 'vote_options.question_id')
+            ->leftJoin('vote_history', 'vote_history.vote_option_id', '=', 'vote_options.id')
+            ->where('vote.id', $voteId)
+            ->groupBy(
+                'vote.id', 
+                'vote.status', 
+                'vote.banner',
+                'vote.logo', 
+                'vote.is_public', 
+                'vote.title', 
+                'vote.is_anonymous',
+                'vote.show_results',                 
+                'vote_questions.question', 
+                'vote_questions.type',
+                'vote_questions.is_required', 
+                'vote_questions.id', 
+                'vote_options.option', 
+                'vote_options.id', 
+                'vote_options.total_voted'
+            )
+            ->get();
+            // dump( $data);
+            $result = [];
+            foreach ($data as $item) {
+                $result['vote_id'] = $item->id;
+                $result['title'] = $item->title;
+                $result['short_link'] = $item->short_link;
+                $result['status'] = $item->status;
+                $result['questions'][$item->question_id]['type'] = $item->type;
+                $result['questions'][$item->question_id]['is_required'] = $item->is_required;
+                $result['questions'][$item->question_id]['question_id'] = $item->question_id;
+                $result['questions'][$item->question_id]['question'] = $item->question;
+                $answer = $item->answer != "[null]" ? $item->answer : [];
+                
+                // dump($item->answer);
+                // dump($answer);
+                $result['questions'][$item->question_id]['options'][] = [
+                    'option_id'=>$item->option_id,
+                    'option'=>$item->option,
+                    'total_voted'=>$item->total_voted,
+                    'answer'=>$answer
+                ];
+            }
+            // dump($result);
+            $dataExcel[] = [$result['title']];
+            $dataExcel[] = ["Câu hỏi","câu trả lời","tổng vote"];
+            
+            if(isset($result['questions'])){
+                foreach ($result['questions'] as $question) {
+                    $dataExcel[] = [$question['question']];
+                    if($question['type'] <3){
+                        foreach ($question['options'] as $option) {
+                            $dataExcel[] = ["",$option['option'],$option['total_voted']];
+                        }
+                    }elseif($question['type'] ==3){
+                        $answers  = json_decode($question['options'][0]['answer'], true);
+                        foreach ($answers as $answer) {
+                            $dataExcel[] = ["",$answer];
+                        }
+                    }                    
+                }
+            }
+            
+            // $data[] = [["abcd", "efgh"], ["abcd2", "efgh2"], ["abcd3", "efgh3"]];
+        }
+        // Lấy dữ liệu bạn muốn lưu
+        
+
+            // dump($dataExcel);die;
+        $sheet = $spreadsheet->getActiveSheet(); // Sử dụng Sheet đầu tiên của file
+        // Merge các ô A1, B1, C1 lại với nhau
+        $sheet->mergeCells('A1:C1');
+
+        // Lưu dữ liệu vào Sheet 1
+        foreach ($dataExcel as $rowIndex => $row) {
+            foreach ($row as $columnIndex => $cellValue) {
+                $cell = $sheet->getCellByColumnAndRow($columnIndex + 1, $rowIndex + 1);
+                $cell->setValue($cellValue);
+        
+                // // Căn giữa nội dung của từng cột
+                // $cellStyle = $cell->getStyle();
+                // $cellStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                // $cellStyle->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            }
+        }
+        // Căn giữa nội dung của hàng đầu tiên
+        $firstRowStyle = $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1');
+        $firstRowStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $firstRowStyle->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        // Ghi tệp Excel
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($fileName);
+
+        // Trả về tệp Excel để tải xuống
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit();
     }
 }
