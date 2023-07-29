@@ -24,13 +24,13 @@ export default {
         };
     },
     created() {
-        this.getVotes(5);
+        this.getVotes(6);
     },
     methods:{
         
         loadmore() {
             // Tăng số lượng dòng hiển thị lên
-            this.getVotes(this.visibleRowCount+5);
+            this.getVotes(this.visibleRowCount+6);
             // Copy dữ liệu từ allData vào displayedData với số lượng dòng cần hiển thị
         },
         openModals(voteId) {
@@ -38,6 +38,8 @@ export default {
             this.currentVoteId = voteId;
             this.voteModal = {'question': null};
             this.getInfoVote(voteId);
+
+            console.log('this.datasets',this.chartData.datasets[0].data);
         },
         closeModal() {
             this.modalShow = false;
@@ -127,7 +129,7 @@ export default {
             let searchTerm = this.searchTerm.trim(); 
 
             // if (searchTerm === '') {
-            //   this.searchVotes(5);
+            //   this.searchVotes(6);
             //   return;
             // }
 
@@ -175,12 +177,19 @@ export default {
 </script>
 
 <template>
+    <div class="page-title-right d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+            <a href="javascript:void(0);" class="mb-0">Thống kê</a>
+            </li>
+        </ol>
+    </div>
     <div class="container mb-5 statistic-vote">
         <div class="row justify-content-between mb-4 align-items-center">
             <div class="col-md-3">
             </div>
             <div class="col-md-4">
-                <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes(5)">
+                <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes(6)">
                     <div class="position-relative">
                     <input type="text" class="form-control" v-model="searchTerm" placeholder="Tìm kiếm..." />
                     <span class="ri-search-line"></span>
@@ -207,49 +216,47 @@ export default {
                 <button class="btn btn-primary" @click="loadmore" v-if="isLoadMore && group_vote.length >= 5">Xem thêm</button>
             </div>
         </div>
-      <b-modal  :scrollable="true" :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
-        <div class="row justify-content-end">
-            <div class="col-lg-9"></div>
-            <div class="col-lg-3 text-right">
-                <b-button variant="link" @click="closeModal"><i class="fas fa-times"></i></b-button>
+        <b-modal  :scrollable="true" :id="'modal-' + currentVoteId" size="xl" hide-footer hide-header v-model="modalShow">
+            <div class="row justify-content-end">
+                <div class="col-lg-9"></div>
+                <div class="col-lg-3 text-right">
+                    <b-button variant="link" @click="closeModal"><i class="fas fa-times"></i></b-button>
+                </div>
             </div>
-        </div>
-        <h3 class="text-center mb-2">{{ voteModal.title }}</h3>
-        <b-table
-            v-if="voteModal.questions"
-            striped
-            hover
-            :items="getQuestionsByVoteId(voteModal.questions)"
-            :fields="tableFields"
-            bordered
-            responsive
-            sticky-header
-        >
-        <template #cell(options)="row">
-            <ul class="mb-0">
-                <!-- {{ row.value }} -->
-                <li class="mb-1" v-for="option in row.value" :key="option.option_id">
-                    <!-- Sử dụng row.type để lọc các option dựa trên type -->
-                    <template v-if="row.item.type === 3">
-                        <span>
-                            <ol>
-                                <li v-for="answerItem in parseAnswer(option.answer)">
-                                    {{ answerItem }}
-                                </li>
-                            </ol>
-                        </span>
-                    </template>
-                    <template v-else-if="row.item.type !== 3">
-                        {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
-                    </template>
-                    <!-- Các type khác nếu có -->
-                </li>
-            </ul>
-        </template>
-        </b-table>
-      </b-modal>
-
-      
+            <h3 class="text-center mb-2">{{ voteModal.title }}</h3>
+            <b-table
+                v-if="voteModal.questions"
+                striped
+                hover
+                :items="getQuestionsByVoteId(voteModal.questions)"
+                :fields="tableFields"
+                bordered
+                responsive
+                sticky-header
+            >
+            <template #cell(options)="row">
+                <ul class="mb-0">
+                    <!-- {{ row.value }} -->
+                    <li class="mb-1" v-for="option in row.value" :key="option.option_id">
+                        <!-- Sử dụng row.type để lọc các option dựa trên type -->
+                        <template v-if="row.item.type === 3">
+                            <span>
+                                <ol>
+                                    <li v-for="answerItem in parseAnswer(option.answer)">
+                                        {{ answerItem }}
+                                    </li>
+                                </ol>
+                            </span>
+                        </template>
+                        <template v-else-if="row.item.type !== 3">
+                            {{ option.option }}<br>( Tổng số lượt đã vote: <strong style="font-family: Inter,sans-serif;">{{ option.total_voted }}</strong> )
+                        </template>
+                        <!-- Các type khác nếu có -->
+                    </li>
+                </ul>
+            </template>
+            </b-table>
+        </b-modal>
     </div>
 </template>
 
