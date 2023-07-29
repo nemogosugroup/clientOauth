@@ -19,7 +19,8 @@ class Vote extends Model
         'is_public',
         'banner',
         'logo',
-        'is_anonymous'
+        'is_anonymous',
+        'short_link'
     ];
     
 }

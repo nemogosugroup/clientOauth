@@ -22338,11 +22338,16 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
-    copyLinkToClipboard: function copyLinkToClipboard(vote_id) {
+    copyLinkToClipboard: function copyLinkToClipboard(vote) {
+      console.log('check vote', vote);
       var currentURL = window.location.href; // Lấy địa chỉ URL hiện tại
       var urlObject = new URL(currentURL);
       var domain = urlObject.hostname;
-      var dynamicLink = "".concat(domain, "/voting/").concat(vote_id); // Thêm tham số động vào link
+      var dynamicLink = "".concat(domain, "/voting/").concat(vote.id);
+      if (vote.short_link && vote.short_link !== "") {
+        dynamicLink = "".concat(domain, "/").concat(vote.short_link);
+      }
+      // Thêm tham số động vào link
 
       var textarea = document.createElement("textarea");
       textarea.style.position = "fixed";
@@ -22363,8 +22368,53 @@ __webpack_require__.r(__webpack_exports__);
         autoClose: 1500
       });
     },
-    publishVote: function publishVote(vote) {
+    createShortLink: function createShortLink(vote_id) {
       var _this2 = this;
+      var formData = {
+        id: vote_id,
+        auto_create: 1,
+        short_link: ""
+      };
+      var token = this.$store.getters.accessToken;
+      // Add the searchTerm as a query parameter to the API call
+      this.axios.post("/api/vote/create-short-link", formData, {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      }).then(function (response) {
+        if (response.data.status === 200) {
+          var icon = "error";
+          if (response.data.success == true) {
+            icon = "success";
+            console.log("response.data.data", response.data.data);
+            console.log("this.group_vote", _this2.group_vote);
+            var elementToUpdate = _this2.group_vote.find(function (element) {
+              return element.id === vote_id;
+            });
+            if (elementToUpdate) {
+              // Cập nhật thông tin của phần tử tìm thấy
+              elementToUpdate['short_link'] = response.data.data.short_link;
+            }
+            console.log("check update this.group_vote", _this2.group_vote);
+          }
+          _this2.$swal.fire({
+            position: "center",
+            icon: icon,
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+
+          // if(response.data.success === true){
+          //   this.group_vote[vote_id]['short_link'] = response.data.data.short_link;
+          // }
+        }
+      })["catch"](function (error) {
+        console.log('Error:', error);
+      });
+    },
+    publishVote: function publishVote(vote) {
+      var _this3 = this;
       var action = 'off';
       if (vote.is_public == 0) {
         action = 'on';
@@ -22382,7 +22432,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         if (response.data.status === 200 && response.data.success == true) {
           vote.is_public = !vote.is_public; // Update the status of the specific vote to 'published'
-          _this2.$swal.fire({
+          _this3.$swal.fire({
             position: "center",
             icon: "success",
             title: "Bạn đã xuất bản thành công",
@@ -22390,7 +22440,7 @@ __webpack_require__.r(__webpack_exports__);
             timer: 1500
           });
         } else {
-          _this2.$swal.fire({
+          _this3.$swal.fire({
             position: "center",
             icon: "error",
             title: response.data.message,
@@ -24067,10 +24117,14 @@ var _hoisted_21 = ["onClick"];
 var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
   "class": "ri-file-copy-2-fill"
 }, null, -1 /* HOISTED */);
-var _hoisted_23 = {
+var _hoisted_23 = ["onClick"];
+var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  "class": "ri-file-copy-2-fill"
+}, null, -1 /* HOISTED */);
+var _hoisted_25 = {
   "class": "row load-more mt-4"
 };
-var _hoisted_24 = {
+var _hoisted_26 = {
   "class": "col text-center"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -24148,13 +24202,20 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.toggleStatus(vote);
       }
-    }, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(vote.status ? 'Mở' : 'Đóng'), 1 /* TEXT */)], 10 /* CLASS, PROPS */, _hoisted_19)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(vote.status ? 'Mở' : 'Đóng'), 1 /* TEXT */)], 10 /* CLASS, PROPS */, _hoisted_19)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), vote.short_link ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+      key: 3,
       "class": "btn btn-info mb-2",
       onClick: function onClick($event) {
-        return $options.copyLinkToClipboard(vote.id);
+        return $options.copyLinkToClipboard(vote);
       }
-    }, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Sao chép liên kết")], 8 /* PROPS */, _hoisted_21)])])])]);
-  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [$data.isLoadMore && $data.group_vote.length >= 5 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    }, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Sao chép liên kết")], 8 /* PROPS */, _hoisted_21)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+      key: 4,
+      "class": "btn btn-info mb-2",
+      onClick: function onClick($event) {
+        return $options.createShortLink(vote.id);
+      }
+    }, [_hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Tạo Liên kết ngắn")], 8 /* PROPS */, _hoisted_23))])])])]);
+  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [$data.isLoadMore && $data.group_vote.length >= 5 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
     key: 0,
     "class": "btn btn-primary",
     onClick: _cache[2] || (_cache[2] = function () {
@@ -24779,6 +24840,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         ref: "lastInput"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_b_form_input, {
         id: "answer-text",
+        "class": "mb-3",
         name: "answer-text",
         modelValue: option.option,
         "onUpdate:modelValue": function onUpdateModelValue($event) {

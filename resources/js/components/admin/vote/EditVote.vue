@@ -297,7 +297,7 @@ export default {
                 <label class="card-title" v-if="question.type === 4">Nhập số điểm tối đa</label>
                 <div class="row" v-if="question.type !== 3" v-for="(option, index) in question.options" :key="index">
                   <div class="col-lg-9" ref="lastInput" v-if="option.sub_type !== 'remove'">
-                    <b-form-input id="answer-text" name="answer-text" v-model="option.option" placeholder=""
+                    <b-form-input id="answer-text" class="mb-3" name="answer-text" v-model="option.option" placeholder=""
                       @keypress.enter.prevent @keyup.enter="addAnswer(question)" required
                       :disabled="voteData.is_public == 1"></b-form-input>
                   </div>
