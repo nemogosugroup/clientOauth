@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+
+use App\Models\Vote;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +30,15 @@ Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'home'])
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+Route::get('/{short_code}', function (Request $request) {
+    $vote = Vote::where("short_link", $request->short_code)->first();
+    if ($vote) {
+        return Redirect::to("/voting/{$vote->id}");
+    } else {
+        // return Redirect::to("/voting/42");
+        abort(404); // Trả về lỗi 404 nếu không tìm thấy $vote tương ứng
+    }
+});
 Route::get('/error', [App\Http\Controllers\HomeController::class, 'home'])->name('error');
 Route::get('/admin', [App\Http\Controllers\HomeController::class, 'home'])->name('admin');
 Route::get('home/{any}',[App\Http\Controllers\HomeController::class, 'home'])->where('any', '.*');

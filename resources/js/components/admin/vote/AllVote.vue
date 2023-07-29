@@ -119,11 +119,16 @@ export default {
           });
       },
 
-      copyLinkToClipboard(vote_id) {
+      copyLinkToClipboard(vote) {
+        console.log('check vote',vote);
         const currentURL = window.location.href; // Lấy địa chỉ URL hiện tại
         const urlObject = new URL(currentURL);
         const domain = urlObject.hostname;
-        const dynamicLink = `${domain}/voting/${vote_id}`; // Thêm tham số động vào link
+        let dynamicLink = `${domain}/voting/${vote.id}`;
+        if(vote.short_link && vote.short_link!==""){
+          dynamicLink = `${domain}/${vote.short_link}`;
+        }
+         // Thêm tham số động vào link
 
         const textarea = document.createElement("textarea");
         textarea.style.position = "fixed";
@@ -148,7 +153,53 @@ export default {
           autoClose: 1500,
         });
       },
-
+      createShortLink(vote_id){
+        let formData =  {
+          id: vote_id,
+          auto_create:1,
+          short_link: ""
+        };
+        let token = this.$store.getters.accessToken;
+        // Add the searchTerm as a query parameter to the API call
+        this.axios
+          .post(`/api/vote/create-short-link`,formData, {
+            headers: {
+              'Authorization': 'Bearer ' + token
+            },
+          })
+          .then((response) => {
+            if (response.data.status === 200) {
+              let icon = "error";
+              if(response.data.success == true){
+                icon = "success";
+                console.log("response.data.data",response.data.data);
+                console.log("this.group_vote",this.group_vote);
+                const elementToUpdate = this.group_vote.find((element) => element.id === vote_id);
+                if (elementToUpdate) {
+                  // Cập nhật thông tin của phần tử tìm thấy
+                  elementToUpdate['short_link'] = response.data.data.short_link;
+                }
+                console.log("check update this.group_vote",this.group_vote);
+              }
+              this.$swal.fire({
+                  position: "center",
+                  icon: icon,
+                  title: response.data.message,
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+              
+              
+              // if(response.data.success === true){
+              //   this.group_vote[vote_id]['short_link'] = response.data.data.short_link;
+              // }
+            }
+          })
+          .catch((error) => {
+            
+            console.log('Error:', error);
+          });
+      },
       publishVote(vote) {
         let action = 'off';
         if(vote.is_public == 0 ){
@@ -236,7 +287,8 @@ export default {
                   <button v-if="vote.is_public" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2 mb-2" @click="toggleStatus(vote)">
                     <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
                   </button>
-                  <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
+                  <button class="btn btn-info mb-2" v-if="vote.short_link" @click="copyLinkToClipboard(vote)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
+                  <button class="btn btn-info mb-2" v-else @click="createShortLink(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Tạo Liên kết ngắn</button>
               </div>
             </div>
           </div>

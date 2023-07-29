@@ -9,6 +9,7 @@ use App\Models\Voted;
 use App\Models\VoteQuestions;
 use App\Models\VoteOptions;
 use App\Models\VoteHistory;
+use Illuminate\Support\Str;
 
 class VoteController extends Controller
 {
@@ -650,6 +651,73 @@ class VoteController extends Controller
         return response()->json($response);
     }
 
+    public function createShortLink(Request $request)
+    {
+        $id = $request->input('id');
+        
+        $isAuto = 0 ;
+        if($request->input('auto_create') && $request->input('auto_create') == 1 ){
+            $isAuto = 1;  
+        }else{
+            $isAuto = 0 ;
+        }
+        $vote = Vote::where("id", $id)->first();
+        if(!$vote){
+            $response = [
+                "status"=> 200,
+                "message"=>"Không tìm thấy!",
+                "data"=>[],
+                "success"=>false
+            ];
+            return response()->json($response);
+        }
+        if($vote->short_link!==null && $vote->short_link!==""){
+            $response = [
+                "status"=> 200,
+                "message"=>"Đường dẫn rút gon đã được tạo trước đó!",
+                "data"=>[],
+                "success"=>false
+            ];
+            return response()->json($response);
+        }
+        if($isAuto == 1){
+            $shortLink ="";
+            do {
+                $shortLink = Str::random(8); // Tạo chuỗi 6 ký tự ngẫu nhiên từ a-z và số 0-9
+            } while (Vote::where('short_link', $shortLink)->exists() || \Route::has($shortLink));
+        }else{
+            $shortLink = $request->input('short_link');
+            if(!$shortLink){
+                $response = [
+                    "status"=> 200,
+                    "message"=>"Bạn chưa nhập đường dẫn rút gọn của trang vote!",
+                    "data"=>[],
+                    "success"=>false
+                ];
+                return response()->json($response);
+            }
+            if(Vote::where('short_link', $shortLink)->exists()){
+                $response = [
+                    "status"=> 200,
+                    "message"=>"Đường dẫn ngắn đã tồn tại, hãy chọn đường đẫn khác!",
+                    "data"=>[],
+                    "success"=>false
+                ];
+                return response()->json($response);
+            }
+        }
+        $vote->short_link = $shortLink;
+        $vote->save();
+        
+        $response = [
+            "status"=> 200,
+            "message"=>"Tạo đường dẫn ngắn thành công!",
+            "data"=>['short_link'=>$shortLink],
+            "success"=>true
+        ];
+        return response()->json($response);
+    }
+
     public function getInfo(Request $request)
     {
         $voteId = $request->input('id');
@@ -660,6 +728,7 @@ class VoteController extends Controller
             'vote.logo', 
             'vote.is_public', 
             'vote.title',
+            'vote.short_link',
             'vote.is_anonymous',
             'vote_questions.question as question', 
             'vote_questions.type as type', 
@@ -702,6 +771,7 @@ class VoteController extends Controller
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['short_link'] = $item->short_link;
             $result[$item->id]['is_anonymous'] = $item->is_anonymous == 1;
             $result[$item->id]['banner'] = $item->banner;
             $result[$item->id]['logo'] = $item->logo;
@@ -747,6 +817,7 @@ class VoteController extends Controller
         $data = Vote::select(
             'vote.id', 
             'vote.status', 
+            'vote.short_link', 
             'vote.title',
             'vote.is_public',
             'vote.banner',
@@ -780,6 +851,7 @@ class VoteController extends Controller
             'vote.id',
             'vote.status',
             'vote.title',
+            'vote.short_link',
             'vote_questions.question as question',
             'vote_questions.type as type',
             'vote_questions.is_required as is_required',
@@ -810,6 +882,7 @@ class VoteController extends Controller
         foreach ($data as $item) {
             $result[$item->id]['vote_id'] = $item->id;
             $result[$item->id]['title'] = $item->title;
+            $result[$item->id]['short_link'] = $item->short_link;
             $result[$item->id]['status'] = $item->status;
             $result[$item->id]['questions'][$item->question_id]['type'] = $item->type;
             $result[$item->id]['questions'][$item->question_id]['is_required'] = $item->is_required;
