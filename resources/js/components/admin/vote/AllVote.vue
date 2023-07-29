@@ -21,7 +21,7 @@ export default {
       };
     },
     created() {
-        this.searchVotes(5);
+        this.searchVotes(6);
     },
     methods: {
       loadmore() {
@@ -200,55 +200,61 @@ export default {
 </script>
 
 <template>
-    <div class="container mb-5 all-vote">
-      <div class="row justify-content-between mb-4 align-items-center">
-        <div class="col-md-3">
-          <router-link to="/admin/create-vote">
-            <button class="btn btn-primary"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
-          </router-link>
-        </div>
-        <div class="col-md-4">
-          <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes(5)">
-            <div class="position-relative">
-              <input type="text" class="form-control" v-model="searchTerm" placeholder="Tìm kiếm..." />
-              <span class="ri-search-line"></span>
-            </div>
-          </form>
-        </div>
+  <div class="page-title-right d-flex">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="javascript:void(0);" class="mb-0">Quản lý</a>
+        </li>
+    </ol>
+  </div>
+  <div class="container mb-5 all-vote">
+    <div class="row justify-content-between mb-4 align-items-center">
+      <div class="col-md-3">
+        <router-link to="/admin/create-vote">
+          <button class="btn btn-primary"><i class="fas fa-pen-square"></i>&nbsp;Tạo mới</button>
+        </router-link>
       </div>
-      <div class="row card-all-vote">
-        <div class="col-md-6" v-for="(vote, voteId) in group_vote" :key="voteId">
-          <div class="card">
-            <img class="card-img-top img-fluid" v-if="vote.banner === null || vote.banner === ''" :src="banner_default" alt="Card image cap">
-            <img class="card-img-top img-fluid" v-else :src="vote.banner" alt="Card image cap">
-            <div class="card-body">
-              <h3 class="card-title">{{ vote.title }}</h3>
-              <div class="action-btn">
-                  <router-link :to="{ path: `/admin/detail-vote/` + vote.id, params: { id: vote.id } }">
-                    <button class="btn btn-dark mr-2 mb-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
-                  </router-link>
-                  <router-link :to="{ path: `/voting/` + vote.id, params: { id: vote.id } }">
-                    <button class="btn btn-primary mr-2 mb-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
-                  </router-link>
-                  <button v-if="!vote.is_public" class="btn btn-success mr-2 mb-2" @click="publishVote(vote)">
-                    <i class="ri-earth-line"></i>&nbsp;Xuất bản
-                  </button>
-                  <button v-if="vote.is_public" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2 mb-2" @click="toggleStatus(vote)">
-                    <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Mở' : 'Đóng' }}
-                  </button>
-                  <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
-              </div>
+      <div class="col-md-4">
+        <form class="app-search d-none d-lg-block" @submit.prevent="searchVotes(6)">
+          <div class="position-relative">
+            <input type="text" class="form-control" v-model="searchTerm" placeholder="Tìm kiếm..." />
+            <span class="ri-search-line"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row card-all-vote">
+      <div class="col-md-6" v-for="(vote, voteId) in group_vote" :key="voteId">
+        <div class="card">
+          <img class="card-img-top img-fluid" v-if="vote.banner === null || vote.banner === ''" :src="banner_default" alt="Card image cap">
+          <img class="card-img-top img-fluid" v-else :src="vote.banner" alt="Card image cap">
+          <div class="card-body">
+            <h3 class="card-title">{{ vote.title }}</h3>
+            <div class="action-btn">
+                <router-link :to="{ path: `/admin/detail-vote/` + vote.id, params: { id: vote.id } }">
+                  <button class="btn btn-dark mr-2 mb-2"><i class="fas fa-file-alt"></i>&nbsp;Chi tiết</button>
+                </router-link>
+                <router-link v-if="!vote.is_public" :to="{ path: `/viewvote/` + vote.id, params: { id: vote.id } }">
+                  <button class="btn btn-primary mr-2 mb-2"><i class="fas fa-desktop"></i>&nbsp;Xem trước</button>
+                </router-link>
+                <button v-if="!vote.is_public" class="btn btn-success mr-2 mb-2" @click="publishVote(vote)">
+                  <i class="ri-earth-line"></i>&nbsp;Xuất bản
+                </button>
+                <button v-if="vote.is_public" :class="['btn', { 'btn-success': vote.status, 'btn-danger': !vote.status }]" class="mr-2 mb-2" @click="toggleStatus(vote)">
+                  <i class="fas fa-power-off"></i>&nbsp;{{ vote.status ? 'Đang mở' : 'Đang đóng' }}
+                </button>
+                <button class="btn btn-info mb-2"  @click="copyLinkToClipboard(vote.id)"><i class="ri-file-copy-2-fill"></i>&nbsp;Sao chép liên kết</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="row load-more mt-4">
-        <div class="col text-center">
-          <button class="btn btn-primary" @click="loadmore" v-if="isLoadMore && group_vote.length >= 5">Xem thêm</button>
-        </div>
+    </div>
+    <div class="row load-more mt-4">
+      <div class="col text-center">
+        <button class="btn btn-primary" @click="loadmore" v-if="isLoadMore && group_vote.length >= 5">Xem thêm</button>
       </div>
     </div>
-    
+  </div>
 </template>
 
 <style>

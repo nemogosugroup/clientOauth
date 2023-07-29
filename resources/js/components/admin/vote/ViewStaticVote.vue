@@ -68,12 +68,6 @@ export default {
       .catch((error) => {
         console.log('Error:', error);
       });
-    
-    // Gọi hàm updateData() ban đầu khi component được tạo
-    this.updateData();
-
-    // Gọi hàm updateData() mỗi 5 giây
-    this.updateInterval = setInterval(this.updateData, 10000);
   },
   methods:{
     // saveData(){
@@ -83,163 +77,163 @@ export default {
     //   };
     //   console.log(formVoteData);
     // }  
-    saveData() {
-      let vote_info = {};
-      for (const question of this.group_question) {
-        console.log("check question", question)
-        if (question.type === 1) {
-          vote_info[question.question_id] = this.selected_checkbox.filter((option_id) => {
-            return question.options.some((option) => option.option_id === option_id);
-          });
-        } else if (question.type === 2) {
-          let selected_radio_temp = this.selected_radio[question.question_id] || '';
-          vote_info[question.question_id] = selected_radio_temp !== '' ? [selected_radio_temp] : [];
-        } else if (question.type === 3) {
-          // Loại hình câu hỏi dạng văn bản, không có phương án được chọn
-          // Có thể xử lý dữ liệu văn bản ở đây nếu cần thiết
-          vote_info[question.question_id] = this.textContents[question.question_id] || '';
-        } else if (question.type === 4) {
-          // Loại hình câu hỏi dạng LinearScale
-          vote_info[question.question_id] = this.scaleValue[question.question_id] || '';
-        }
-      }
+    // saveData() {
+    //   let vote_info = {};
+    //   for (const question of this.group_question) {
+    //     console.log("check question", question)
+    //     if (question.type === 1) {
+    //       vote_info[question.question_id] = this.selected_checkbox.filter((option_id) => {
+    //         return question.options.some((option) => option.option_id === option_id);
+    //       });
+    //     } else if (question.type === 2) {
+    //       let selected_radio_temp = this.selected_radio[question.question_id] || '';
+    //       vote_info[question.question_id] = selected_radio_temp !== '' ? [selected_radio_temp] : [];
+    //     } else if (question.type === 3) {
+    //       // Loại hình câu hỏi dạng văn bản, không có phương án được chọn
+    //       // Có thể xử lý dữ liệu văn bản ở đây nếu cần thiết
+    //       vote_info[question.question_id] = this.textContents[question.question_id] || '';
+    //     } else if (question.type === 4) {
+    //       // Loại hình câu hỏi dạng LinearScale
+    //       vote_info[question.question_id] = this.scaleValue[question.question_id] || '';
+    //     }
+    //   }
 
-      for (const question of this.group_question) {
-        if (question.is_required === 1) {
-          // Check if the question is answered based on its type
-          let isQuestionAnswered = false;
-          if (question.type === 1) {
-            isQuestionAnswered = this.selected_checkbox.some((option_id) =>
-              question.options.some((option) => option.option_id === option_id)
-            );
-          } else if (question.type === 2) {
-            isQuestionAnswered = !!this.selected_radio[question.question_id];
-          } else if (question.type === 3) {
-            isQuestionAnswered = !!this.textContents[question.question_id];
-          } else if (question.type === 4) {
-            isQuestionAnswered = !!this.scaleValue[question.question_id];
-          }
+    //   for (const question of this.group_question) {
+    //     if (question.is_required === 1) {
+    //       // Check if the question is answered based on its type
+    //       let isQuestionAnswered = false;
+    //       if (question.type === 1) {
+    //         isQuestionAnswered = this.selected_checkbox.some((option_id) =>
+    //           question.options.some((option) => option.option_id === option_id)
+    //         );
+    //       } else if (question.type === 2) {
+    //         isQuestionAnswered = !!this.selected_radio[question.question_id];
+    //       } else if (question.type === 3) {
+    //         isQuestionAnswered = !!this.textContents[question.question_id];
+    //       } else if (question.type === 4) {
+    //         isQuestionAnswered = !!this.scaleValue[question.question_id];
+    //       }
 
-          if (!isQuestionAnswered) {
-            // Display an error message or handle the validation as needed
-            this.$swal.fire({
-              position: "center",
-              icon: "error",
-              title: `Xin vui lòng trả lời câu hỏi: ${question.question}`,
-              showConfirmButton: false,
-              timer: 1500
-            });
-            return; // Stop the form submission if any required question is not answered
-          }
-        }
-      }
+    //       if (!isQuestionAnswered) {
+    //         // Display an error message or handle the validation as needed
+    //         this.$swal.fire({
+    //           position: "center",
+    //           icon: "error",
+    //           title: `Xin vui lòng trả lời câu hỏi: ${question.question}`,
+    //           showConfirmButton: false,
+    //           timer: 1500
+    //         });
+    //         return; // Stop the form submission if any required question is not answered
+    //       }
+    //     }
+    //   }
 
-      let formVoteData = {
-        id: this.$route.params.id,
-        vote_info: JSON.stringify(vote_info),
-      };
-      console.log(formVoteData);
-      let token = this.$store.getters.accessToken;
-      // console.log("this.group_question", this.group_question);
-      let seft = this;
-      axios.post('/api/vote/vote', formVoteData, {
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      })
-        .then(function (response) {
-          // console.log("vote/add: ", response.data);
-          if (response.data.status === 200 && response.data.success == true) {
-            seft.group_question = [];
-            const voteInfo = response.data.data.voteInfo;
-            const voteId = Object.keys(voteInfo)[0];
-            const voteData = voteInfo[voteId];
-            seft.isVoted = true;
-            seft.status = voteData.status == 1 ? true : false;
-            seft.title_vote = voteData.title;
-            // console.log(voteData);
-            for (const questionKey in voteData.questions) {
-              let question_total_voted = 0;
-              let question = voteData.questions[questionKey];
-              for (const option of question.options) {
-                question_total_voted += option.total_voted;
-                // console.log(option);
-              }
-              if (question_total_voted == 0) {
-                question_total_voted = 1;
-              }
-              question.total_voted = question_total_voted
-              seft.group_question.push(question);
-              // console.log("group_question", seft.group_question);
-              //gửi thông báo
-              seft.$swal.fire({
-                position: "center",
-                icon: "success",
-                title: "Bạn thực hiện đánh giá thành công",
-                showConfirmButton: false,
-                timer: 1500
-              });
-            }
-            // console.log("this.group_question", seft.group_question);
-          }else{
-            seft.$swal.fire({
-              position: "center",
-              icon: "error",
-              title: response.data.message,
-              showConfirmButton: false,
-              timer: 1500
-            });
-          }
+    //   let formVoteData = {
+    //     id: this.$route.params.id,
+    //     vote_info: JSON.stringify(vote_info),
+    //   };
+    //   console.log(formVoteData);
+    //   let token = this.$store.getters.accessToken;
+    //   // console.log("this.group_question", this.group_question);
+    //   let seft = this;
+    //   axios.post('/api/vote/vote', formVoteData, {
+    //     headers: {
+    //       'Authorization': 'Bearer ' + token
+    //     }
+    //   })
+    //     .then(function (response) {
+    //       // console.log("vote/add: ", response.data);
+    //       if (response.data.status === 200 && response.data.success == true) {
+    //         seft.group_question = [];
+    //         const voteInfo = response.data.data.voteInfo;
+    //         const voteId = Object.keys(voteInfo)[0];
+    //         const voteData = voteInfo[voteId];
+    //         seft.isVoted = true;
+    //         seft.status = voteData.status == 1 ? true : false;
+    //         seft.title_vote = voteData.title;
+    //         // console.log(voteData);
+    //         for (const questionKey in voteData.questions) {
+    //           let question_total_voted = 0;
+    //           let question = voteData.questions[questionKey];
+    //           for (const option of question.options) {
+    //             question_total_voted += option.total_voted;
+    //             // console.log(option);
+    //           }
+    //           if (question_total_voted == 0) {
+    //             question_total_voted = 1;
+    //           }
+    //           question.total_voted = question_total_voted
+    //           seft.group_question.push(question);
+    //           // console.log("group_question", seft.group_question);
+    //           //gửi thông báo
+    //           seft.$swal.fire({
+    //             position: "center",
+    //             icon: "success",
+    //             title: "Bạn thực hiện đánh giá thành công",
+    //             showConfirmButton: false,
+    //             timer: 1500
+    //           });
+    //         }
+    //         // console.log("this.group_question", seft.group_question);
+    //       }else{
+    //         seft.$swal.fire({
+    //           position: "center",
+    //           icon: "error",
+    //           title: response.data.message,
+    //           showConfirmButton: false,
+    //           timer: 1500
+    //         });
+    //       }
 
-        })
-        .catch(function (error) {
-          console.log("vote/add error: ", error);
-        });
+    //     })
+    //     .catch(function (error) {
+    //       console.log("vote/add error: ", error);
+    //     });
       
 
-      console.log(formVoteData);
-    },
-    updateData() {
-      if(this.$route.params.id && this.$route.params.id >0){
-        let token = this.$store.getters.accessToken;
-        axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
-          headers: {
-            Authorization: 'Bearer ' + token
-          }
-        })
-        .then((response) => {
-          if (response.data.status === 200 && response.data.success) {
-            // Cập nhật dữ liệu vào state hoặc các biến khác của component
-            const voteInfo = response.data.data.voteInfo;
-            this.isVoted = response.data.data.is_voted;
-            const voteId = Object.keys(voteInfo)[0];
-            const voteData = voteInfo[voteId];
-            this.status = voteData.status == 1;
-            this.title_vote = voteData.title;
+    //   console.log(formVoteData);
+    // },
+    // updateData() {
+    //   if(this.$route.params.id && this.$route.params.id >0){
+    //     let token = this.$store.getters.accessToken;
+    //     axios.get(`/api/vote/get-info?id=${this.$route.params.id}`, {
+    //       headers: {
+    //         Authorization: 'Bearer ' + token
+    //       }
+    //     })
+    //     .then((response) => {
+    //       if (response.data.status === 200 && response.data.success) {
+    //         // Cập nhật dữ liệu vào state hoặc các biến khác của component
+    //         const voteInfo = response.data.data.voteInfo;
+    //         this.isVoted = response.data.data.is_voted;
+    //         const voteId = Object.keys(voteInfo)[0];
+    //         const voteData = voteInfo[voteId];
+    //         this.status = voteData.status == 1;
+    //         this.title_vote = voteData.title;
 
-            // Cập nhật lại các giá trị total_voted của câu hỏi
-            for (const questionKey in voteData.questions) {
-              let question_total_voted = 0;
-              let question = voteData.questions[questionKey];
-              for (const option of question.options) {
-                question_total_voted += option.total_voted;
-              }
-              if (question_total_voted == 0) {
-                question_total_voted = 1;
-              }
-              question.total_voted = question_total_voted;
-            }
+    //         // Cập nhật lại các giá trị total_voted của câu hỏi
+    //         for (const questionKey in voteData.questions) {
+    //           let question_total_voted = 0;
+    //           let question = voteData.questions[questionKey];
+    //           for (const option of question.options) {
+    //             question_total_voted += option.total_voted;
+    //           }
+    //           if (question_total_voted == 0) {
+    //             question_total_voted = 1;
+    //           }
+    //           question.total_voted = question_total_voted;
+    //         }
 
-            // Gán lại giá trị cho group_question
-            this.group_question = Object.values(voteData.questions);
-          }
-        })
-        .catch((error) => {
-          console.log('Error:', error);
-        });
-      }
+    //         // Gán lại giá trị cho group_question
+    //         this.group_question = Object.values(voteData.questions);
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.log('Error:', error);
+    //     });
+    //   }
       
-    },
+    // },
 
 
     onScaleValueChange(value) {
@@ -261,6 +255,9 @@ export default {
 
 <template>
   <div class="container mb-5 mt-5">
+    <router-link :to="{ path: `/admin/all-vote/`}">
+      <button class="btn btn-dark mr-2 mb-4"><i class="ri-arrow-left-line"></i>&nbsp;Quay lại</button>
+    </router-link>
     <div class="card banner fade-in" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl }">
         <div class="logo-vote">
           <img class="fade-in" v-if="logo_vote" :src="logo_vote" alt="Logo Vote">
@@ -274,7 +271,7 @@ export default {
     </div>
     <div class="row">
       <div class="col-md-12">
-        <form class="gosu-form-evaluation" role="form" @submit.prevent="saveData">
+        <form class="gosu-form-evaluation" role="form">
           <div class="row mt-2">
             <div class="col-md-12" v-for="(question) in group_question" :key="question.question_id">
               <div class="card">
@@ -334,10 +331,6 @@ export default {
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-if="!isPublic" :disabled="true">Chưa public</button>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-else-if="isVoted" :disabled="true">Bạn đã thực hiện khảo sát</button>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-else-if="!status" :disabled="true">Đợt khảo sát đã kết thúc</button>
-          <button class="btn btn-primary float-right mb-4" type="submit" v-else>Gửi Đánh Giá</button>
         </form>
       </div>
     </div>

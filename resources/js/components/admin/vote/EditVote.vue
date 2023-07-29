@@ -117,6 +117,17 @@ export default {
       return validQuestions.length > 1;
       // return questions.filter(question => question.sub_type !== 'remove').length > 1;
     },
+
+    deleteBanner() {
+      this.image_banner_Url = null;
+      this.selected_banner_File = null;
+    },
+
+    deleteLogo() {
+      this.image_logo_Url = null;
+      this.selected_logo_File = null;
+    },
+
     onBannerFileChange(event) {
       console.log("check onBannerFileChange");
       // Lấy tập tin ảnh từ sự kiện change
@@ -178,6 +189,18 @@ export default {
 </script>
 
 <template>
+  <div class="page-title-right d-flex">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link :to="{ path: `/admin/all-vote/`}">
+              Quản lý
+          </router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="javascript:void(0);" class="mb-0">Chi tiết</a>
+        </li>
+    </ol>
+  </div>
   <div class="container mb-5">
     <div class="row">
       <div class="col-md-12">
@@ -207,10 +230,15 @@ export default {
           <div class="card add-banner">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 d-flex justify-content-between">
                   <label class="card-title">Ảnh bìa (Banner):</label>
+                  <button v-if="image_banner_Url" class="btn btn-danger btn-sm mb-3" @click="deleteBanner">
+                    <i class="fas fa-trash-alt"></i>&nbsp;Xoá
+                  </button>
+                </div>
+                <div class="col-md-12">
                   <div class="input-banner">
-                    <input type="file" ref="fileInput" @change="onBannerFileChange" class="my-3" />
+                    <input v-if="!image_banner_Url" type="file" ref="fileInput" @change="onBannerFileChange" class="my-3" />
                     <img v-if="image_banner_Url" :src="image_banner_Url" alt="Uploaded Image" />
                   </div>
                 </div>
@@ -220,11 +248,16 @@ export default {
           <div class="card add-logo">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 d-flex justify-content-between">
                   <label class="card-title">Logo:</label>
+                  <button v-if="image_logo_Url" class="btn btn-danger btn-sm mt-2" @click="deleteLogo">
+                    <i class="fas fa-trash-alt"></i>&nbsp;Xoá
+                  </button>
+                </div>
+                <div class="col-md-12">
                   <div class="row input-logo">
                     <div class="col-md-12">
-                      <input type="file" ref="fileInput" @change="onLogoFileChange" class="my-3" />
+                      <input type="file" v-if="!image_logo_Url" ref="fileInput" @change="onLogoFileChange" class="my-3" />
                     </div>
                     <div class="col-md-12 text-center" v-if="image_logo_Url">
                       <img :src="image_logo_Url" alt="Uploaded Image" />

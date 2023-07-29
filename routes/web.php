@@ -25,6 +25,7 @@ Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout
 // Auth::routes(['register' => false, 'reset' => false ]);
 
 Route::get('/voting/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('voting');
+Route::get('/viewvote/{id}', [App\Http\Controllers\HomeController::class, 'home'])->name('viewvote');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');

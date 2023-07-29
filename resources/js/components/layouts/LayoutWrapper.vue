@@ -24,10 +24,13 @@
                                 <h4 class="mb-0 d-none d-md-block">
                                     <!-- {{ pageName }} -->
                                 </h4>
-                                <div class="page-title-right">
+                                <div class="page-title-right d-none">
                                     <ol class="breadcrumb" v-if="crumbs && crumbs.length > 0">
                                         <li class="breadcrumb-item" v-for="(crumb, index) in crumbs" :key="index">
-                                            <p style="margin-bottom: 0px;">{{ crumb.title }}</p>
+                                            
+                                            <router-link :to="{ path: crumb.link}">
+                                                {{ crumb.title }}
+                                            </router-link>
                                         </li>
                                     </ol>
                                 </div>
@@ -88,7 +91,7 @@ export default {
 
 <style>
 .page-content{
-    min-height: 815px;
+    min-height: 809px;
 }
 
 </style>

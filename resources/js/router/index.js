@@ -11,6 +11,7 @@ import Dashboard from '../components/admin/Dashboard.vue';
 import VoteParent from '../components/admin/vote/VoteParent.vue';
 import CreateVote from '../components/admin/vote/CreateVote.vue';
 import ViewVote from '../components/admin/vote/ViewVote.vue';
+import ViewStaticVote from '../components/admin/vote/ViewStaticVote.vue';
 import EditVote from '../components/admin/vote/EditVote.vue';
 import AllVote from '../components/admin/vote/AllVote.vue';
 import StatisticVote from '../components/admin/vote/StatisticVote.vue';
@@ -29,25 +30,30 @@ export const routes = [
         path: '/admin',
         name: 'Dashboard',
         component: AdminParent,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true,roles: ['ROLE_ADMIN'] },
         children: [
-            { name: 'Admin Dashboard', path: 'dashboard', component: Dashboard },
+          { name: 'Admin Dashboard', path: 'dashboard', component: Dashboard },
+          { name: 'All Vote', path: 'all-vote', component: AllVote ,},
+          { name: 'Create Vote', path: 'create-vote', component: CreateVote ,},
+          { name: 'Detail Vote', path: 'detail-vote/:id', component: EditVote,},
+          { name: 'Statistic Vote', path: 'statistic-vote', component: StatisticVote,},
         ]
     },
-    {
-        path: '/admin',
-        name: 'Vote',
-        component: VoteParent,
-        meta: { roles: ['ROLE_ADMIN'] },
-        children: [
-            { name: 'All Vote', path: 'all-vote', component: AllVote ,},
-            { name: 'Create Vote', path: 'create-vote', component: CreateVote ,},
-            { name: 'Detail Vote', path: 'detail-vote/:id', component: EditVote,},
-            { name: 'Statistic Vote', path: 'statistic-vote', component: StatisticVote,},
-            // { name: 'All Vote', path: 'all-vote', component: AllVote },
-        ]
-    },
+    // {
+    //     path: '/admin',
+    //     name: 'Vote',
+    //     component: AdminParent,
+    //     meta: { roles: ['ROLE_ADMIN'] },
+    //     children: [
+    //         { name: 'All Vote', path: 'all-vote', component: AllVote ,},
+    //         { name: 'Create Vote', path: 'create-vote', component: CreateVote ,},
+    //         { name: 'Detail Vote', path: 'detail-vote/:id', component: EditVote,},
+    //         { name: 'Statistic Vote', path: 'statistic-vote', component: StatisticVote,},
+    //         // { name: 'All Vote', path: 'all-vote', component: AllVote },
+    //     ]
+    // },
     { name: 'Voting', path: '/voting/:id', component: ViewVote,},
+    { name: 'ViewVote', path: '/viewvote/:id', component: ViewStaticVote,},
 
     
 

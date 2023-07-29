@@ -4,13 +4,14 @@
             <LayoutWrapper />
             <RightSidebar />
         </div>
-        <div class="" v-else>
+        <div class="main-container" v-else>
             <div class="container-xl">      
                 <HomeNavbarView />
             </div>
-            <div class="container">
+            <div class="container app-content">
                 <router-view></router-view>
             </div>
+            <FooterLayout />
         </div>
     </div>
 </template>
@@ -21,6 +22,7 @@ import LayoutWrapper from './components/layouts/LayoutWrapper.vue';
 import RightSidebar from './components/layouts/RightSidebar.vue';
 
 import HomeNavbarView from './components/home/view/NavbarView.vue';
+import FooterLayout from './components/layouts/FooterLayout.vue';
 
 
 export default {
@@ -29,6 +31,7 @@ export default {
         LayoutWrapper,
         RightSidebar,
         HomeNavbarView,
+        FooterLayout,
         // register,
     },
     computed: {
@@ -46,3 +49,15 @@ export default {
     },
 }
 </script>
+
+<style>
+.app_vue .main-container{
+    overflow: hidden;
+}
+
+.app_vue .main-container .app-content{
+    min-height: 606px;
+    margin-bottom: 85px;
+}
+
+</style>
