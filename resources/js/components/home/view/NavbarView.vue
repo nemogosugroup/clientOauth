@@ -15,7 +15,8 @@
         </div>
       </div>
       <div class="d-flex pe-0 pe-lg-3">
-        <div class="dropdown d-inline-block user-dropdown" v-if=true>
+        <router-link to="/admin/dashboard" class="btn btn-dark text-center mr-5 my-auto" v-if="isGotoAdmin">Trang Admin</router-link>
+        <div class="dropdown d-inline-block user-dropdown" v-if=true>          
           <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             <img class="rounded-circle header-profile-user" src="/assets/images/users/avatar-2.jpg" alt="Header Avatar" />
@@ -76,6 +77,9 @@ export default {
     
     UserForm() {
           let user = JSON.parse(this.$store.getters.infoUser);
+          if(user){
+            console.log("check user",JSON.parse(user.roles));
+          }
           return {
               name: user ? user.name : ""
           }
@@ -85,10 +89,18 @@ export default {
       // return this.$store.getters.getLoginResponse.authenticated || loginResponse.authenticated || false;
     },
     isGotoAdmin() {
-      return true;
-      // const authUser = JSON.parse(localStorage.getItem('authUser')) ?? {};
-      // const loginRoles = authUser.roles[0].name;
-      // return loginRoles === "admin" || loginRoles === "leader";
+      let user = JSON.parse(this.$store.getters.infoUser);
+      let isAdmin = false;
+      if(user){
+        let arrayRoles= JSON.parse(user.roles);
+        for (var i = 0; i < arrayRoles.length; i++) {
+          console.log(arrayRoles[i]);
+          if (arrayRoles[i] === "ROLE_ADMIN") {
+            isAdmin = true;
+          }
+        }
+      }
+      return isAdmin;
     },
   },
 

@@ -105,7 +105,7 @@ export default {
       }
 
       for (const question of this.group_question) {
-        if (question.is_required === 1) {
+        if (question.is_required === true) {
           // Check if the question is answered based on its type
           let isQuestionAnswered = false;
           if (question.type === 1) {
@@ -245,23 +245,25 @@ export default {
     onScaleValueChange(value) {
       this.scaleValue = value;
     },
-
-  },
-  computed: {
     bannerImageUrl() {
       let banner_vote = this.banner_vote;
       if(banner_vote === null || banner_vote === ""){
         banner_vote = this.banner_default
       }
+      console.log("`url(${banner_vote})`",`url(${banner_vote})`);
       return `url(${banner_vote})`;
     },
+
+  },
+  computed: {
+    
   },
 };
 </script>
 
 <template>
   <div class="container mb-5 mt-5">
-    <div class="card banner fade-in" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl }">
+    <div class="card banner fade-in" style="background-repeat: no-repeat;background-position: center ;background-size: cover;" :style="{ backgroundImage: bannerImageUrl() }">
         <div class="logo-vote">
           <img class="fade-in" v-if="logo_vote" :src="logo_vote" alt="Logo Vote">
           <img class="fade-in" v-else :src="logo_default" alt="Logo Vote">

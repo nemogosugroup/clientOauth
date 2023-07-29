@@ -238,7 +238,7 @@ export default {
                 </div>
                 <div class="col-md-12">
                   <div class="input-banner">
-                    <input v-if="!image_banner_Url" type="file" ref="fileInput" @change="onBannerFileChange" class="my-3" />
+                    <input v-if="!image_banner_Url" type="file" ref="fileInput" @change="onBannerFileChange" class="my-3" :disabled="voteData.is_public == 1"/>
                     <img v-if="image_banner_Url" :src="image_banner_Url" alt="Uploaded Image" />
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export default {
                 <div class="col-md-12">
                   <div class="row input-logo">
                     <div class="col-md-12">
-                      <input type="file" v-if="!image_logo_Url" ref="fileInput" @change="onLogoFileChange" class="my-3" />
+                      <input type="file" v-if="!image_logo_Url" ref="fileInput" @change="onLogoFileChange" class="my-3" :disabled="voteData.is_public == 1"/>
                     </div>
                     <div class="col-md-12 text-center" v-if="image_logo_Url">
                       <img :src="image_logo_Url" alt="Uploaded Image" />
@@ -283,11 +283,15 @@ export default {
                     <select class="form-control select2" v-model="question.type" :disabled="voteData.is_public == 1">
                       <option v-for="value in type_options" :key="value.id" :value="value.id">{{ value.option }}</option>
                     </select>
+                    <div class="mt-3">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" :id="`is_required_${question.question_id}`" class="custom-control-input"
+                        v-model="question.is_required" :disabled="voteData.is_public == 1">
+                      <label class="custom-control-label" :for="`is_required_${question.question_id}`">Bắt buộc</label>
+                    </div>
                   </div>
-                  <div class="col-lg-1">
-                    <label>*:</label>
-                    <input type="checkbox" v-model="question.is_required" :disabled="voteData.is_public == 1">
                   </div>
+                  
                 </div>
                 <label class="card-title" v-if="question.type !== 3 && question.type !== 4">Nhập câu trả lời</label>
                 <label class="card-title" v-if="question.type === 4">Nhập số điểm tối đa</label>
@@ -319,7 +323,8 @@ export default {
               </div>
             </div>
           </div>
-          <button class="btn btn-primary float-right mb-4" type="submit" :disabled="voteData.is_public == 1">Lưu biểu
+          <button class="btn btn-primary float-right mb-4" type="submit" v-if="voteData.is_public == 1" :disabled="true">Trang vote đã được xuất bản</button>
+          <button class="btn btn-primary float-right mb-4" type="submit" v-else :disabled="voteData.is_public == 1">Lưu biểu
             mẫu</button>
         </form>
     </div>
