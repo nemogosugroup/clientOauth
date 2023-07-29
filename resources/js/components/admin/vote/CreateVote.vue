@@ -2,7 +2,6 @@
 /**
  * Form-element component
  */
-import slugify from 'slugify';
 export default {
   data() {
     return {
