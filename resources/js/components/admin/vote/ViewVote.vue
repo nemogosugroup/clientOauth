@@ -305,7 +305,7 @@ export default {
                         <label class="custom-control-label text-capitalize" :for="answer.option_id">{{ answer.option
                         }}</label>
                       </div>
-                      <b-progress :max="100" height="14px">
+                      <b-progress :max="100" height="14px"  v-if="show_results">
                         <b-progress-bar :value="(answer.total_voted / question.total_voted) * 100"
                           :label="`${((answer.total_voted / question.total_voted) * 100).toFixed(0)}%`"></b-progress-bar>
                       </b-progress>

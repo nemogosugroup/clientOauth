@@ -63,6 +63,8 @@ export default {
       
       let formCreateVote = new FormData();
       formCreateVote.append('banner', this.selected_banner_File);
+      console.log("this.image_banner_Url",this.image_banner_Url);
+      console.log("this.image_banner_Url == null",this.image_banner_Url == null);
       formCreateVote.append('is_remove_banner', this.image_banner_Url == null);
       formCreateVote.append('logo', this.selected_logo_File);
       formCreateVote.append('is_remove_logo', this.image_logo_Url == null);
@@ -240,7 +242,7 @@ export default {
               <div class="row">
                 <div class="col-md-12 d-flex justify-content-between">
                   <label class="card-title">Ảnh bìa (Banner):</label>
-                  <button v-if="image_banner_Url" class="btn btn-danger btn-sm mb-3" @click="deleteBanner">
+                  <button v-if="image_banner_Url && voteData.is_public == 0" class="btn btn-danger btn-sm mb-3" @click="deleteBanner">
                     <i class="fas fa-trash-alt"></i>&nbsp;Xoá
                   </button>
                 </div>
@@ -258,7 +260,7 @@ export default {
               <div class="row">
                 <div class="col-md-12 d-flex justify-content-between">
                   <label class="card-title">Logo:</label>
-                  <button v-if="image_logo_Url" class="btn btn-danger btn-sm mt-2" @click="deleteLogo">
+                  <button v-if="image_logo_Url && voteData.is_public == 0" class="btn btn-danger btn-sm mt-2" @click="deleteLogo">
                     <i class="fas fa-trash-alt"></i>&nbsp;Xoá
                   </button>
                 </div>

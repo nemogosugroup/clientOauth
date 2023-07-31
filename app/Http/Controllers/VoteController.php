@@ -332,7 +332,7 @@ class VoteController extends Controller
             $banner->move(public_path('uploads'), $fileBannerName);
             $filePathBanner = '/uploads/' . $fileBannerName;
         }
-        if($filePathBanner == "" && ($request->input('is_remove_logo')!==true && $request->input('is_remove_logo') !== "")){
+        if($filePathBanner == "" && ($request->input('is_remove_banner')!==true && $request->input('is_remove_banner')!=="true")){
             $filePathBanner = $vote->banner;
         }
         $filePathLogo = "";
@@ -368,7 +368,7 @@ class VoteController extends Controller
             $logo->move(public_path('uploads'), $fileLogoName);
             $filePathLogo = '/uploads/' . $fileLogoName;
         }
-        if($filePathLogo == "" && ($request->input('is_remove_logo')!==true && $request->input('is_remove_logo') !== "")){
+        if($filePathLogo == "" && ($request->input('is_remove_logo')!==true && $request->input('is_remove_logo')!=="true")){
             $filePathLogo = $vote->logo;
         }
 
@@ -760,6 +760,7 @@ class VoteController extends Controller
             'vote.logo', 
             'vote.is_public', 
             'vote.title', 
+            'vote.short_link', 
             'vote.is_anonymous', 
             'vote.show_results', 
             'vote_questions.question', 
@@ -871,6 +872,7 @@ class VoteController extends Controller
             'vote.id',
             'vote.status',
             'vote.title',
+            'vote.short_link', 
             'vote_questions.question',
             'vote_questions.type',
             'vote_questions.id',
@@ -1144,6 +1146,7 @@ class VoteController extends Controller
                 'vote.logo', 
                 'vote.is_public', 
                 'vote.title', 
+                'vote.short_link', 
                 'vote.is_anonymous',
                 'vote.show_results',                 
                 'vote_questions.question', 

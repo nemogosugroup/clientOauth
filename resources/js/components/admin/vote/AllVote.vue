@@ -361,4 +361,9 @@ export default {
   max-width: 375px;
   width: 100%;
 }
+
+#shortlink-url:disabled{
+  opacity: 0.7;
+  background-color: #e0e0e0;
+}
 </style>
